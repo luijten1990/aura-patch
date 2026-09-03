@@ -1,6 +1,16 @@
 const { spawn } = require("node:child_process")
+const { existsSync } = require("node:fs")
+const path = require("node:path")
 
-const medusaCli = require.resolve("@medusajs/cli/cli.js")
+// Hostinger starts the source-root entry even when an output folder is set.
+const compiledDirectory = path.join(__dirname, ".medusa", "server")
+const runtimeDirectory = existsSync(path.join(compiledDirectory, "medusa-config.js"))
+  ? compiledDirectory
+  : __dirname
+process.chdir(runtimeDirectory)
+const medusaCli = require.resolve("@medusajs/cli/cli.js", {
+  paths: [runtimeDirectory],
+})
 
 const run = (args) =>
   new Promise((resolve, reject) => {
@@ -19,7 +29,8 @@ const run = (args) =>
     child.on("error", reject)
   })
 
-run(["db:migrate"])
+// The bundled migration script contains demo European catalog data.
+run(["db:migrate", "--skip-scripts"])
   .then(() => run(["start"]))
   .catch((error) => {
     console.error("Unable to start the Medusa server:", error)
