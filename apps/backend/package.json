@@ -14,6 +14,7 @@
   ],
   "scripts": {
     "build": "medusa build",
+    "build:hostinger": "medusa build && cp hostinger-start.js .medusa/server/hostinger-start.js",
     "start": "medusa start",
     "dev": "medusa develop",
     "lint": "medusa lint",
