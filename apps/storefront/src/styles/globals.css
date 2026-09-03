@@ -1,0 +1,157 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@layer utilities {
+  /* Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  input:focus ~ label,
+  input:not(:placeholder-shown) ~ label {
+    @apply -translate-y-2 text-xsmall-regular;
+  }
+
+  input:focus ~ label {
+    @apply left-0;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus {
+    border: 1px solid #212121;
+    -webkit-text-fill-color: #212121;
+    -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  input[type="search"]::-webkit-search-decoration,
+  input[type="search"]::-webkit-search-cancel-button,
+  input[type="search"]::-webkit-search-results-button,
+  input[type="search"]::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+  }
+}
+
+@layer components {
+  body {
+    @apply bg-aura-cream text-aura-forest;
+    font-family: var(--font-manrope), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    zoom: 0.9;
+  }
+
+  .aura-logo-mark {
+    filter: grayscale(1) contrast(5);
+    mix-blend-mode: screen;
+  }
+
+  .content-container {
+    @apply max-w-[1320px] w-full mx-auto px-5 small:px-8;
+  }
+
+  .aura-shell {
+    @apply mx-auto w-full max-w-[1320px] px-5 small:px-8;
+  }
+
+  .aura-display {
+    font-family: var(--font-hedvig-serif), Iowan Old Style, Baskerville, serif;
+    font-weight: 400;
+    letter-spacing: -0.035em;
+  }
+
+  .aura-eyebrow {
+    @apply text-[12px] font-medium uppercase tracking-[0.2em];
+  }
+
+  .aura-button {
+    @apply items-center justify-center rounded-full bg-aura-gold px-7 py-4 text-[13px] font-medium uppercase tracking-[0.12em] text-aura-forest transition-colors hover:bg-aura-forest hover:text-aura-cream;
+  }
+
+  .aura-button-outline {
+    @apply inline-flex items-center justify-center rounded-full border border-aura-forest/40 px-7 py-4 text-[13px] font-medium uppercase tracking-[0.12em] transition-colors hover:border-aura-forest hover:bg-aura-forest hover:text-aura-cream;
+  }
+
+  .aura-feature-card {
+    @apply min-h-[390px] rounded-[1.5rem] bg-aura-sage p-7 small:p-8;
+  }
+
+  .aura-product-card > a > div > div:first-child {
+    @apply aspect-[4/5] rounded-[2rem] border-0 bg-white p-0 shadow-none;
+  }
+
+  .aura-product-card > a > div > div:last-child {
+    @apply mt-5 text-[16px];
+  }
+
+  .contrast-btn {
+    @apply px-4 py-2 border border-black rounded-full hover:bg-black hover:text-white transition-colors duration-200 ease-in;
+  }
+
+  .text-xsmall-regular {
+    @apply text-[10px] leading-4 font-normal;
+  }
+
+  .text-small-regular {
+    @apply text-xs leading-5 font-normal;
+  }
+
+  .text-small-semi {
+    @apply text-xs leading-5 font-semibold;
+  }
+
+  .text-base-regular {
+    @apply text-sm leading-6 font-normal;
+  }
+
+  .text-base-semi {
+    @apply text-sm leading-6 font-semibold;
+  }
+
+  .text-large-regular {
+    @apply text-base leading-6 font-normal;
+  }
+
+  .text-large-semi {
+    @apply text-base leading-6 font-semibold;
+  }
+
+  .text-xl-regular {
+    @apply text-2xl leading-[36px] font-normal;
+  }
+
+  .text-xl-semi {
+    @apply text-2xl leading-[36px] font-semibold;
+  }
+
+  .text-2xl-regular {
+    @apply text-[30px] leading-[48px] font-normal;
+  }
+
+  .text-2xl-semi {
+    @apply text-[30px] leading-[48px] font-semibold;
+  }
+
+  .text-3xl-regular {
+    @apply text-[32px] leading-[44px] font-normal;
+  }
+
+  .text-3xl-semi {
+    @apply text-[32px] leading-[44px] font-semibold;
+  }
+}
