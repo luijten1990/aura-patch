@@ -13,7 +13,7 @@
     "medusa"
   ],
   "scripts": {
-    "build": "medusa build && cp hostinger-start.js .medusa/server/hostinger-start.js",
+    "build": "medusa build && cp hostinger-start.js .medusa/server/hostinger-start.js && npm install --omit=dev --prefix .medusa/server",
     "start": "medusa start",
     "dev": "medusa develop",
     "lint": "medusa lint",
