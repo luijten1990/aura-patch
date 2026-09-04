@@ -33,12 +33,9 @@ export const retrieveRegion = async (id: string) => {
 }
 
 const regionMap = new Map<string, HttpTypes.StoreRegion>()
-const US_REGION_ID = "reg_01M1GV9S6HCQ6T0QBS03K32TT3"
 
 export const getRegion = async (countryCode: string) => {
-  if (countryCode.toLowerCase() === "us") {
-    return retrieveRegion(US_REGION_ID)
-  }
+  countryCode = countryCode.toLowerCase()
 
   if (regionMap.has(countryCode)) {
     return regionMap.get(countryCode)
