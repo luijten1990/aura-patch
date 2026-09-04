@@ -48,7 +48,6 @@ const Hero = ({ product }: HeroProps) => {
         </div>
         <div className="relative mx-auto w-full max-w-[460px]">
           <div className="absolute inset-[10%] rounded-[48%] bg-aura-sage/70 blur-3xl" />
-          {product ? (
             <LocalizedClientLink href={productHref} className="group relative block">
               <div className="relative aspect-[4/5] overflow-hidden">
                 <Image
@@ -61,13 +60,10 @@ const Hero = ({ product }: HeroProps) => {
                 />
               </div>
               <div className="mt-2 flex items-baseline justify-between gap-5 border-t border-aura-forest/20 pt-4 text-[14px]">
-                <span>{product.title}</span>
+                <span>{product?.title || "Aura Patch — 30-day supply"}</span>
                 {price && <span className="font-semibold">{price.calculated_price}</span>}
               </div>
             </LocalizedClientLink>
-          ) : (
-            <div className="relative aspect-[4/5] rounded-[2rem] bg-aura-sage" />
-          )}
         </div>
       </section>
 
