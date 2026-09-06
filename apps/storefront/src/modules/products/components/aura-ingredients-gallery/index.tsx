@@ -38,7 +38,7 @@ export default function AuraIngredientsGallery() {
           {ingredients.map(([name, file, tags, description], index) => (
             <article key={name} className="group overflow-hidden rounded-[1.25rem] bg-[#f5f0e5] text-aura-forest">
               <div className="relative aspect-[4/3] overflow-hidden">
-                <Image src={`/images/ingredients/${file}`} alt={`${name} ingredient`} fill className="object-cover transition-transform duration-700 group-hover:scale-[1.035]" sizes="(max-width: 1023px) 50vw, 25vw" />
+                <Image src={`/images/ingredients/${file.replace('.png', '.webp')}`} alt={`${name} ingredient`} fill className="object-cover transition-transform duration-700 group-hover:scale-[1.035]" sizes="(max-width: 1023px) 50vw, 25vw" />
                 <span className="absolute left-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-aura-forest text-[10px] text-aura-cream">{String(index + 1).padStart(2, "0")}</span>
               </div>
               <div className="px-4 py-5 small:px-5">

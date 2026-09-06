@@ -39,7 +39,7 @@ export default async function Nav() {
           >
             <span className="relative h-10 w-10 overflow-hidden rounded-full small:h-11 small:w-11">
               <Image
-                src="/images/aura-flower-of-life.png"
+                src="/images/aura-flower-of-life.webp"
                 alt=""
                 fill
                 priority

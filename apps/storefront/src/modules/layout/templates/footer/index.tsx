@@ -29,7 +29,7 @@ export default function Footer() {
             >
               <span className="relative h-16 w-16 overflow-hidden rounded-full">
                 <Image
-                  src="/images/aura-flower-of-life.png"
+                  src="/images/aura-flower-of-life.webp"
                   alt=""
                   fill
                   className="aura-logo-mark object-cover"

@@ -32,9 +32,9 @@ const opportunities = [
 ]
 
 const campaignTiles = [
-  ["/images/ambassador-daily-ritual.png", "Wellness", "in real life"],
-  ["/images/ambassador-apply.png", "Share your ritual", "in your own voice"],
-  ["/images/ambassador-create.png", "Create with intention", "earn as you inspire"],
+  ["/images/ambassador-daily-ritual.webp", "Wellness", "in real life"],
+  ["/images/ambassador-apply.webp", "Share your ritual", "in your own voice"],
+  ["/images/ambassador-create.webp", "Create with intention", "earn as you inspire"],
   ["/images/aura-patch-front-original.jpeg", "Join the Aura community", "today"],
 ]
 

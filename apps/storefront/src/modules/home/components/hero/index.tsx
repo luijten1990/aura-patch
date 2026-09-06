@@ -132,7 +132,7 @@ const Hero = ({ product }: HeroProps) => {
             <div className="relative">
               <div className="relative aspect-[4/3] min-h-[390px] small:aspect-[16/9] small:min-h-[620px]">
                 <Image
-                  src="/images/aura-patch-anatomy.png"
+                  src="/images/aura-patch-anatomy.webp"
                   alt="Exploded view showing the three round layers of an Aura Patch"
                   fill
                   className="object-cover object-center small:object-contain"
@@ -247,13 +247,13 @@ const Hero = ({ product }: HeroProps) => {
             {
               name: "Aura Recover",
               description: "A considered reset for replenishment and restoration.",
-              image: "/images/aura-restore-coming-soon.png",
+              image: "/images/aura-restore-coming-soon.webp",
               background: "bg-[#e4e8d8]",
             },
             {
               name: "Aura Energy",
               description: "A brighter ritual created for momentum and focus.",
-              image: "/images/aura-energy-coming-soon.png",
+              image: "/images/aura-energy-coming-soon.webp",
               background: "bg-[#f3dfaa]",
             },
           ].map((item) => (
