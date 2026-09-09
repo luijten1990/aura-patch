@@ -125,7 +125,11 @@ const CartDropdown = ({
                           className="w-24"
                         >
                           <Thumbnail
-                            thumbnail={item.thumbnail}
+                            thumbnail={
+                              item.product_handle === "aura-patch"
+                                ? "/images/aura-patch-front-original.jpeg"
+                                : item.thumbnail
+                            }
                             images={item.variant?.product?.images}
                             size="square"
                           />

@@ -43,6 +43,10 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
   // TODO: Update this to grab the actual max inventory
   const maxQtyFromInventory = 10
   const maxQuantity = item.variant?.manage_inventory ? 10 : maxQtyFromInventory
+  const thumbnail =
+    item.product_handle === "aura-patch"
+      ? "/images/aura-patch-front-original.jpeg"
+      : item.thumbnail
 
   return (
     <Table.Row className="w-full" data-testid="product-row">
@@ -55,7 +59,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
           })}
         >
           <Thumbnail
-            thumbnail={item.thumbnail}
+            thumbnail={thumbnail}
             images={item.variant?.product?.images}
             size="square"
           />
