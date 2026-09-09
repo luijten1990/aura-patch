@@ -10,6 +10,20 @@ const localPackageDir = (pkg: string) =>
     })
   )
 
+const stripeProvider =
+  process.env.STRIPE_API_KEY && process.env.STRIPE_WEBHOOK_SECRET
+    ? [
+        {
+          resolve: "@medusajs/medusa/payment-stripe",
+          id: "stripe",
+          options: {
+            apiKey: process.env.STRIPE_API_KEY,
+            webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+          },
+        },
+      ]
+    : []
+
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
@@ -33,4 +47,13 @@ module.exports = defineConfig({
       },
     }),
   },
+
+  modules: [
+    {
+      resolve: "@medusajs/medusa/payment",
+      options: {
+        providers: stripeProvider,
+      },
+    },
+  ],
 })

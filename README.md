@@ -152,6 +152,30 @@ The storefront is configured via environment variables in `apps/storefront/.env.
 | `NEXT_PUBLIC_BASE_URL` | Base URL of the storefront | `https://localhost:8000` |
 | `NEXT_PUBLIC_STRIPE_KEY` | Stripe publishable key (optional) | — |
 
+## Stripe payments
+
+The storefront already includes Stripe's Payment Element. To enable it, configure
+the Medusa backend with server-only secrets:
+
+```bash
+STRIPE_API_KEY=rk_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+```
+
+The Stripe provider registers only when both values are set. For an existing
+region, replace `pp_system_default` with `pp_stripe_stripe` in Medusa Admin so
+customers cannot submit an unpaid manual order. Then configure Stripe to send
+these events to
+`https://<medusa-backend-url>/hooks/payment/stripe_stripe`:
+
+- `payment_intent.amount_capturable_updated`
+- `payment_intent.succeeded`
+- `payment_intent.payment_failed`
+
+Set `NEXT_PUBLIC_STRIPE_KEY=pk_...` only in the storefront's environment. Never
+put the restricted API key or webhook secret in browser-visible environment
+variables.
+
 ## Resources
 
 - [Medusa Documentation](https://docs.medusajs.com)

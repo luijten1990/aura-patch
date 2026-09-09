@@ -36,6 +36,10 @@ export default async function initial_data_seed({
   );
 
   const countries = ["gb", "de", "dk", "se", "fr", "es", "it"];
+  const paymentProviders =
+    process.env.STRIPE_API_KEY && process.env.STRIPE_WEBHOOK_SECRET
+      ? ["pp_stripe_stripe"]
+      : ["pp_system_default"];
 
   logger.info("Seeding store data...");
   const {
@@ -103,7 +107,7 @@ export default async function initial_data_seed({
           name: "Europe",
           currency_code: "eur",
           countries,
-          payment_providers: ["pp_system_default"],
+          payment_providers: paymentProviders,
         },
       ],
     },
