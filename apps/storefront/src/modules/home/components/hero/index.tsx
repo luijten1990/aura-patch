@@ -35,7 +35,7 @@ const Hero = ({ product }: HeroProps) => {
       <section className="aura-shell grid items-center gap-10 py-14 small:grid-cols-[1fr_0.8fr] small:py-16">
         <div className="max-w-[600px]">
           <p className="aura-eyebrow">The next generation of wellness</p>
-          <h1 className="aura-display mt-6 text-[50px] leading-[0.96] small:text-[68px]">
+          <h1 className="aura-display mt-6 text-[50px] leading-[1.04] small:text-[68px]">
             19 Ingredients.<br />One Daily Patch.
           </h1>
           <p className="mt-7 max-w-[540px] text-[16px] leading-7 text-aura-forest/80">
