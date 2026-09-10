@@ -4,7 +4,7 @@ import { isManual, isStripeLike } from "@lib/constants"
 import { placeOrder } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
 import { Button } from "@modules/common/components/ui"
-import { useElements, useStripe } from "@stripe/react-stripe-js"
+import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
 import { useParams } from "next/navigation"
 import React, { useState } from "react"
 import ErrorMessage from "../error-message"
@@ -75,6 +75,16 @@ const StripePaymentButton = ({
 
   const handlePayment = async () => {
     if (!stripe || !elements || !cart) {
+      return
+    }
+
+    // `useElements()` can remain available after a route change even when its
+    // Payment Element has been unmounted. Guarding this prevents Stripe's
+    // opaque IntegrationError and gives the shopper a recoverable message.
+    if (!elements.getElement(PaymentElement)) {
+      setErrorMessage(
+        "Your payment form is no longer available. Return to Payment and try again."
+      )
       return
     }
 

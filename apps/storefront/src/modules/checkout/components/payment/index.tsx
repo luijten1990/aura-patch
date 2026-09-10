@@ -139,7 +139,21 @@ const Payment = ({
         )}
       </div>
       <div>
-        <div className={isOpen ? "block" : "hidden"}>
+        {/*
+          Keep Stripe's iframe in the document after moving to review. Hiding it
+          with `display: none` can cause Stripe to unregister the Payment
+          Element, leaving `confirmPayment` without an element to confirm.
+          The off-screen layout keeps it mounted while removing it from both
+          the visual flow and the accessibility tree.
+        */}
+        <div
+          className={
+            isOpen
+              ? "block"
+              : "absolute h-px w-px overflow-hidden opacity-0 pointer-events-none"
+          }
+          aria-hidden={!isOpen}
+        >
           {!paidByGiftcard && availablePaymentMethods?.length && (
             <>
               <RadioGroup
