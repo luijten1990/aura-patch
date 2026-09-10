@@ -4,6 +4,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import IngredientsShowcase from "@modules/home/components/ingredients-showcase"
 import AuraIngredientsGallery from "@modules/products/components/aura-ingredients-gallery"
 import ContactForm from "@modules/home/components/contact-form"
+import NewsletterSignup from "@modules/home/components/newsletter-signup"
 import Image from "next/image"
 
 type HeroProps = {
@@ -306,7 +307,10 @@ const Hero = ({ product }: HeroProps) => {
             <p className="mt-6 max-w-[430px] text-[15px] leading-7 text-aura-forest/70">Questions about Aura, your order, wholesale, partnerships, or investing? Send us a note and we’ll point it to the right place.</p>
             <LocalizedClientLink href={productHref} className="mt-8 inline-flex text-[11px] font-bold uppercase tracking-[0.16em] text-aura-forest underline decoration-aura-gold decoration-2 underline-offset-8">Explore Aura Patch</LocalizedClientLink>
           </div>
-          <ContactForm />
+          <div className="flex flex-col gap-6">
+            <ContactForm />
+            <NewsletterSignup />
+          </div>
         </div>
       </section>
     </div>
