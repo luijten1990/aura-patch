@@ -98,7 +98,9 @@ export default async function orderPlacedBrevoHandler({
     return
   }
 
-  const typedOrder = order as Order
+  // `query.graph` returns generated nullable field types; this subscriber only
+  // requests the fields represented by the local email payload type.
+  const typedOrder = order as unknown as Order
   const orderNumber = typedOrder.display_id ?? typedOrder.id
   const total = formatAmount(typedOrder.total, typedOrder.currency_code)
   const items = (typedOrder.items ?? [])
