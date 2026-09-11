@@ -1,4 +1,4 @@
-import { defineMiddlewares } from "@medusajs/framework/utils"
+import { defineMiddlewares } from "@medusajs/framework/http"
 import type { NextFunction, Request, Response } from "express"
 
 const SLOW_REQUEST_MS = 1_000
