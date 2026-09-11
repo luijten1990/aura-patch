@@ -19,7 +19,9 @@ const logSlowStoreWrite = (req: Request, res: Response, next: NextFunction) => {
     const durationMs = Math.round(performance.now() - startedAt)
 
     if (durationMs >= SLOW_REQUEST_MS) {
-      console.info(
+      // Hostinger's runtime-log view suppresses info-level application output.
+      // Warning makes only the slow, privacy-safe measurements visible there.
+      console.warn(
         `[checkout-timing] ${req.method} ${req.baseUrl}${req.path} ${res.statusCode} ${durationMs}ms`
       )
     }
