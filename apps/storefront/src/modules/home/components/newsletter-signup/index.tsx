@@ -1,33 +1,24 @@
 "use client"
 
-import { useState } from "react"
-import type { FormEvent } from "react"
+import { useRef, useState } from "react"
 
 const BREVO_FORM_ACTION =
   "https://863fe79f.sibforms.com/serve/MUIFAMI6TqrUKksTB4nJw_WyLu2GHzoi5rzeXxky19vw2_vdQNIv_PtCZg5NBrDJ3wr-d5SKx9DryRrTs-y8b5caTytR011qcDIJFfRnW9q5_sNG2_YiNxhIRAiXaoisrQsyzyTo6O2skPmUrOokQfB08SxSAvkCPpe0EeQwkXFXnvfyCTVShgheWJWGvYLTWi2LwCFmXUw8VDv0Sg=="
 
 export default function NewsletterSignup() {
-  const [status, setStatus] = useState<"idle" | "success" | "error">("idle")
+  const [status, setStatus] = useState<"idle" | "success">("idle")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const formRef = useRef<HTMLFormElement>(null)
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+  const handleSubmit = () => {
     setIsSubmitting(true)
     setStatus("idle")
 
-    try {
-      await fetch(BREVO_FORM_ACTION, {
-        method: "POST",
-        mode: "no-cors",
-        body: new FormData(event.currentTarget),
-      })
-      event.currentTarget.reset()
-      setStatus("success")
-    } catch {
-      setStatus("error")
-    } finally {
+    window.setTimeout(() => {
+      formRef.current?.reset()
       setIsSubmitting(false)
-    }
+      setStatus("success")
+    }, 250)
   }
 
   return (
@@ -39,7 +30,14 @@ export default function NewsletterSignup() {
       <p className="mt-4 max-w-[470px] text-[15px] leading-7 text-aura-forest/70">
         Be first to hear about new formulas, launches, and early access.
       </p>
-      <form className="mt-6" onSubmit={handleSubmit}>
+      <form
+        ref={formRef}
+        className="mt-6"
+        action={BREVO_FORM_ACTION}
+        method="post"
+        onSubmit={handleSubmit}
+        target="brevo-newsletter-target"
+      >
         <label className="aura-eyebrow block" htmlFor="newsletter-email">
           Email address
         </label>
@@ -63,9 +61,9 @@ export default function NewsletterSignup() {
         </div>
         <input name="email_address_check" type="text" className="hidden" tabIndex={-1} autoComplete="off" />
         <input name="locale" type="hidden" value="en" />
+        <iframe className="hidden" name="brevo-newsletter-target" title="Brevo newsletter signup" />
         <p aria-live="polite" className="mt-3 text-[13px] leading-5 text-aura-forest/70">
           {status === "success" && "You’re on the list. Welcome to Aura."}
-          {status === "error" && "We couldn’t add you just now. Please try again."}
         </p>
       </form>
     </aside>
