@@ -47,9 +47,17 @@ const Payment = ({
     setError(null)
     setSelectedPaymentMethod(method)
     if (isStripeLike(method)) {
-      await initiatePaymentSession(cart, {
-        provider_id: method,
-      })
+      try {
+        await initiatePaymentSession(cart, {
+          provider_id: method,
+        })
+        // The payment session is created server-side. Refresh the cart so the
+        // PaymentWrapper receives its client secret and can mount Stripe's
+        // Payment Element instead of leaving the checkout on its skeleton.
+        router.refresh()
+      } catch (err) {
+        setError(err instanceof Error ? err.message : String(err))
+      }
     }
   }
 
