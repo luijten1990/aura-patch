@@ -113,7 +113,35 @@ export default async function orderPlacedBrevoHandler({
     .join("")
 
   const sender = { email: senderEmail, name: senderName }
-  const customerHtml = `<h1>Thanks for your order!</h1><p>Your Aura Patch order #${orderNumber} has been received.</p><ul>${items}</ul><p><strong>Total: ${total}</strong></p>`
+  const customerHtml = `<!doctype html>
+<html lang="en">
+  <body style="margin:0;padding:0;background:#f5f3ed;color:#1d2821;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;background:#f5f3ed;">
+      <tr><td align="center" style="padding:28px 16px 42px;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:600px;">
+          <tr><td align="center" bgcolor="#173f36" style="background:#173f36;padding:19px 24px;">
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0"><tr>
+              <td valign="middle" style="padding-right:14px;"><img src="https://www.getaurapatch.com/images/aura-flower-of-life-white-transparent.png" width="62" height="62" alt="Aura Patch" style="display:block;border:0;outline:none;text-decoration:none;width:62px;height:62px;"></td>
+              <td valign="middle" style="font-family:Georgia,'Times New Roman',serif;font-size:28px;line-height:31px;letter-spacing:4px;font-weight:400;color:#ffffff;">AURA&nbsp;PATCH</td>
+            </tr></table>
+          </td></tr>
+          <tr><td style="background:#ffffff;border:1px solid #e1e0d8;padding:44px 44px 46px;">
+            <p style="margin:0 0 17px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;letter-spacing:1.6px;text-transform:uppercase;color:#77866d;">Order confirmed</p>
+            <h1 style="margin:0 0 28px;font-family:Georgia,'Times New Roman',serif;font-size:40px;line-height:47px;font-weight:400;color:#1d2821;">Thank you<br>for your purchase.</h1>
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 25px;"><tr>
+              <td width="154" valign="top" style="width:154px;padding:2px 24px 8px 0;"><a href="https://www.getaurapatch.com/us/products/aura-patch" style="text-decoration:none;"><img src="https://www.getaurapatch.com/_next/image?url=%2Fimages%2Faura-patch-front-original.jpeg&w=1600&q=75" width="130" alt="Aura Patch daily wellness and immune support patch" style="display:block;width:130px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none;"></a></td>
+              <td valign="top" style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:26px;color:#405044;"><p style="margin:0 0 14px;">Hi there,</p><p style="margin:0;">Thank you for choosing Aura Patch. Your order <strong style="color:#1d2821;">#${escapeHtml(String(orderNumber))}</strong> has been received, and we’re preparing it with care.</p></td>
+            </tr></table>
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:28px 0;border-top:1px solid #d9ddd3;border-bottom:1px solid #d9ddd3;"><tr><td style="padding:20px 0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:25px;color:#405044;"><strong style="font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:#77866d;">Your order</strong><ul style="margin:13px 0 12px;padding-left:20px;">${items}</ul><p style="margin:0;"><strong style="color:#1d2821;">Total: ${total}</strong></p></td></tr></table>
+            <p style="margin:0 0 30px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:27px;color:#405044;">We’re glad to be part of your daily wellness routine.</p>
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0"><tr><td bgcolor="#173f36"><a href="https://www.getaurapatch.com/us/products/aura-patch" style="display:inline-block;padding:15px 24px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:#ffffff;text-decoration:none;">Explore Aura Patch</a></td></tr></table>
+          </td></tr>
+          <tr><td align="center" style="padding:29px 20px 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:20px;color:#667068;">Questions? Reply to this email or write to <a href="mailto:info@getaurapatch.com" style="color:#405044;text-decoration:underline;">info@getaurapatch.com</a>.</td></tr>
+        </table>
+      </td></tr>
+    </table>
+  </body>
+</html>`
 
   if (typedOrder.email) {
     await sendBrevoEmail(apiKey, {
