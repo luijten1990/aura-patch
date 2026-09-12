@@ -38,7 +38,37 @@ export default function NewsletterSignup() {
         onSubmit={handleSubmit}
         target="brevo-newsletter-target"
       >
-        <label className="aura-eyebrow block" htmlFor="newsletter-email">
+        <div className="mt-3 grid gap-3 small:grid-cols-2">
+          <div>
+            <label className="aura-eyebrow block" htmlFor="newsletter-first-name">
+              First name
+            </label>
+            <input
+              className="mt-3 w-full rounded-full border border-aura-forest/25 bg-transparent px-5 py-4 text-[15px] text-aura-forest outline-none transition-colors placeholder:text-aura-forest/45 focus:border-aura-gold"
+              id="newsletter-first-name"
+              name="FIRSTNAME"
+              type="text"
+              autoComplete="given-name"
+              placeholder="First name"
+              required
+            />
+          </div>
+          <div>
+            <label className="aura-eyebrow block" htmlFor="newsletter-last-name">
+              Last name
+            </label>
+            <input
+              className="mt-3 w-full rounded-full border border-aura-forest/25 bg-transparent px-5 py-4 text-[15px] text-aura-forest outline-none transition-colors placeholder:text-aura-forest/45 focus:border-aura-gold"
+              id="newsletter-last-name"
+              name="LASTNAME"
+              type="text"
+              autoComplete="family-name"
+              placeholder="Last name"
+              required
+            />
+          </div>
+        </div>
+        <label className="aura-eyebrow mt-4 block" htmlFor="newsletter-email">
           Email address
         </label>
         <div className="mt-3 flex flex-col gap-3 small:flex-row">
