@@ -1,8 +1,8 @@
 import { AbstractFulfillmentProviderService } from "@medusajs/framework/utils"
-import type { CalculateShippingOptionPriceDTO, CreateFulfillmentResult, FulfillmentOption, ValidateFulfillmentDataContext } from "@medusajs/types"
+import type { CalculateShippingOptionPriceDTO, CreateFulfillmentResult, FulfillmentDTO, FulfillmentItemDTO, FulfillmentOption, FulfillmentOrderDTO, ValidateFulfillmentDataContext } from "@medusajs/types"
 
 type Address = { address_1?: string; address_2?: string; city?: string; province?: string; postal_code?: string; country_code?: string; first_name?: string; last_name?: string; company?: string; phone?: string; email?: string }
-type Options = { apiToken: string; itemDescription: string; itemValueUsd: number; itemHsCode?: string; weightOz: number; lengthIn: number; widthIn: number; heightIn: number }
+type Options = { apiToken: string; baseUrl: string; itemDescription: string; itemValueUsd: number; itemHsCode?: string; weightOz: number; lengthIn: number; widthIn: number; heightIn: number }
 
 export class EasyshipFulfillmentService extends AbstractFulfillmentProviderService {
   static identifier = "easyship"
@@ -34,8 +34,43 @@ export class EasyshipFulfillmentService extends AbstractFulfillmentProviderServi
     return { calculated_amount: Math.round((cheapest.total_charge ?? cheapest.shipment_charge_total!) * 100), is_calculated_price_tax_inclusive: false }
   }
 
-  async createFulfillment(): Promise<CreateFulfillmentResult> {
-    throw new Error("Easyship label purchase requires the configured international shipment workflow")
+  async createFulfillment(
+    data: Record<string, unknown>,
+    _items: Partial<Omit<FulfillmentItemDTO, "fulfillment">>[],
+    order: Partial<FulfillmentOrderDTO> | undefined,
+    _fulfillment: Partial<Omit<FulfillmentDTO, "provider_id" | "data" | "items">>
+  ): Promise<CreateFulfillmentResult> {
+    const destination = order?.shipping_address as Address | undefined
+    const origin = data.easyship_origin as Address | undefined
+    this.assertInternational(destination)
+    this.assertAddress(origin, "warehouse")
+
+    const result = await this.request("/shipments", {
+      origin_address: this.address(origin!),
+      destination_address: this.address(destination!),
+      incoterms: "DDP",
+      order_data: { platform: "medusa", platform_order_number: order?.id },
+      courier_settings: { allow_fallback: true, apply_shipping_rules: true },
+      shipping_settings: {
+        buy_label: true,
+        buy_label_synchronous: true,
+        printing_options: { format: "URL", label: "4x6", commercial_invoice: "A4", packing_slip: "none" },
+      },
+      parcels: [this.parcel()],
+    })
+    const shipment = (result.shipment || result) as Record<string, unknown>
+    const shipmentId = this.firstString(shipment, ["easyship_shipment_id", "shipment_id", "id"])
+    const trackingNumber = this.firstString(shipment, ["tracking_number"])
+    const labelUrl = this.firstString(shipment, ["label_url", "label_file_url", "label"])
+    const trackingUrl = this.firstString(shipment, ["tracking_url", "tracking_page_url"])
+    if (!shipmentId || !trackingNumber || !labelUrl) {
+      throw new Error("Easyship did not return a shipment ID, tracking number, and label URL")
+    }
+
+    return {
+      data: { easyship_shipment_id: shipmentId, easyship_tracking_number: trackingNumber },
+      labels: [{ tracking_number: trackingNumber, tracking_url: trackingUrl || labelUrl, label_url: labelUrl }],
+    }
   }
   async cancelFulfillment() { return {} }
 
@@ -44,8 +79,20 @@ export class EasyshipFulfillmentService extends AbstractFulfillmentProviderServi
     return { total_actual_weight: kg, box: { length: this.options_.lengthIn * 2.54, width: this.options_.widthIn * 2.54, height: this.options_.heightIn * 2.54 }, items: [{ description: this.options_.itemDescription, actual_weight: kg, declared_currency: "USD", declared_customs_value: this.options_.itemValueUsd, ...(this.options_.itemHsCode ? { hs_code: this.options_.itemHsCode } : {}) }] }
   }
   private address(value: Address) { return { name: [value.first_name, value.last_name].filter(Boolean).join(" ") || value.company, company_name: value.company, address_line_1: value.address_1, address_line_2: value.address_2, city: value.city, state: value.province, postal_code: value.postal_code, country_alpha2: value.country_code?.toUpperCase(), phone_number: value.phone, email: value.email } }
+  private firstString(value: unknown, names: string[]): string | undefined {
+    if (!value || typeof value !== "object") return undefined
+    const record = value as Record<string, unknown>
+    for (const name of names) if (typeof record[name] === "string" && record[name]) return record[name] as string
+    for (const child of Object.values(record)) {
+      if (child && typeof child === "object") {
+        const found = this.firstString(child, names)
+        if (found) return found
+      }
+    }
+    return undefined
+  }
   private async request(path: string, body: Record<string, unknown>) {
-    const response = await fetch(`https://public-api.easyship.com/2024-09${path}`, { method: "POST", headers: { Authorization: `Bearer ${this.options_.apiToken}`, "Content-Type": "application/json" }, body: JSON.stringify(body) })
+    const response = await fetch(`${this.options_.baseUrl}/2024-09${path}`, { method: "POST", headers: { Authorization: `Bearer ${this.options_.apiToken}`, "Content-Type": "application/json" }, body: JSON.stringify(body) })
     const result = await response.json() as Record<string, unknown>
     if (!response.ok) throw new Error(`Easyship rate request failed (${response.status}): ${JSON.stringify(result)}`)
     return result

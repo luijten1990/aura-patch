@@ -80,6 +80,11 @@ const easyshipProvider =
         id: "easyship",
         options: {
           apiToken: process.env.EASYSHIP_API_TOKEN,
+          baseUrl:
+            process.env.EASYSHIP_API_BASE_URL ||
+            (process.env.EASYSHIP_API_TOKEN.startsWith("sand_")
+              ? "https://public-api-sandbox.easyship.com"
+              : "https://public-api.easyship.com"),
           itemDescription: process.env.EASYSHIP_ITEM_DESCRIPTION,
           itemValueUsd: Number(process.env.EASYSHIP_ITEM_VALUE_USD),
           itemHsCode: process.env.EASYSHIP_ITEM_HS_CODE,
