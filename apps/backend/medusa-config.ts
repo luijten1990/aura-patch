@@ -92,6 +92,10 @@ const easyshipProvider =
           lengthIn: Number(process.env.EASYSHIP_PACKAGE_LENGTH_IN),
           widthIn: Number(process.env.EASYSHIP_PACKAGE_WIDTH_IN),
           heightIn: Number(process.env.EASYSHIP_PACKAGE_HEIGHT_IN),
+          brevoApiKey: process.env.BREVO_API_KEY,
+          labelEmailTo: process.env.EASYSHIP_LABEL_EMAIL_TO || process.env.USPS_LABEL_EMAIL_TO || "orders@getaurapatch.com",
+          labelEmailFrom: process.env.BREVO_SENDER_EMAIL || "info@getaurapatch.com",
+          labelEmailFromName: process.env.BREVO_SENDER_NAME || "Aura Patch Orders",
         },
       }]
     : []

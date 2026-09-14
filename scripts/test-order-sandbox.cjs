@@ -130,26 +130,36 @@ async function main() {
     await handler(args({ ...international, shipping_address: { country_code: "us" } }))
     assert.equal(calls.length, 1)
   })
-  await test("Easyship creates an international label with the sandbox endpoint", async () => {
+  await test("Easyship emails a generated international sandbox label to the orders mailbox", async () => {
     const calls = []
     const Service = load("apps/backend/src/modules/easyship/service.ts", { fetch: async (url, request) => {
       calls.push({ url, body: JSON.parse(request.body) })
-      return Response.json({ shipment: {
-        easyship_shipment_id: "ESGB10000001", tracking_number: "EASYSHIP-TEST",
-        label_url: "https://labels.example.test/ESGB10000001.pdf", tracking_url: "https://track.example.test/EASYSHIP-TEST",
+      if (url.endsWith("/shipments")) return Response.json({ shipment: {
+        easyship_shipment_id: "ESGB10000001", tracking_page_url: "https://track.example.test/EASYSHIP-TEST",
+        trackings: [{ tracking_number: "EASYSHIP-TEST" }],
+        shipping_documents: [{ category: "label", base64_encoded_strings: [Buffer.from("%PDF-1.4\\nTEST FIXTURE ONLY\\n%%EOF").toString("base64")] }],
       } }, { status: 201 })
+      assert.equal(url, "https://api.brevo.com/v3/smtp/email")
+      return Response.json({ messageId: "test" })
     } }).EasyshipFulfillmentService
     const service = new Service({}, {
       baseUrl: "https://public-api-sandbox.easyship.com", apiToken: "sand_test", itemDescription: "Vitamin patch", itemValueUsd: 49.99,
       itemHsCode: "3005109000", weightOz: 3, lengthIn: 8.3, widthIn: 5.8, heightIn: 0.25,
+      brevoApiKey: "test", labelEmailFrom: "info@getaurapatch.com", labelEmailTo: "orders@getaurapatch.com",
     })
     const destination = { country_code: "gb", first_name: "Sandbox", last_name: "Test", address_1: "1 Test Street", city: "London", postal_code: "SW1A 1AA" }
     const origin = { country_code: "us", first_name: "Aura", last_name: "Patch", address_1: "1 Origin Street", city: "Los Angeles", province: "CA", postal_code: "90001" }
     const result = await service.createFulfillment({ easyship_origin: origin }, [], { id: "order_test", shipping_address: destination }, {})
     assert.equal(result.labels[0].tracking_number, "EASYSHIP-TEST")
-    assert.equal(result.labels[0].label_url, "https://labels.example.test/ESGB10000001.pdf")
+    assert.ok(result.labels[0].label_url.startsWith("data:application/pdf;base64,"))
     assert.equal(calls[0].url, "https://public-api-sandbox.easyship.com/2024-09/shipments")
     assert.equal(calls[0].body.shipping_settings.buy_label, true)
+    assert.equal(calls[0].body.shipping_settings.printing_options.format, "pdf")
+    assert.equal(calls[0].body.origin_address.line_1, "1 Origin Street")
+    assert.equal(calls[0].body.order_data.platform, undefined)
+    const email = calls.at(-1).body
+    assert.equal(email.to[0].email, "orders@getaurapatch.com")
+    assert.equal(email.attachment[0].name, "easyship-label-EASYSHIP-TEST.pdf")
   })
   await test("USPS response PDF is preserved and attached to the orders mailbox email", async () => {
     const pdf = Buffer.from("%PDF-1.4\nTEST FIXTURE ONLY\n%%EOF")

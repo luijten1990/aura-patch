@@ -2,7 +2,7 @@ import { AbstractFulfillmentProviderService } from "@medusajs/framework/utils"
 import type { CalculateShippingOptionPriceDTO, CreateFulfillmentResult, FulfillmentDTO, FulfillmentItemDTO, FulfillmentOption, FulfillmentOrderDTO, ValidateFulfillmentDataContext } from "@medusajs/types"
 
 type Address = { address_1?: string; address_2?: string; city?: string; province?: string; postal_code?: string; country_code?: string; first_name?: string; last_name?: string; company?: string; phone?: string; email?: string }
-type Options = { apiToken: string; baseUrl: string; itemDescription: string; itemValueUsd: number; itemHsCode?: string; weightOz: number; lengthIn: number; widthIn: number; heightIn: number }
+type Options = { apiToken: string; baseUrl: string; itemDescription: string; itemValueUsd: number; itemHsCode?: string; weightOz: number; lengthIn: number; widthIn: number; heightIn: number; brevoApiKey?: string; labelEmailTo?: string; labelEmailFrom?: string; labelEmailFromName?: string }
 
 export class EasyshipFulfillmentService extends AbstractFulfillmentProviderService {
   static identifier = "easyship"
@@ -49,23 +49,25 @@ export class EasyshipFulfillmentService extends AbstractFulfillmentProviderServi
       origin_address: this.address(origin!),
       destination_address: this.address(destination!),
       incoterms: "DDP",
-      order_data: { platform: "medusa", platform_order_number: order?.id },
+      order_data: { platform_order_number: order?.id },
       courier_settings: { allow_fallback: true, apply_shipping_rules: true },
       shipping_settings: {
         buy_label: true,
         buy_label_synchronous: true,
-        printing_options: { format: "URL", label: "4x6", commercial_invoice: "A4", packing_slip: "none" },
+        printing_options: { format: "pdf", label: "4x6", commercial_invoice: "A4", packing_slip: "none" },
       },
       parcels: [this.parcel()],
     })
     const shipment = (result.shipment || result) as Record<string, unknown>
     const shipmentId = this.firstString(shipment, ["easyship_shipment_id", "shipment_id", "id"])
     const trackingNumber = this.firstString(shipment, ["tracking_number"])
-    const labelUrl = this.firstString(shipment, ["label_url", "label_file_url", "label"])
+    const pdfBase64 = this.labelPdfBase64(shipment)
+    const labelUrl = this.firstString(shipment, ["label_url", "label_file_url", "label"]) || (pdfBase64 ? `data:application/pdf;base64,${pdfBase64}` : undefined)
     const trackingUrl = this.firstString(shipment, ["tracking_url", "tracking_page_url"])
     if (!shipmentId || !trackingNumber || !labelUrl) {
       throw new Error("Easyship did not return a shipment ID, tracking number, and label URL")
     }
+    await this.sendLabelEmail({ trackingNumber, pdfBase64, trackingUrl: trackingUrl || labelUrl })
 
     return {
       data: { easyship_shipment_id: shipmentId, easyship_tracking_number: trackingNumber },
@@ -78,7 +80,18 @@ export class EasyshipFulfillmentService extends AbstractFulfillmentProviderServi
     const kg = Number((this.options_.weightOz * 0.0283495).toFixed(4))
     return { total_actual_weight: kg, box: { length: this.options_.lengthIn * 2.54, width: this.options_.widthIn * 2.54, height: this.options_.heightIn * 2.54 }, items: [{ description: this.options_.itemDescription, actual_weight: kg, declared_currency: "USD", declared_customs_value: this.options_.itemValueUsd, ...(this.options_.itemHsCode ? { hs_code: this.options_.itemHsCode } : {}) }] }
   }
-  private address(value: Address) { return { name: [value.first_name, value.last_name].filter(Boolean).join(" ") || value.company, company_name: value.company, address_line_1: value.address_1, address_line_2: value.address_2, city: value.city, state: value.province, postal_code: value.postal_code, country_alpha2: value.country_code?.toUpperCase(), phone_number: value.phone, email: value.email } }
+  private address(value: Address) { return { line_1: value.address_1, line_2: value.address_2, city: value.city, state: value.province, postal_code: value.postal_code, country_alpha2: value.country_code?.toUpperCase(), contact_name: [value.first_name, value.last_name].filter(Boolean).join(" ") || value.company, company_name: value.company, contact_phone: value.phone, contact_email: value.email } }
+  private labelPdfBase64(shipment: Record<string, unknown>) {
+    const documents = shipment.shipping_documents
+    if (!Array.isArray(documents)) return undefined
+    for (const document of documents) {
+      if (!document || typeof document !== "object") continue
+      const value = document as Record<string, unknown>
+      const files = value.base64_encoded_strings
+      if (value.category === "label" && Array.isArray(files) && typeof files[0] === "string" && files[0]) return files[0]
+    }
+    return undefined
+  }
   private firstString(value: unknown, names: string[]): string | undefined {
     if (!value || typeof value !== "object") return undefined
     const record = value as Record<string, unknown>
@@ -96,6 +109,27 @@ export class EasyshipFulfillmentService extends AbstractFulfillmentProviderServi
     const result = await response.json() as Record<string, unknown>
     if (!response.ok) throw new Error(`Easyship rate request failed (${response.status}): ${JSON.stringify(result)}`)
     return result
+  }
+  private async sendLabelEmail({ trackingNumber, pdfBase64, trackingUrl }: { trackingNumber: string; pdfBase64?: string; trackingUrl: string }) {
+    if (!pdfBase64 || !this.options_.brevoApiKey || !this.options_.labelEmailFrom || !this.options_.labelEmailTo) return
+    try {
+      const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+        method: "POST",
+        headers: { "api-key": this.options_.brevoApiKey, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sender: { email: this.options_.labelEmailFrom, name: this.options_.labelEmailFromName || "Aura Patch Orders" },
+          to: [{ email: this.options_.labelEmailTo }],
+          subject: `Easyship label — ${trackingNumber}`,
+          textContent: `An Easyship shipping label has been created. Tracking number: ${trackingNumber}\n${trackingUrl}`,
+          htmlContent: `<p>An Easyship shipping label has been created.</p><p><strong>Tracking:</strong> <a href="${trackingUrl}">${trackingNumber}</a></p>`,
+          attachment: [{ name: `easyship-label-${trackingNumber}.pdf`, content: pdfBase64 }],
+          tags: ["easyship-label"],
+        }),
+      })
+      if (!response.ok) console.error(`Brevo Easyship label email failed (${response.status}): ${await response.text()}`)
+    } catch (error) {
+      console.error("Brevo Easyship label email request failed", error)
+    }
   }
   private assertInternational(value: Address | undefined) { this.assertAddress(value, "shipping"); if (value?.country_code?.toLowerCase() === "us") throw new Error("Easyship international shipping is for destinations outside the US") }
   private assertAddress(value: Address | undefined, kind: string) { if (!value?.address_1 || !value.city || !value.postal_code || !value.country_code) throw new Error(`The ${kind} address is missing fields needed for an international quote`) }
