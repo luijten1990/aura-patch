@@ -13,12 +13,17 @@ const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
   const items = cart?.items
   return (
     <div>
-      <div className="pb-3 flex items-center">
-        <Heading className="text-[2rem] leading-[2.75rem]">Cart</Heading>
+      <div className="flex items-end justify-between border-b border-aura-forest/15 pb-5">
+        <Heading className="aura-display text-[44px] font-normal leading-none small:text-[58px]">
+          Your cart
+        </Heading>
+        <span className="pb-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-aura-forest/55">
+          {items?.length ?? 0} {items?.length === 1 ? "item" : "items"}
+        </span>
       </div>
-      <Table>
-        <Table.Header className="border-t-0">
-          <Table.Row className="text-ui-fg-subtle txt-medium-plus">
+      <Table className="block small:table">
+        <Table.Header className="hidden border-t-0 small:table-header-group">
+          <Table.Row className="border-aura-forest/15 text-[10px] font-semibold uppercase tracking-[0.14em] text-aura-forest/50 hover:bg-transparent">
             <Table.HeaderCell className="!pl-0">Item</Table.HeaderCell>
             <Table.HeaderCell></Table.HeaderCell>
             <Table.HeaderCell>Quantity</Table.HeaderCell>
@@ -30,7 +35,7 @@ const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
             </Table.HeaderCell>
           </Table.Row>
         </Table.Header>
-        <Table.Body>
+        <Table.Body className="block small:table-row-group">
           {items
             ? items
                 .sort((a, b) => {

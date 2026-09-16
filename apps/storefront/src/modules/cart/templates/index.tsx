@@ -13,27 +13,25 @@ const CartTemplate = ({
   customer: HttpTypes.StoreCustomer | null
 }) => {
   return (
-    <div className="py-12">
+    <main className="min-h-[70vh] bg-aura-cream py-12 text-aura-forest small:py-20">
       <div className="content-container" data-testid="cart-container">
         {cart?.items?.length ? (
-          <div className="grid grid-cols-1 small:grid-cols-[1fr_360px] gap-x-40">
-            <div className="flex flex-col bg-white py-6 gap-y-6">
+          <div className="grid grid-cols-1 gap-10 small:grid-cols-[minmax(0,1fr)_380px] small:gap-12">
+            <div className="flex min-w-0 flex-col gap-y-8">
               {!customer && (
                 <>
                   <SignInPrompt />
-                  <Divider />
+                  <Divider className="border-aura-forest/15" />
                 </>
               )}
               <ItemsTemplate cart={cart} />
             </div>
             <div className="relative">
-              <div className="flex flex-col gap-y-8 sticky top-12">
+              <div className="sticky top-12 flex flex-col gap-y-8">
                 {cart && cart.region && (
-                  <>
-                    <div className="bg-white py-6">
-                      <Summary cart={cart} />
-                    </div>
-                  </>
+                  <div className="rounded-[1.75rem] border border-aura-forest/15 bg-[#f5efe4] p-6 small:p-8">
+                    <Summary cart={cart} />
+                  </div>
                 )}
               </div>
             </div>
@@ -44,7 +42,7 @@ const CartTemplate = ({
           </div>
         )}
       </div>
-    </div>
+    </main>
   )
 }
 

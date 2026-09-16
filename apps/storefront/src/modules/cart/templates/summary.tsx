@@ -26,19 +26,27 @@ const Summary = ({ cart }: SummaryProps) => {
   const step = getCheckoutStep(cart)
 
   return (
-    <div className="flex flex-col gap-y-4">
-      <Heading level="h2" className="text-[2rem] leading-[2.75rem]">
-        Summary
+    <div className="flex flex-col gap-y-5">
+      <Heading
+        level="h2"
+        className="aura-display text-[38px] font-normal leading-none"
+      >
+        Order summary
       </Heading>
-      <DiscountCode cart={cart} />
-      <Divider />
-      <CartTotals totals={cart} />
+      <DiscountCode cart={cart} variant="aura" />
+      <Divider className="border-aura-forest/15" />
+      <CartTotals totals={cart} variant="aura" />
       <LocalizedClientLink
         href={"/checkout?step=" + step}
         data-testid="checkout-button"
       >
-        <Button className="w-full h-10">Go to checkout</Button>
+        <Button className="min-h-12 w-full rounded-full !bg-aura-gold px-6 text-[11px] font-bold uppercase tracking-[0.16em] !text-aura-forest hover:!bg-aura-forest hover:!text-aura-cream">
+          Go to checkout
+        </Button>
       </LocalizedClientLink>
+      <p className="text-center text-[10px] font-medium uppercase tracking-[0.12em] text-aura-forest/45">
+        Secure checkout · Free standard shipping
+      </p>
     </div>
   )
 }

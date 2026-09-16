@@ -1,6 +1,13 @@
 "use client"
 
-import { Badge, Heading, Input, Label, Text } from "@modules/common/components/ui"
+import {
+  Badge,
+  Heading,
+  Input,
+  Label,
+  Text,
+  clx,
+} from "@modules/common/components/ui"
 import React from "react"
 
 import { applyPromotions } from "@lib/data/cart"
@@ -12,20 +19,24 @@ import { SubmitButton } from "../submit-button"
 
 type DiscountCodeProps = {
   cart: HttpTypes.StoreCart
+  variant?: "default" | "aura"
 }
 
-const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
+const DiscountCode: React.FC<DiscountCodeProps> = ({
+  cart,
+  variant = "default",
+}) => {
   const [isOpen, setIsOpen] = React.useState(false)
   const [errorMessage, setErrorMessage] = React.useState("")
 
   const { promotions = [] } = cart
   const removePromotionCode = async (code: string) => {
     const validPromotions = promotions.filter(
-      (promotion) => promotion.code !== code
+      (promotion) => promotion.code !== code,
     )
 
     await applyPromotions(
-      validPromotions.filter((p) => p.code !== undefined).map((p) => p.code!)
+      validPromotions.filter((p) => p.code !== undefined).map((p) => p.code!),
     )
   }
 
@@ -54,17 +65,28 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
   }
 
   return (
-    <div className="w-full bg-white flex flex-col">
+    <div
+      className={clx(
+        "flex w-full flex-col",
+        variant === "aura" ? "bg-transparent" : "bg-white",
+      )}
+    >
       <div className="txt-medium">
         <form action={(a) => addPromotionCode(a)} className="w-full mb-5">
           <Label className="flex gap-x-1 my-2 items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
               type="button"
-              className="txt-medium text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
+              className={clx(
+                variant === "aura"
+                  ? "text-[11px] font-semibold uppercase tracking-[0.12em] text-aura-forest/60 underline decoration-aura-gold decoration-2 underline-offset-4 transition-colors hover:text-aura-forest"
+                  : "txt-medium text-ui-fg-interactive hover:text-ui-fg-interactive-hover",
+              )}
               data-testid="add-discount-button"
             >
-              Add Promotion Code(s)
+              {variant === "aura"
+                ? "Add promotion code"
+                : "Add Promotion Code(s)"}
             </button>
 
             {/* <Tooltip content="You can add multiple promotion codes">

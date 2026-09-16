@@ -49,41 +49,50 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
       : item.thumbnail
 
   return (
-    <Table.Row className="w-full" data-testid="product-row">
-      <Table.Cell className="!pl-0 p-4 w-24">
+    <Table.Row
+      className="grid w-full grid-cols-[80px_minmax(0,1fr)_auto] gap-x-4 gap-y-3 border-aura-forest/15 py-6 hover:bg-transparent small:table-row"
+      data-testid="product-row"
+    >
+      <Table.Cell className="row-span-2 w-20 !p-0 align-top small:w-28 small:!py-6 small:!pl-0 small:!pr-4">
         <LocalizedClientLink
           href={`/products/${item.product_handle}`}
           className={clx("flex", {
             "w-16": type === "preview",
-            "small:w-24 w-12": type === "full",
+            "w-20 small:w-24": type === "full",
           })}
         >
           <Thumbnail
             thumbnail={thumbnail}
             images={item.variant?.product?.images}
             size="square"
+            className="!rounded-[1.25rem] !border !border-aura-forest/10 !bg-[#f5efe4] !p-0 !shadow-none"
           />
         </LocalizedClientLink>
       </Table.Cell>
 
-      <Table.Cell className="text-left">
+      <Table.Cell className="min-w-0 !p-0 text-left align-top small:p-4">
         <Text
-          className="txt-medium-plus text-ui-fg-base"
+          className="text-[16px] font-semibold leading-6 text-aura-forest"
           data-testid="product-title"
         >
           {item.product_title}
         </Text>
-        <LineItemOptions variant={item.variant} data-testid="product-variant" />
+        <div className="mt-1 text-[12px] text-aura-forest/55">
+          <LineItemOptions
+            variant={item.variant}
+            data-testid="product-variant"
+          />
+        </div>
       </Table.Cell>
 
       {type === "full" && (
-        <Table.Cell>
-          <div className="flex gap-2 items-center w-28">
+        <Table.Cell className="col-start-2 row-start-2 !p-0 small:table-cell small:p-4">
+          <div className="flex w-28 items-center gap-2">
             <DeleteButton id={item.id} data-testid="product-delete-button" />
             <CartItemSelect
               value={item.quantity}
               onChange={(value) => changeQuantity(parseInt(value.target.value))}
-              className="w-14 h-10 p-4"
+              className="h-10 w-16 rounded-full border-aura-forest/20 bg-transparent px-3 text-aura-forest"
               data-testid="product-select-button"
             >
               {/* TODO: Update this with the v2 way of managing inventory */}
@@ -95,7 +104,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
                   <option value={i + 1} key={i}>
                     {i + 1}
                   </option>
-                )
+                ),
               )}
 
               <option value={1} key={1}>
@@ -109,7 +118,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
       )}
 
       {type === "full" && (
-        <Table.Cell className="hidden small:table-cell">
+        <Table.Cell className="hidden text-aura-forest/70 small:table-cell">
           <LineItemUnitPrice
             item={item}
             style="tight"
@@ -118,7 +127,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
         </Table.Cell>
       )}
 
-      <Table.Cell className="!pr-0">
+      <Table.Cell className="col-start-3 row-start-1 !p-0 text-right text-[15px] font-semibold text-aura-forest small:table-cell small:!py-4 small:!pr-0">
         <span
           className={clx("!pr-0", {
             "flex flex-col items-end h-full justify-center": type === "preview",
