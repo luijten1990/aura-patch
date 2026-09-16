@@ -1,6 +1,6 @@
+import Image from "next/image"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import ChevronDown from "@modules/common/icons/chevron-down"
-import MedusaCTA from "@modules/layout/components/medusa-cta"
 
 export default function CheckoutLayout({
   children,
@@ -8,35 +8,44 @@ export default function CheckoutLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="w-full bg-white relative small:min-h-screen">
-      <div className="h-16 bg-white border-b ">
-        <nav className="flex h-full items-center content-container justify-between">
+    <div className="relative min-h-screen w-full bg-aura-cream text-aura-forest">
+      <header className="sticky top-0 z-50 bg-[#17382f] text-[#f6f0e5]">
+        <nav className="content-container flex h-[66px] items-center justify-between">
           <LocalizedClientLink
             href="/cart"
-            className="text-small-semi text-ui-fg-base flex items-center gap-x-2 uppercase flex-1 basis-0"
+            className="flex flex-1 basis-0 items-center gap-x-2 text-[12px] uppercase tracking-[0.08em] transition-opacity hover:opacity-70"
             data-testid="back-to-cart-link"
           >
             <ChevronDown className="rotate-90" size={16} />
-            <span className="mt-px hidden small:block txt-compact-plus text-ui-fg-subtle hover:text-ui-fg-base ">
-              Back to shopping cart
-            </span>
-            <span className="mt-px block small:hidden txt-compact-plus text-ui-fg-subtle hover:text-ui-fg-base">
-              Back
-            </span>
+            <span className="mt-px hidden small:block">Back to cart</span>
+            <span className="mt-px block small:hidden">Back</span>
           </LocalizedClientLink>
           <LocalizedClientLink
             href="/"
-            className="txt-compact-xlarge-plus text-ui-fg-subtle hover:text-ui-fg-base uppercase"
+            className="flex shrink-0 items-center gap-2.5"
             data-testid="store-link"
           >
-            Medusa Store
+            <span className="relative h-10 w-10 overflow-hidden rounded-full small:h-11 small:w-11">
+              <Image
+                src="/images/aura-flower-of-life.webp"
+                alt=""
+                fill
+                priority
+                className="aura-logo-mark object-cover"
+                sizes="44px"
+              />
+            </span>
+            <span className="aura-display text-[16px] leading-[0.9] tracking-[0.13em] text-[#aebfba] small:text-[18px]">
+              AURA
+              <br />
+              <span className="text-[0.65em] tracking-[0.25em]">PATCH</span>
+            </span>
           </LocalizedClientLink>
           <div className="flex-1 basis-0" />
         </nav>
-      </div>
-      <div className="relative" data-testid="checkout-container">{children}</div>
-      <div className="py-4 w-full flex items-center justify-center">
-        <MedusaCTA />
+      </header>
+      <div className="relative" data-testid="checkout-container">
+        {children}
       </div>
     </div>
   )

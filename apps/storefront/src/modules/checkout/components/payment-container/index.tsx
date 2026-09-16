@@ -33,24 +33,26 @@ const PaymentContainer: React.FC<PaymentContainerProps> = ({
       value={paymentProviderId}
       disabled={disabled}
       className={clx(
-        "flex flex-col gap-y-2 text-small-regular cursor-pointer py-4 border rounded-rounded px-8 mb-2 hover:shadow-borders-interactive-with-active",
+        "mb-2 flex cursor-pointer flex-col gap-y-2 rounded-[1.25rem] border bg-[#f5efe4] px-6 py-4 text-[14px] text-aura-forest",
         {
-          "border-ui-border-interactive":
+          "border-aura-gold":
             selectedPaymentOptionId === paymentProviderId,
+          "border-aura-forest/15 hover:border-aura-forest/40":
+            selectedPaymentOptionId !== paymentProviderId,
         }
       )}
     >
       <div className="flex items-center justify-between ">
         <div className="flex items-center gap-x-4">
           <Radio checked={selectedPaymentOptionId === paymentProviderId} />
-          <Text className="text-base-regular">
+          <Text className="text-[15px]">
             {paymentInfoMap[paymentProviderId]?.title || paymentProviderId}
           </Text>
           {isManual(paymentProviderId) && isDevelopment && (
             <PaymentTest className="hidden small:block" />
           )}
         </div>
-        <span className="justify-self-end text-ui-fg-base">
+        <span className="justify-self-end text-aura-forest">
           {paymentInfoMap[paymentProviderId]?.icon}
         </span>
       </div>
@@ -87,7 +89,7 @@ export const StripePaymentContainer = ({
       {selectedPaymentOptionId === paymentProviderId &&
         (stripeReady ? (
           <div className="my-4 transition-all duration-150 ease-in-out">
-            <Text className="txt-medium-plus text-ui-fg-base mb-1">
+            <Text className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-aura-forest/55">
               Enter your payment details:
             </Text>
             <PaymentElement

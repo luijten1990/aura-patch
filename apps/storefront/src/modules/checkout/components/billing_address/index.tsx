@@ -43,6 +43,7 @@ const BillingAddress = ({
           value={formData["billing_address.first_name"]}
           onChange={handleChange}
           required
+          variant="aura"
           data-testid="billing-first-name-input"
         />
         <Input
@@ -52,6 +53,7 @@ const BillingAddress = ({
           value={formData["billing_address.last_name"]}
           onChange={handleChange}
           required
+          variant="aura"
           data-testid="billing-last-name-input"
         />
         <Input
@@ -61,6 +63,7 @@ const BillingAddress = ({
           value={formData["billing_address.address_1"]}
           onChange={handleChange}
           required
+          variant="aura"
           data-testid="billing-address-input"
         />
         <Input
@@ -69,6 +72,7 @@ const BillingAddress = ({
           value={formData["billing_address.company"]}
           onChange={handleChange}
           autoComplete="organization"
+          variant="aura"
           data-testid="billing-company-input"
         />
         <Input
@@ -78,6 +82,7 @@ const BillingAddress = ({
           value={formData["billing_address.postal_code"]}
           onChange={handleChange}
           required
+          variant="aura"
           data-testid="billing-postal-input"
         />
         <Input
@@ -86,6 +91,7 @@ const BillingAddress = ({
           autoComplete="address-level2"
           value={formData["billing_address.city"]}
           onChange={handleChange}
+          variant="aura"
         />
         <CountrySelect
           name="billing_address.country_code"
@@ -95,6 +101,7 @@ const BillingAddress = ({
           value={formData["billing_address.country_code"]}
           onChange={handleChange}
           required
+          className="h-12 rounded-full border-aura-forest/20 bg-[#f7f4ed] text-aura-forest hover:bg-[#f7f4ed]"
           data-testid="billing-country-select"
         />
         <Input
@@ -103,6 +110,7 @@ const BillingAddress = ({
           autoComplete="address-level1"
           value={formData["billing_address.province"]}
           onChange={handleChange}
+          variant="aura"
           data-testid="billing-province-input"
         />
         <Input
@@ -111,6 +119,7 @@ const BillingAddress = ({
           autoComplete="tel"
           value={formData["billing_address.phone"]}
           onChange={handleChange}
+          variant="aura"
           data-testid="billing-phone-input"
         />
       </div>

@@ -99,8 +99,8 @@ const ShippingAddress = ({
   return (
     <>
       {customer && (addressesInRegion?.length || 0) > 0 && (
-        <Container className="mb-6 flex flex-col gap-y-4 p-5">
-          <p className="text-small-regular">
+        <Container className="mb-6 flex flex-col gap-y-4 !rounded-[1.25rem] !border !border-aura-forest/15 !bg-[#f5efe4] p-5">
+          <p className="text-[14px] leading-6 text-aura-forest/70">
             {`Hi ${customer.first_name}, do you want to use one of your saved addresses?`}
           </p>
           <AddressSelect
@@ -122,6 +122,7 @@ const ShippingAddress = ({
           value={formData["shipping_address.first_name"]}
           onChange={handleChange}
           required
+          variant="aura"
           data-testid="shipping-first-name-input"
         />
         <Input
@@ -131,6 +132,7 @@ const ShippingAddress = ({
           value={formData["shipping_address.last_name"]}
           onChange={handleChange}
           required
+          variant="aura"
           data-testid="shipping-last-name-input"
         />
         <Input
@@ -140,6 +142,7 @@ const ShippingAddress = ({
           value={formData["shipping_address.address_1"]}
           onChange={handleChange}
           required
+          variant="aura"
           data-testid="shipping-address-input"
         />
         <Input
@@ -148,6 +151,7 @@ const ShippingAddress = ({
           value={formData["shipping_address.company"]}
           onChange={handleChange}
           autoComplete="organization"
+          variant="aura"
           data-testid="shipping-company-input"
         />
         <Input
@@ -157,6 +161,7 @@ const ShippingAddress = ({
           value={formData["shipping_address.postal_code"]}
           onChange={handleChange}
           required
+          variant="aura"
           data-testid="shipping-postal-code-input"
         />
         <Input
@@ -166,6 +171,7 @@ const ShippingAddress = ({
           value={formData["shipping_address.city"]}
           onChange={handleChange}
           required
+          variant="aura"
           data-testid="shipping-city-input"
         />
         <CountrySelect
@@ -176,6 +182,7 @@ const ShippingAddress = ({
           value={formData["shipping_address.country_code"]}
           onChange={handleChange}
           required
+          className="h-12 rounded-full border-aura-forest/20 bg-[#f7f4ed] text-aura-forest hover:bg-[#f7f4ed]"
           data-testid="shipping-country-select"
         />
         <Input
@@ -184,6 +191,7 @@ const ShippingAddress = ({
           autoComplete="address-level1"
           value={formData["shipping_address.province"]}
           onChange={handleChange}
+          variant="aura"
           data-testid="shipping-province-input"
         />
       </div>
@@ -206,6 +214,7 @@ const ShippingAddress = ({
           value={formData.email}
           onChange={handleChange}
           required
+          variant="aura"
           data-testid="shipping-email-input"
         />
         <Input
@@ -214,6 +223,7 @@ const ShippingAddress = ({
           autoComplete="tel"
           value={formData["shipping_address.phone"]}
           onChange={handleChange}
+          variant="aura"
           data-testid="shipping-phone-input"
         />
       </div>

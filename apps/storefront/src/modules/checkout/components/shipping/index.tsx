@@ -152,14 +152,14 @@ const Shipping: React.FC<ShippingProps> = ({
   }, [isOpen])
 
   return (
-    <div className="bg-white">
-      <div className="flex flex-row items-center justify-between mb-6">
+    <div>
+      <div className="mb-6 flex flex-row items-center justify-between">
         <Heading
           level="h2"
           className={clx(
-            "flex flex-row text-3xl-regular gap-x-2 items-baseline",
+            "aura-display flex flex-row items-baseline gap-x-2 text-[32px] font-normal leading-none",
             {
-              "opacity-50 pointer-events-none select-none":
+              "pointer-events-none select-none opacity-50":
                 !isOpen && cart.shipping_methods?.length === 0,
             }
           )}
@@ -176,7 +176,7 @@ const Shipping: React.FC<ShippingProps> = ({
             <Text>
               <button
                 onClick={handleEdit}
-                className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
+                className="text-[11px] font-semibold uppercase tracking-[0.12em] text-aura-forest/55 underline decoration-aura-gold decoration-2 underline-offset-4 transition-colors hover:text-aura-forest"
                 data-testid="edit-delivery-button"
               >
                 Edit
@@ -188,11 +188,11 @@ const Shipping: React.FC<ShippingProps> = ({
         <>
           <div className="grid">
             <div className="flex flex-col">
-              <span className="font-medium txt-medium text-ui-fg-base">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-aura-forest/55">
                 Shipping method
               </span>
-              <span className="mb-4 text-ui-fg-muted txt-medium">
-                How would you like you order delivered
+              <span className="mb-4 mt-2 text-[14px] leading-6 text-aura-forest/65">
+                How would you like your order delivered
               </span>
             </div>
             <div data-testid="delivery-options-container">
@@ -214,10 +214,12 @@ const Shipping: React.FC<ShippingProps> = ({
                       value={PICKUP_OPTION_ON}
                       data-testid="delivery-option-radio"
                       className={clx(
-                        "flex items-center justify-between text-small-regular cursor-pointer py-4 border rounded-rounded px-8 mb-2 hover:shadow-borders-interactive-with-active",
+                        "mb-2 flex cursor-pointer items-center justify-between rounded-[1.25rem] border bg-[#f5efe4] px-6 py-4 text-[14px] text-aura-forest",
                         {
-                          "border-ui-border-interactive":
+                          "border-aura-gold":
                             showPickupOptions === PICKUP_OPTION_ON,
+                          "border-aura-forest/15 hover:border-aura-forest/40":
+                            showPickupOptions !== PICKUP_OPTION_ON,
                         }
                       )}
                     >
@@ -244,11 +246,10 @@ const Shipping: React.FC<ShippingProps> = ({
                   }}
                 >
                   {!_shippingMethods?.length && (
-                    <span className="text-small-regular text-ui-fg-muted">
+                    <span className="text-[14px] leading-6 text-aura-forest/55">
                       No shipping methods are available for this address. For
-                      international orders, confirm the country is in a Medusa
-                      region and that Easy Ship is assigned to an international
-                      service zone.
+                      international orders, confirm the destination country is
+                      supported.
                     </span>
                   )}
                   {_shippingMethods?.map((option) => {
@@ -264,11 +265,13 @@ const Shipping: React.FC<ShippingProps> = ({
                         data-testid="delivery-option-radio"
                         disabled={isDisabled}
                         className={clx(
-                          "flex items-center justify-between text-small-regular cursor-pointer py-4 border rounded-rounded px-8 mb-2 hover:shadow-borders-interactive-with-active",
+                          "mb-2 flex cursor-pointer items-center justify-between rounded-[1.25rem] border bg-[#f5efe4] px-6 py-4 text-[14px] text-aura-forest",
                           {
-                            "border-ui-border-interactive":
+                            "border-aura-gold":
                               option.id === shippingMethodId,
-                            "hover:shadow-brders-none cursor-not-allowed":
+                            "border-aura-forest/15 hover:border-aura-forest/40":
+                              option.id !== shippingMethodId,
+                            "cursor-not-allowed opacity-50 hover:border-aura-forest/15":
                               isDisabled,
                           }
                         )}
@@ -277,11 +280,11 @@ const Shipping: React.FC<ShippingProps> = ({
                           <MedusaRadio
                             checked={option.id === shippingMethodId}
                           />
-                          <span className="text-base-regular">
+                          <span className="text-[15px]">
                             {option.name}
                           </span>
                         </div>
-                        <span className="justify-self-end text-ui-fg-base">
+                        <span className="justify-self-end text-aura-forest">
                           {option.price_type === "flat" ? (
                             convertToLocale({
                               amount: option.amount!,
@@ -309,10 +312,10 @@ const Shipping: React.FC<ShippingProps> = ({
           {showPickupOptions === PICKUP_OPTION_ON && (
             <div className="grid">
               <div className="flex flex-col">
-                <span className="font-medium txt-medium text-ui-fg-base">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-aura-forest/55">
                   Store
                 </span>
-                <span className="mb-4 text-ui-fg-muted txt-medium">
+                <span className="mb-4 mt-2 text-[14px] leading-6 text-aura-forest/65">
                   Choose a store near you
                 </span>
               </div>
@@ -334,11 +337,13 @@ const Shipping: React.FC<ShippingProps> = ({
                           disabled={option.insufficient_inventory}
                           data-testid="delivery-option-radio"
                           className={clx(
-                            "flex items-center justify-between text-small-regular cursor-pointer py-4 border rounded-rounded px-8 mb-2 hover:shadow-borders-interactive-with-active",
+                            "mb-2 flex cursor-pointer items-center justify-between rounded-[1.25rem] border bg-[#f5efe4] px-6 py-4 text-[14px] text-aura-forest",
                             {
-                              "border-ui-border-interactive":
+                              "border-aura-gold":
                                 option.id === shippingMethodId,
-                              "hover:shadow-brders-none cursor-not-allowed":
+                              "border-aura-forest/15 hover:border-aura-forest/40":
+                                option.id !== shippingMethodId,
+                              "cursor-not-allowed opacity-50 hover:border-aura-forest/15":
                                 option.insufficient_inventory,
                             }
                           )}
@@ -381,7 +386,7 @@ const Shipping: React.FC<ShippingProps> = ({
             />
             <Button
               size="large"
-              className="mt"
+              className="mt-6 rounded-full !bg-aura-gold px-7 text-[12px] font-semibold uppercase tracking-[0.12em] !text-aura-forest hover:!bg-aura-forest hover:!text-aura-cream"
               onClick={handleSubmit}
               isLoading={isLoading}
               disabled={!cart.shipping_methods?.[0]}
@@ -396,10 +401,10 @@ const Shipping: React.FC<ShippingProps> = ({
           <div className="text-small-regular">
             {cart && (cart.shipping_methods?.length ?? 0) > 0 && (
               <div className="flex flex-col w-1/3">
-                <Text className="txt-medium-plus text-ui-fg-base mb-1">
+                <Text className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-aura-forest/55">
                   Method
                 </Text>
-                <Text className="txt-medium text-ui-fg-subtle">
+                <Text className="text-[14px] leading-6 text-aura-forest/70">
                   {cart.shipping_methods!.at(-1)!.name}{" "}
                   {convertToLocale({
                     amount: cart.shipping_methods!.at(-1)!.amount!,
@@ -411,7 +416,7 @@ const Shipping: React.FC<ShippingProps> = ({
           </div>
         </div>
       )}
-      <Divider className="mt-8" />
+      <Divider className="mt-8 border-aura-forest/15" />
     </div>
   )
 }
