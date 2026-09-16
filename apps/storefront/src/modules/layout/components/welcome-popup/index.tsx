@@ -1,5 +1,6 @@
 "use client"
 
+import { subscribeWelcomeOffer } from "@lib/data/welcome-offer"
 import { FormEvent, useEffect, useState } from "react"
 
 const DISMISSED_KEY = "aura-welcome-offer-dismissed"
@@ -8,6 +9,8 @@ export default function WelcomePopup() {
   const [open, setOpen] = useState(false)
   const [email, setEmail] = useState("")
   const [message, setMessage] = useState("")
+  const [submitting, setSubmitting] = useState(false)
+  const [sent, setSent] = useState(false)
 
   useEffect(() => {
     if (window.localStorage.getItem(DISMISSED_KEY)) return
@@ -38,7 +41,7 @@ export default function WelcomePopup() {
     setOpen(false)
   }
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     if (!email.trim() || !email.includes("@")) {
@@ -46,7 +49,15 @@ export default function WelcomePopup() {
       return
     }
 
-    setMessage("Email signup is being connected. Please check back shortly.")
+    setSubmitting(true)
+    const result = await subscribeWelcomeOffer(email.trim())
+    setSubmitting(false)
+    setMessage(result.message)
+
+    if (result.ok) {
+      setSent(true)
+      window.localStorage.setItem(DISMISSED_KEY, "true")
+    }
   }
 
   if (!open) return null
@@ -99,13 +110,15 @@ export default function WelcomePopup() {
                   setMessage("")
                 }}
                 placeholder="Email address"
-                className="min-w-0 flex-1 bg-transparent px-6 py-5 text-[16px] text-aura-forest outline-none placeholder:text-aura-forest/45"
+                disabled={submitting || sent}
+                className="min-w-0 flex-1 bg-transparent px-6 py-5 text-[16px] text-aura-forest outline-none placeholder:text-aura-forest/45 disabled:opacity-60"
               />
               <button
                 type="submit"
-                className="m-1.5 rounded-[0.95rem] bg-aura-forest px-8 py-4 text-sm font-semibold uppercase tracking-[0.12em] text-aura-cream transition-colors hover:bg-aura-gold"
+                disabled={submitting || sent}
+                className="m-1.5 rounded-[0.95rem] bg-aura-forest px-8 py-4 text-sm font-semibold uppercase tracking-[0.12em] text-aura-cream transition-colors hover:bg-aura-gold disabled:opacity-60"
               >
-                Sign up
+                {submitting ? "Sending" : sent ? "Sent" : "Sign up"}
               </button>
             </div>
             {message && (

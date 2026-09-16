@@ -1,5 +1,9 @@
-import { defineMiddlewares } from "@medusajs/framework/http"
+import {
+  defineMiddlewares,
+  validateAndTransformBody,
+} from "@medusajs/framework/http"
 import type { NextFunction, Request, Response } from "express"
+import { PostStoreWelcomeOfferSchema } from "./store/welcome-offer/validators"
 
 const SLOW_REQUEST_MS = 1_000
 
@@ -33,7 +37,12 @@ const logSlowStoreWrite = (req: Request, res: Response, next: NextFunction) => {
 export default defineMiddlewares({
   routes: [
     {
-      matcher: '/store/*',
+      matcher: "/store/welcome-offer",
+      method: "POST",
+      middlewares: [validateAndTransformBody(PostStoreWelcomeOfferSchema)],
+    },
+    {
+      matcher: "/store/*",
       middlewares: [logSlowStoreWrite],
     },
   ],
