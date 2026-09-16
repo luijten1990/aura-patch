@@ -9,8 +9,9 @@ const CountrySelect = forwardRef<
   HTMLSelectElement,
   NativeSelectProps & {
     region?: HttpTypes.StoreRegion
+    regions?: HttpTypes.StoreRegion[] | null
   }
->(({ placeholder = "Country", region, defaultValue, ...props }, ref) => {
+>(({ placeholder = "Country", region, regions, defaultValue, ...props }, ref) => {
   const innerRef = useRef<HTMLSelectElement>(null)
 
   useImperativeHandle<HTMLSelectElement | null, HTMLSelectElement | null>(
@@ -19,15 +20,26 @@ const CountrySelect = forwardRef<
   )
 
   const countryOptions = useMemo(() => {
-    if (!region) {
-      return []
-    }
+    const sourceRegions = regions?.length ? regions : region ? [region] : []
+    const seen = new Set<string>()
 
-    return region.countries?.map((country) => ({
-      value: country.iso_2,
-      label: country.display_name,
-    }))
-  }, [region])
+    return sourceRegions
+      .flatMap((item) => item.countries ?? [])
+      .reduce<{ value: string; label: string }[]>((options, country) => {
+        const value = country.iso_2 ?? ""
+        if (!value || seen.has(value)) {
+          return options
+        }
+
+        seen.add(value)
+        options.push({
+          value,
+          label: country.display_name ?? value.toUpperCase(),
+        })
+        return options
+      }, [])
+      .sort((a, b) => a.label.localeCompare(b.label))
+  }, [region, regions])
 
   return (
     <NativeSelect

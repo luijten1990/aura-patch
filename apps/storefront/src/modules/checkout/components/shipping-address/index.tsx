@@ -12,11 +12,13 @@ const ShippingAddress = ({
   cart,
   checked,
   onChange,
+  regions,
 }: {
   customer: HttpTypes.StoreCustomer | null
   cart: HttpTypes.StoreCart | null
   checked: boolean
   onChange: () => void
+  regions?: HttpTypes.StoreRegion[] | null
 }) => {
   const [formData, setFormData] = useState<Record<string, string>>({
     "shipping_address.first_name": cart?.shipping_address?.first_name || "",
@@ -31,10 +33,10 @@ const ShippingAddress = ({
     email: cart?.email || "",
   })
 
-  const countriesInRegion = useMemo(
-    () => cart?.region?.countries?.map((c) => c.iso_2),
-    [cart?.region]
-  )
+  const countriesInRegion = useMemo(() => {
+    const source = regions?.length ? regions : cart?.region ? [cart.region] : []
+    return source.flatMap((item) => item.countries?.map((c) => c.iso_2) ?? [])
+  }, [cart?.region, regions])
 
   // check if customer has saved addresses that are in the current region
   const addressesInRegion = useMemo(
@@ -170,6 +172,7 @@ const ShippingAddress = ({
           name="shipping_address.country_code"
           autoComplete="country"
           region={cart?.region}
+          regions={regions}
           value={formData["shipping_address.country_code"]}
           onChange={handleChange}
           required

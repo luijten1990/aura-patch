@@ -243,6 +243,14 @@ const Shipping: React.FC<ShippingProps> = ({
                     }
                   }}
                 >
+                  {!_shippingMethods?.length && (
+                    <span className="text-small-regular text-ui-fg-muted">
+                      No shipping methods are available for this address. For
+                      international orders, confirm the country is in a Medusa
+                      region and that Easy Ship is assigned to an international
+                      service zone.
+                    </span>
+                  )}
                   {_shippingMethods?.map((option) => {
                     const isDisabled =
                       option.price_type === "calculated" &&

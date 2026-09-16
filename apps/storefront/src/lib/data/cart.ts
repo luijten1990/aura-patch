@@ -335,16 +335,28 @@ export async function submitPromotionForm(
 
 // TODO: Pass a POJO instead of a form entity here
 export async function setAddresses(currentState: unknown, formData: FormData) {
+  let countryCode = ""
+
   try {
     if (!formData) {
       throw new Error("No form data found when setting addresses")
     }
-    const cartId = getCartId()
+    const cartId = await getCartId()
     if (!cartId) {
       throw new Error("No existing cart found when setting addresses")
     }
 
+    countryCode = String(
+      formData.get("shipping_address.country_code") || ""
+    ).toLowerCase()
+    const region = await getRegion(countryCode)
+
+    if (!region) {
+      return "Shipping is not available to the selected country. Add that country to a Medusa region first."
+    }
+
     const data = {
+      region_id: region.id,
       shipping_address: {
         first_name: formData.get("shipping_address.first_name"),
         last_name: formData.get("shipping_address.last_name"),
@@ -353,7 +365,7 @@ export async function setAddresses(currentState: unknown, formData: FormData) {
         company: formData.get("shipping_address.company"),
         postal_code: formData.get("shipping_address.postal_code"),
         city: formData.get("shipping_address.city"),
-        country_code: formData.get("shipping_address.country_code"),
+        country_code: countryCode,
         province: formData.get("shipping_address.province"),
         phone: formData.get("shipping_address.phone"),
       },
@@ -381,9 +393,7 @@ export async function setAddresses(currentState: unknown, formData: FormData) {
     return e.message
   }
 
-  redirect(
-    `/${formData.get("shipping_address.country_code")}/checkout?step=delivery`
-  )
+  redirect(`/${countryCode}/checkout?step=delivery`)
 }
 
 /**
@@ -458,16 +468,12 @@ export async function listCartOptions() {
   const headers = {
     ...(await getAuthHeaders()),
   }
-  const next = {
-    ...(await getCacheOptions("shippingOptions")),
-  }
 
   return await sdk.client.fetch<{
     shipping_options: HttpTypes.StoreCartShippingOption[]
   }>("/store/shipping-options", {
     query: { cart_id: cartId },
-    next,
     headers,
-    cache: "force-cache",
+    cache: "no-store",
   })
 }

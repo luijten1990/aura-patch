@@ -8,6 +8,7 @@ import Image from "next/image"
 
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CartButton from "@modules/layout/components/cart-button"
+import NavCountrySelect from "@modules/layout/components/nav-country-select"
 import SideMenu from "@modules/layout/components/side-menu"
 
 export default async function Nav() {
@@ -99,6 +100,8 @@ export default async function Nav() {
 
           {/* Right side */}
           <div className="flex items-center gap-4 justify-end">
+            <NavCountrySelect regions={regions} />
+
             <LocalizedClientLink
               href="/account"
               className="hidden small:block text-[12px] tracking-[0.08em] uppercase hover:opacity-70 transition-opacity"

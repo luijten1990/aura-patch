@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from "next/server"
 const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
 const PUBLISHABLE_API_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
 const DEFAULT_REGION = "us"
-const ENABLED_COUNTRIES = new Set(["us"])
 
 const regionMapCache = {
   regionMap: new Map<string, HttpTypes.StoreRegion>(),
@@ -83,23 +82,14 @@ async function getCountryCode(
     .get("x-vercel-ip-country")
     ?.toLowerCase()
 
-  if (
-    urlCountryCode &&
-    ENABLED_COUNTRIES.has(urlCountryCode) &&
-    regionMap.has(urlCountryCode)
-  ) {
+  if (urlCountryCode && regionMap.has(urlCountryCode)) {
     countryCode = urlCountryCode
   } else if (
     cloudflareCountryCode &&
-    ENABLED_COUNTRIES.has(cloudflareCountryCode) &&
     regionMap.has(cloudflareCountryCode)
   ) {
     countryCode = cloudflareCountryCode
-  } else if (
-    vercelCountryCode &&
-    ENABLED_COUNTRIES.has(vercelCountryCode) &&
-    regionMap.has(vercelCountryCode)
-  ) {
+  } else if (vercelCountryCode && regionMap.has(vercelCountryCode)) {
     countryCode = vercelCountryCode
   } else if (regionMap.has(DEFAULT_REGION)) {
     countryCode = DEFAULT_REGION
