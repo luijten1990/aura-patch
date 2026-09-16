@@ -18,7 +18,14 @@ export default function FloatingBuyNow({
   const router = useRouter()
   const [status, setStatus] = useState<"idle" | "adding" | "error">("idle")
 
-  if (pathname.includes("/cart") || pathname.includes("/checkout")) return null
+  if (
+    pathname.includes("/cart") ||
+    pathname.includes("/checkout") ||
+    pathname.includes("/order/") ||
+    pathname.includes("/account")
+  ) {
+    return null
+  }
 
   const buyNow = async () => {
     if (!variantId || disabled || status === "adding") return

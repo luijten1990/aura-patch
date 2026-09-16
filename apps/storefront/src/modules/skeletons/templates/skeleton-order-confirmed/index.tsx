@@ -4,14 +4,18 @@ import SkeletonOrderItems from "@modules/skeletons/components/skeleton-order-ite
 
 const SkeletonOrderConfirmed = () => {
   return (
-    <div className="bg-gray-50 py-6 min-h-[calc(100vh-64px)] animate-pulse">
-      <div className="content-container flex justify-center">
-        <div className="max-w-4xl h-full bg-white w-full p-10">
-          <SkeletonOrderConfirmedHeader />
-
-          <SkeletonOrderItems />
-
-          <SkeletonOrderInformation />
+    <div className="min-h-[70vh] animate-pulse bg-aura-cream py-12 small:py-20">
+      <div className="content-container max-w-[920px]">
+        <div className="h-3 w-28 rounded-full bg-aura-forest/10" />
+        <div className="mt-5 h-12 w-64 rounded-full bg-aura-forest/10 small:h-16" />
+        <div className="mt-12 grid grid-cols-1 gap-6 small:grid-cols-2">
+          <div className="rounded-[1.75rem] border border-aura-forest/10 bg-[#f5efe4] p-6">
+            <SkeletonOrderConfirmedHeader />
+            <SkeletonOrderItems />
+          </div>
+          <div className="rounded-[1.75rem] border border-aura-forest/10 bg-[#f5efe4] p-6">
+            <SkeletonOrderInformation />
+          </div>
         </div>
       </div>
     </div>

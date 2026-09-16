@@ -14,48 +14,43 @@ const OrderDetails = ({ order, showStatus }: OrderDetailsProps) => {
   }
 
   return (
-    <div>
-      <Text>
+    <div className="text-[15px] leading-7 text-aura-forest/70">
+      <Text className="text-[15px] leading-7 text-aura-forest/70">
         We have sent the order confirmation details to{" "}
-        <span
-          className="text-ui-fg-medium-plus font-semibold"
-          data-testid="order-email"
-        >
+        <span className="font-semibold text-aura-forest" data-testid="order-email">
           {order.email}
         </span>
         .
       </Text>
-      <Text className="mt-2">
+      <Text className="mt-2 text-[15px] leading-7 text-aura-forest/70">
         Order date:{" "}
         <span data-testid="order-date">
           {new Date(order.created_at).toDateString()}
         </span>
       </Text>
-      <Text className="mt-2 text-ui-fg-interactive">
-        Order number: <span data-testid="order-id">{order.display_id}</span>
+      <Text className="mt-2 text-[15px] leading-7 text-aura-forest">
+        Order number:{" "}
+        <span className="font-semibold" data-testid="order-id">
+          {order.display_id}
+        </span>
       </Text>
 
-      <div className="flex items-center text-compact-small gap-x-4 mt-4">
-        {showStatus && (
-          <>
-            <Text>
-              Order status:{" "}
-              <span className="text-ui-fg-subtle " data-testid="order-status">
-                {formatStatus(order.fulfillment_status)}
-              </span>
-            </Text>
-            <Text>
-              Payment status:{" "}
-              <span
-                className="text-ui-fg-subtle "
-                sata-testid="order-payment-status"
-              >
-                {formatStatus(order.payment_status)}
-              </span>
-            </Text>
-          </>
-        )}
-      </div>
+      {showStatus && (
+        <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px] text-aura-forest/60">
+          <Text className="text-[13px] text-aura-forest/60">
+            Order status:{" "}
+            <span className="text-aura-forest" data-testid="order-status">
+              {formatStatus(order.fulfillment_status)}
+            </span>
+          </Text>
+          <Text className="text-[13px] text-aura-forest/60">
+            Payment status:{" "}
+            <span className="text-aura-forest" data-testid="order-payment-status">
+              {formatStatus(order.payment_status)}
+            </span>
+          </Text>
+        </div>
+      )}
     </div>
   )
 }

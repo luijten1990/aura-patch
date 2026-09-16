@@ -1,6 +1,7 @@
 import React from "react"
 
-import UnderlineLink from "@modules/common/components/interactive-link"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import { Heading, Text } from "@modules/common/components/ui"
 
 import AccountNav from "../components/account-nav"
 import { HttpTypes } from "@medusajs/types"
@@ -15,25 +16,39 @@ const AccountLayout: React.FC<AccountLayoutProps> = ({
   children,
 }) => {
   return (
-    <div className="flex-1 small:py-12" data-testid="account-page">
-      <div className="flex-1 content-container h-full max-w-5xl mx-auto bg-white flex flex-col">
-        <div className="grid grid-cols-1  small:grid-cols-[240px_1fr] py-12">
-          <div>{customer && <AccountNav customer={customer} />}</div>
-          <div className="flex-1">{children}</div>
-        </div>
-        <div className="flex flex-col small:flex-row items-end justify-between small:border-t border-gray-200 py-12 gap-8">
-          <div>
-            <h3 className="text-xl-semi mb-4">Got questions?</h3>
-            <span className="txt-medium">
-              You can find frequently asked questions and answers on our
-              customer service page.
-            </span>
+    <div
+      className="min-h-[70vh] flex-1 bg-aura-cream py-12 text-aura-forest small:py-20"
+      data-testid="account-page"
+    >
+      <div className="content-container flex h-full max-w-5xl flex-col">
+        {customer ? (
+          <div className="grid grid-cols-1 py-4 small:grid-cols-[240px_1fr] small:py-0">
+            <div>
+              <AccountNav customer={customer} />
+            </div>
+            <div className="flex-1">{children}</div>
           </div>
-          <div>
-            <UnderlineLink href="/customer-service">
-              Customer Service
-            </UnderlineLink>
+        ) : (
+          <div className="flex flex-1 justify-center py-4 small:py-8">
+            {children}
           </div>
+        )}
+        <div className="mt-10 flex flex-col items-start justify-between gap-6 border-t border-aura-forest/15 pt-8 small:flex-row small:items-end">
+          <div>
+            <Heading
+              level="h3"
+              className="aura-display text-[28px] font-normal leading-none"
+            >
+              Got questions?
+            </Heading>
+            <Text className="mt-3 max-w-[28rem] text-[15px] leading-7 text-aura-forest/65">
+              You can find frequently asked questions and answers on our FAQ
+              page.
+            </Text>
+          </div>
+          <LocalizedClientLink href="/#faq" className="aura-button-outline">
+            View FAQ
+          </LocalizedClientLink>
         </div>
       </div>
     </div>

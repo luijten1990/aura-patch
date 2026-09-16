@@ -54,7 +54,6 @@ const CartDropdown = ({
     open()
   }
 
-  // Clean up the timer when the component unmounts
   useEffect(() => {
     return () => {
       if (activeTimer) {
@@ -65,7 +64,6 @@ const CartDropdown = ({
 
   const pathname = usePathname()
 
-  // open cart dropdown when modifying the cart items, but only if we're not on the cart page
   useEffect(() => {
     if (itemRef.current !== totalItems && !pathname.includes("/cart")) {
       timedOpen()
@@ -75,14 +73,14 @@ const CartDropdown = ({
 
   return (
     <div
-      className="h-full z-50"
+      className="z-50 h-full"
       onMouseEnter={openAndCancel}
       onMouseLeave={close}
     >
       <Popover className="relative h-full">
         <PopoverButton className="h-full">
           <LocalizedClientLink
-            className="hover:text-ui-fg-base"
+            className="text-[12px] uppercase tracking-[0.08em] transition-opacity hover:opacity-70"
             href="/cart"
             data-testid="nav-cart-link"
           >{`Cart (${totalItems})`}</LocalizedClientLink>
@@ -99,15 +97,20 @@ const CartDropdown = ({
         >
           <PopoverPanel
             static
-            className="hidden small:block absolute top-[calc(100%+1px)] right-0 bg-white border-x border-b border-gray-200 w-[420px] text-ui-fg-base"
+            className="absolute right-0 top-[calc(100%+12px)] hidden w-[400px] overflow-hidden rounded-[1.5rem] border border-aura-forest/15 bg-[#f5efe4] text-aura-forest shadow-[0_18px_50px_rgba(25,63,55,0.12)] small:block"
             data-testid="nav-cart-dropdown"
           >
-            <div className="p-4 flex items-center justify-center">
-              <h3 className="text-large-semi">Cart</h3>
+            <div className="flex items-end justify-between border-b border-aura-forest/10 px-6 py-5">
+              <h3 className="aura-display text-[28px] font-normal leading-none">
+                Your cart
+              </h3>
+              <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-aura-forest/50">
+                {totalItems} {totalItems === 1 ? "item" : "items"}
+              </span>
             </div>
             {cartState && cartState.items?.length ? (
               <>
-                <div className="overflow-y-scroll max-h-[402px] px-4 grid grid-cols-1 gap-y-8 no-scrollbar p-px">
+                <div className="no-scrollbar grid max-h-[402px] grid-cols-1 gap-y-6 overflow-y-scroll px-6 py-5">
                   {cartState.items
                     .sort((a, b) => {
                       return (a.created_at ?? "") > (b.created_at ?? "")
@@ -116,13 +119,13 @@ const CartDropdown = ({
                     })
                     .map((item) => (
                       <div
-                        className="grid grid-cols-[122px_1fr] gap-x-4"
+                        className="grid grid-cols-[88px_1fr] gap-x-4"
                         key={item.id}
                         data-testid="cart-item"
                       >
                         <LocalizedClientLink
                           href={`/products/${item.product_handle}`}
-                          className="w-24"
+                          className="w-[72px]"
                         >
                           <Thumbnail
                             thumbnail={
@@ -132,44 +135,46 @@ const CartDropdown = ({
                             }
                             images={item.variant?.product?.images}
                             size="square"
+                            className="!rounded-[1.25rem] !border !border-aura-forest/10 !bg-[#f7f4ed] !p-0 !shadow-none"
                           />
                         </LocalizedClientLink>
-                        <div className="flex flex-col justify-between flex-1">
-                          <div className="flex flex-col flex-1">
-                            <div className="flex items-start justify-between">
-                              <div className="flex flex-col overflow-ellipsis whitespace-nowrap mr-4 w-[180px]">
-                                <h3 className="text-base-regular overflow-hidden text-ellipsis">
-                                  <LocalizedClientLink
-                                    href={`/products/${item.product_handle}`}
-                                    data-testid="product-link"
-                                  >
-                                    {item.title}
-                                  </LocalizedClientLink>
-                                </h3>
+                        <div className="flex flex-1 flex-col justify-between">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="mr-2 min-w-0 flex-1">
+                              <h3 className="overflow-hidden text-ellipsis text-[15px] font-semibold leading-5 text-aura-forest">
+                                <LocalizedClientLink
+                                  href={`/products/${item.product_handle}`}
+                                  data-testid="product-link"
+                                >
+                                  {item.title}
+                                </LocalizedClientLink>
+                              </h3>
+                              <div className="mt-1 text-[12px] text-aura-forest/55">
                                 <LineItemOptions
                                   variant={item.variant}
                                   data-testid="cart-item-variant"
                                   data-value={item.variant}
                                 />
-                                <span
-                                  data-testid="cart-item-quantity"
-                                  data-value={item.quantity}
-                                >
-                                  Quantity: {item.quantity}
-                                </span>
                               </div>
-                              <div className="flex justify-end">
-                                <LineItemPrice
-                                  item={item}
-                                  style="tight"
-                                  currencyCode={cartState.currency_code}
-                                />
-                              </div>
+                              <span
+                                className="mt-1 block text-[12px] text-aura-forest/55"
+                                data-testid="cart-item-quantity"
+                                data-value={item.quantity}
+                              >
+                                Quantity: {item.quantity}
+                              </span>
+                            </div>
+                            <div className="shrink-0 text-[14px] font-semibold text-aura-forest">
+                              <LineItemPrice
+                                item={item}
+                                style="tight"
+                                currencyCode={cartState.currency_code}
+                              />
                             </div>
                           </div>
                           <DeleteButton
                             id={item.id}
-                            className="mt-1"
+                            className="mt-2"
                             data-testid="cart-item-remove-button"
                           >
                             Remove
@@ -178,14 +183,13 @@ const CartDropdown = ({
                       </div>
                     ))}
                 </div>
-                <div className="p-4 flex flex-col gap-y-4 text-small-regular">
-                  <div className="flex items-center justify-between">
-                    <span className="text-ui-fg-base font-semibold">
-                      Subtotal{" "}
-                      <span className="font-normal">(excl. taxes)</span>
+                <div className="flex flex-col gap-y-4 border-t border-aura-forest/10 px-6 py-5">
+                  <div className="flex items-end justify-between">
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-aura-forest/55">
+                      Subtotal
                     </span>
                     <span
-                      className="text-large-semi"
+                      className="aura-display text-[28px] leading-none"
                       data-testid="cart-subtotal"
                       data-value={subtotal}
                     >
@@ -195,10 +199,9 @@ const CartDropdown = ({
                       })}
                     </span>
                   </div>
-                  <LocalizedClientLink href="/cart" passHref>
+                  <LocalizedClientLink href="/cart">
                     <Button
-                      className="w-full"
-                      size="large"
+                      className="min-h-12 w-full rounded-full !bg-aura-gold px-6 text-[11px] font-bold uppercase tracking-[0.16em] !text-aura-forest hover:!bg-aura-forest hover:!text-aura-cream"
                       data-testid="go-to-cart-button"
                     >
                       Go to cart
@@ -207,21 +210,20 @@ const CartDropdown = ({
                 </div>
               </>
             ) : (
-              <div>
-                <div className="flex py-16 flex-col gap-y-4 items-center justify-center">
-                  <div className="bg-gray-900 text-small-regular flex items-center justify-center w-6 h-6 rounded-full text-white">
-                    <span>0</span>
-                  </div>
-                  <span>Your shopping bag is empty.</span>
-                  <div>
-                    <LocalizedClientLink href="/store">
-                      <>
-                        <span className="sr-only">Go to all products page</span>
-                        <Button onClick={close}>Explore products</Button>
-                      </>
-                    </LocalizedClientLink>
-                  </div>
-                </div>
+              <div className="flex flex-col items-start px-6 py-10">
+                <span className="aura-eyebrow text-aura-gold">
+                  Your bag is waiting
+                </span>
+                <p className="aura-display mt-3 text-[32px] leading-none">
+                  Your cart is empty
+                </p>
+                <LocalizedClientLink
+                  href="/store"
+                  className="aura-button mt-6 inline-flex"
+                  onClick={close}
+                >
+                  Explore products
+                </LocalizedClientLink>
               </div>
             )}
           </PopoverPanel>
