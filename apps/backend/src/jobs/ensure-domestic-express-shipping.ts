@@ -18,7 +18,7 @@ export default async function ensureDomesticExpressShippingJob(
 }
 
 export const config = {
-  name: "ensure-domestic-express-easyship",
+  name: "ensure-domestic-express-us-zone",
   schedule: "* * * * *",
-  numberOfExecutions: 8,
+  numberOfExecutions: 12,
 }

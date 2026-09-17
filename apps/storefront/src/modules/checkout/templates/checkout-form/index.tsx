@@ -6,6 +6,7 @@ import Addresses from "@modules/checkout/components/addresses"
 import Payment from "@modules/checkout/components/payment"
 import Review from "@modules/checkout/components/review"
 import Shipping from "@modules/checkout/components/shipping"
+import { Suspense } from "react"
 
 export default async function CheckoutForm({
   cart,
@@ -21,21 +22,27 @@ export default async function CheckoutForm({
   const [shippingMethods, paymentMethods, regions] = await Promise.all([
     listCartShippingMethods(cart.id),
     listCartPaymentMethods(cart.region?.id ?? ""),
-    listRegions(),
+    listRegions().catch(() => []),
   ])
 
   return (
     <div className="w-full grid grid-cols-1 gap-y-8">
       <Addresses cart={cart} customer={customer} regions={regions} />
 
-      <Shipping
-        cart={cart}
-        availableShippingMethods={shippingMethods ?? []}
-      />
+      <Suspense fallback={null}>
+        <Shipping
+          cart={cart}
+          availableShippingMethods={shippingMethods ?? []}
+        />
+      </Suspense>
 
-      <Payment cart={cart} availablePaymentMethods={paymentMethods ?? []} />
+      <Suspense fallback={null}>
+        <Payment cart={cart} availablePaymentMethods={paymentMethods ?? []} />
+      </Suspense>
 
-      <Review cart={cart} />
+      <Suspense fallback={null}>
+        <Review cart={cart} />
+      </Suspense>
     </div>
   )
 }

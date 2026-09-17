@@ -6,6 +6,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/utils"
 import {
+  createServiceZonesWorkflow,
   createShippingOptionsWorkflow,
   updateShippingOptionsWorkflow,
 } from "@medusajs/medusa/core-flows"
@@ -112,15 +113,54 @@ const ensureDomesticExpressShippingStep = createStep(
       ],
     })
 
-    const usZone = (fulfillmentSets as FulfillmentSetRecord[])
-      .filter((set) => set.type !== "pickup")
+    const shippingSets = (fulfillmentSets as FulfillmentSetRecord[]).filter(
+      (set) => set.type !== "pickup"
+    )
+
+    let usZone = shippingSets
       .flatMap((set) => set.service_zones || [])
       .find(isUsOnlyZone)
 
     if (!usZone?.id) {
+      const targetSet = shippingSets.find((set) =>
+        (set.service_zones || []).some((zone) => (zone.shipping_options || []).length)
+      ) || shippingSets[0]
+
+      if (!targetSet?.id) {
+        throw new MedusaError(
+          MedusaError.Types.NOT_FOUND,
+          "No shipping fulfillment set was found for Express Shipping."
+        )
+      }
+
+      const { result: createdZones } = await createServiceZonesWorkflow(container).run({
+        input: {
+          data: [
+            {
+              name: "United States",
+              fulfillment_set_id: targetSet.id,
+              geo_zones: [
+                {
+                  type: "country" as const,
+                  country_code: "us",
+                },
+              ],
+            },
+          ],
+        },
+      })
+
+      usZone = {
+        id: createdZones[0]?.id,
+        name: createdZones[0]?.name || "United States",
+        shipping_options: [],
+      }
+    }
+
+    if (!usZone?.id) {
       throw new MedusaError(
         MedusaError.Types.NOT_FOUND,
-        "No United States-only service zone was found for Express Shipping."
+        "Unable to create a United States service zone for Express Shipping."
       )
     }
 
