@@ -155,3 +155,27 @@
     @apply text-[32px] leading-[44px] font-semibold;
   }
 }
+
+/* Medusa UI tokens hard-code Inter; keep Aura body type instead. */
+.txt-medium,
+.txt-medium-plus,
+.txt-small,
+.txt-small-plus,
+.txt-large,
+.txt-large-plus,
+.txt-xlarge,
+.txt-xlarge-plus,
+.txt-xsmall,
+.txt-xsmall-plus,
+.txt-compact-medium,
+.txt-compact-medium-plus,
+.txt-compact-small,
+.txt-compact-small-plus,
+.txt-compact-large,
+.txt-compact-large-plus,
+.txt-compact-xlarge,
+.txt-compact-xlarge-plus,
+.txt-compact-xsmall,
+.txt-compact-xsmall-plus {
+  font-family: var(--font-manrope), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}

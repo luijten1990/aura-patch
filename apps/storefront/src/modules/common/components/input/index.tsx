@@ -49,9 +49,21 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="flex flex-col w-full">
         {topLabel && (
-          <Label className="mb-2 txt-compact-medium-plus">{topLabel}</Label>
+          <Label
+            className={clx(
+              "mb-2",
+              variant === "aura" ? "font-sans text-[13px]" : "txt-compact-medium-plus"
+            )}
+          >
+            {topLabel}
+          </Label>
         )}
-        <div className="flex relative z-0 w-full txt-compact-medium">
+        <div
+          className={clx(
+            "flex relative z-0 w-full",
+            variant === "aura" ? "font-sans text-[14px]" : "txt-compact-medium"
+          )}
+        >
           <input
             type={inputType}
             name={name}

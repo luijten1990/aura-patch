@@ -3,7 +3,6 @@ import { LOGIN_VIEW } from "@modules/account/templates/login-template"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
 import Input from "@modules/common/components/input"
-import { Text } from "@modules/common/components/ui"
 import { useActionState } from "react"
 
 type Props = {
@@ -15,16 +14,16 @@ const Login = ({ setCurrentView }: Props) => {
 
   return (
     <div
-      className="flex w-full flex-col rounded-[1.75rem] border border-aura-forest/15 bg-[#f5efe4] px-6 py-8 small:px-8 small:py-10"
+      className="flex w-full flex-col rounded-[1.75rem] border border-aura-forest/15 bg-[#f5efe4] px-6 py-8 font-sans small:px-8 small:py-10"
       data-testid="login-page"
     >
       <span className="aura-eyebrow text-aura-gold">Account</span>
       <h1 className="aura-display mt-3 text-[40px] font-normal leading-none small:text-[48px]">
         Welcome back
       </h1>
-      <Text className="mt-4 mb-8 text-[15px] leading-7 text-aura-forest/65">
+      <p className="mt-4 mb-8 font-sans text-[15px] leading-7 text-aura-forest/65">
         Sign in to access an enhanced shopping experience.
-      </Text>
+      </p>
       {message?.state === "verification_required" && (
         <div
           className="mb-6 rounded-[1.25rem] border border-aura-forest/15 bg-aura-cream px-4 py-4 text-center text-[14px] leading-6 text-aura-forest/75"

@@ -16,7 +16,7 @@ const AccountLayout: React.FC<AccountLayoutProps> = ({
 }) => {
   return (
     <div
-      className="min-h-[70vh] flex-1 bg-aura-cream py-12 text-aura-forest small:py-20"
+      className="min-h-[70vh] flex-1 bg-aura-cream py-12 font-sans text-aura-forest small:py-20"
       data-testid="account-page"
     >
       <div className="content-container flex h-full max-w-5xl flex-col">
