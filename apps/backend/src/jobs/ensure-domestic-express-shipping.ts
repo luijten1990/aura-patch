@@ -10,7 +10,7 @@ export default async function ensureDomesticExpressShippingJob(
   try {
     const { result } = await ensureDomesticExpressShippingWorkflow(container).run()
     logger.info(
-      `Domestic Express Shipping ready (${result.created ? "created" : "already present"}): ${result.name}`
+      `Domestic Express Shipping ready (${result.created ? "created" : result.updated ? "updated" : "already present"}): ${result.name}`
     )
   } catch (error) {
     logger.error(`Unable to ensure domestic Express Shipping: ${String(error)}`)
@@ -18,7 +18,7 @@ export default async function ensureDomesticExpressShippingJob(
 }
 
 export const config = {
-  name: "ensure-domestic-express-shipping",
+  name: "ensure-domestic-express-easyship",
   schedule: "* * * * *",
   numberOfExecutions: 8,
 }

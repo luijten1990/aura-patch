@@ -63,10 +63,11 @@ export default async function autoFulfillUspsOrderHandler({
   const countryCode = typedOrder.shipping_address?.country_code?.toLowerCase()
   const providerId = typedOrder.shipping_methods?.[0]?.shipping_option?.provider_id
   const isUspsOrder = countryCode === "us" && providerId === "fp_usps_usps"
-  const isEasyshipOrder = countryCode && countryCode !== "us" && providerId === "fp_easyship_easyship"
+  const isEasyshipOrder =
+    providerId === "fp_easyship_easyship" || providerId === "easyship_easyship"
   if (!isUspsOrder && !isEasyshipOrder) {
     logger.info(
-      `Automatic fulfillment skipped: order ${typedOrder.id} must use USPS for US destinations or Easyship for international destinations.`
+      `Automatic fulfillment skipped: order ${typedOrder.id} must use USPS or Easyship.`
     )
     return
   }

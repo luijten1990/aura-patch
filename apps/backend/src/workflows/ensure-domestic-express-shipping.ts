@@ -5,10 +5,14 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/utils"
-import { createShippingOptionsWorkflow } from "@medusajs/medusa/core-flows"
+import {
+  createShippingOptionsWorkflow,
+  updateShippingOptionsWorkflow,
+} from "@medusajs/medusa/core-flows"
 
 export const DOMESTIC_EXPRESS_NAME = "Express Shipping"
 export const DOMESTIC_EXPRESS_AMOUNT = 6.99
+export const DOMESTIC_EASYSHIP_OPTION_ID = "easyship-domestic"
 
 type GeoZone = {
   country_code?: string
@@ -17,6 +21,8 @@ type GeoZone = {
 type ShippingOptionRecord = {
   id?: string
   name?: string
+  provider_id?: string
+  data?: { id?: string }
 }
 
 type ServiceZoneRecord = {
@@ -43,8 +49,13 @@ type ShippingProfileRecord = {
   id?: string
 }
 
+type ProviderRecord = {
+  id?: string
+}
+
 type EnsureResult = {
   created: boolean
+  updated: boolean
   name: string
   service_zone_id: string
 }
@@ -62,10 +73,28 @@ const isExpressOption = (option: ShippingOptionRecord) => {
   return name.includes("express") || name.includes("priority")
 }
 
+const isEasyshipDomestic = (option: ShippingOptionRecord, providerId: string) =>
+  option.provider_id === providerId && option.data?.id === DOMESTIC_EASYSHIP_OPTION_ID
+
 const ensureDomesticExpressShippingStep = createStep(
   "ensure-domestic-express-shipping",
   async (_, { container }) => {
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
+
+    const { data: providers } = await query.graph({
+      entity: "fulfillment_provider",
+      fields: ["id"],
+    })
+    const easyshipProviderId = (providers as ProviderRecord[]).find((provider) =>
+      provider.id?.includes("easyship")
+    )?.id
+
+    if (!easyshipProviderId) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        "Easyship is not registered. Set EASYSHIP_API_TOKEN and related env vars."
+      )
+    }
 
     const { data: fulfillmentSets } = await query.graph({
       entity: "fulfillment_set",
@@ -78,6 +107,8 @@ const ensureDomesticExpressShippingStep = createStep(
         "service_zones.geo_zones.country_code",
         "service_zones.shipping_options.id",
         "service_zones.shipping_options.name",
+        "service_zones.shipping_options.provider_id",
+        "service_zones.shipping_options.data",
       ],
     })
 
@@ -93,9 +124,31 @@ const ensureDomesticExpressShippingStep = createStep(
       )
     }
 
-    if ((usZone.shipping_options || []).some(isExpressOption)) {
+    const existing = (usZone.shipping_options || []).find(isExpressOption)
+    if (existing?.id && isEasyshipDomestic(existing, easyshipProviderId)) {
       return new StepResponse({
         created: false,
+        updated: false,
+        name: existing.name || DOMESTIC_EXPRESS_NAME,
+        service_zone_id: usZone.id,
+      } satisfies EnsureResult)
+    }
+
+    if (existing?.id) {
+      await updateShippingOptionsWorkflow(container).run({
+        input: [
+          {
+            id: existing.id,
+            name: DOMESTIC_EXPRESS_NAME,
+            provider_id: easyshipProviderId,
+            data: { id: DOMESTIC_EASYSHIP_OPTION_ID },
+          },
+        ],
+      })
+
+      return new StepResponse({
+        created: false,
+        updated: true,
         name: DOMESTIC_EXPRESS_NAME,
         service_zone_id: usZone.id,
       } satisfies EnsureResult)
@@ -141,12 +194,13 @@ const ensureDomesticExpressShippingStep = createStep(
         {
           name: DOMESTIC_EXPRESS_NAME,
           price_type: "flat",
-          provider_id: "manual_manual",
+          provider_id: easyshipProviderId,
           service_zone_id: usZone.id,
           shipping_profile_id: shippingProfile.id,
+          data: { id: DOMESTIC_EASYSHIP_OPTION_ID },
           type: {
             label: "Express",
-            description: "1-3 business days with tracking.",
+            description: "1-3 business days with tracking via UPS Ground.",
             code: "express",
           },
           prices,
@@ -168,6 +222,7 @@ const ensureDomesticExpressShippingStep = createStep(
 
     return new StepResponse({
       created: true,
+      updated: false,
       name: DOMESTIC_EXPRESS_NAME,
       service_zone_id: usZone.id,
     } satisfies EnsureResult)
