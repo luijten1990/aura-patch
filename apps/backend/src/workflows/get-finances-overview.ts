@@ -8,7 +8,7 @@ import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/util
 
 type OrderRecord = {
   id?: string
-  display_id?: number
+  display_id?: number | string
   created_at?: string
   currency_code?: string
   payment_status?: string
@@ -110,7 +110,7 @@ const getFinancesOverviewStep = createStep(
       },
     })
 
-    const paidOrders = (orders as OrderRecord[]).filter((order) => {
+    const paidOrders = (orders as unknown as OrderRecord[]).filter((order) => {
       if (order.status === "canceled") {
         return false
       }

@@ -54,12 +54,16 @@ type ProviderRecord = {
   id?: string
 }
 
-type EnsureResult = {
+export type EnsureResult = {
   created: boolean
   updated: boolean
   name: string
   service_zone_id: string
 }
+
+type FlatRatePrice =
+  | { currency_code: string; amount: number }
+  | { region_id: string; amount: number }
 
 const isUsOnlyZone = (zone: ServiceZoneRecord) => {
   const countries = (zone.geo_zones || [])
@@ -79,7 +83,7 @@ const isEasyshipDomestic = (option: ShippingOptionRecord, providerId: string) =>
 
 const ensureDomesticExpressShippingStep = createStep(
   "ensure-domestic-express-shipping",
-  async (_, { container }) => {
+  async (_, { container }): Promise<StepResponse<EnsureResult>> => {
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
 
     const { data: providers } = await query.graph({
@@ -166,12 +170,12 @@ const ensureDomesticExpressShippingStep = createStep(
 
     const existing = (usZone.shipping_options || []).find(isExpressOption)
     if (existing?.id && isEasyshipDomestic(existing, easyshipProviderId)) {
-      return new StepResponse({
+      return new StepResponse<EnsureResult>({
         created: false,
         updated: false,
         name: existing.name || DOMESTIC_EXPRESS_NAME,
         service_zone_id: usZone.id,
-      } satisfies EnsureResult)
+      })
     }
 
     if (existing?.id) {
@@ -186,12 +190,12 @@ const ensureDomesticExpressShippingStep = createStep(
         ],
       })
 
-      return new StepResponse({
+      return new StepResponse<EnsureResult>({
         created: false,
         updated: true,
         name: DOMESTIC_EXPRESS_NAME,
         service_zone_id: usZone.id,
-      } satisfies EnsureResult)
+      })
     }
 
     const { data: shippingProfiles } = await query.graph({
@@ -215,7 +219,7 @@ const ensureDomesticExpressShippingStep = createStep(
       (region.countries || []).some((country) => country.iso_2?.toLowerCase() === "us")
     )
 
-    const prices: { currency_code?: string; region_id?: string; amount: number }[] = [
+    const prices: FlatRatePrice[] = [
       {
         currency_code: "usd",
         amount: DOMESTIC_EXPRESS_AMOUNT,
@@ -260,12 +264,12 @@ const ensureDomesticExpressShippingStep = createStep(
       ],
     })
 
-    return new StepResponse({
+    return new StepResponse<EnsureResult>({
       created: true,
       updated: false,
       name: DOMESTIC_EXPRESS_NAME,
       service_zone_id: usZone.id,
-    } satisfies EnsureResult)
+    })
   }
 )
 
