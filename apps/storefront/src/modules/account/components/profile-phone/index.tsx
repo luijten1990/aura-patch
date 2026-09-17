@@ -63,6 +63,7 @@ const ProfileEmail: React.FC<MyInformationProps> = ({ customer }) => {
             autoComplete="phone"
             required
             defaultValue={customer.phone ?? ""}
+            variant="aura"
             data-testid="phone-input"
           />
         </div>

@@ -1,7 +1,7 @@
 "use client"
 
 import { Plus } from "@medusajs/icons"
-import { Button, Heading } from "@modules/common/components/ui"
+import { Button } from "@modules/common/components/ui"
 import { useActionState, useEffect, useState } from "react"
 
 import { addCustomerAddress } from "@lib/data/customer"
@@ -47,17 +47,21 @@ const AddAddress = ({
   return (
     <>
       <button
-        className="border border-ui-border-base rounded-rounded p-5 min-h-[220px] h-full w-full flex flex-col justify-between"
+        className="flex h-full min-h-[220px] w-full flex-col justify-between rounded-[1.5rem] border border-aura-forest/15 bg-[#f5efe4] p-5"
         onClick={open}
         data-testid="add-address-button"
       >
-        <span className="text-base-semi">New address</span>
+        <span className="aura-display text-[24px] font-normal leading-none">
+          New address
+        </span>
         <Plus />
       </button>
 
       <Modal isOpen={state} close={close} data-testid="add-address-modal">
         <Modal.Title>
-          <Heading className="mb-2">Add address</Heading>
+          <h2 className="aura-display mb-2 text-[32px] font-normal leading-none">
+            Add address
+          </h2>
         </Modal.Title>
         <form action={formAction}>
           <Modal.Body>
@@ -68,6 +72,7 @@ const AddAddress = ({
                   name="first_name"
                   required
                   autoComplete="given-name"
+                  variant="aura"
                   data-testid="first-name-input"
                 />
                 <Input
@@ -75,6 +80,7 @@ const AddAddress = ({
                   name="last_name"
                   required
                   autoComplete="family-name"
+                  variant="aura"
                   data-testid="last-name-input"
                 />
               </div>
@@ -82,6 +88,7 @@ const AddAddress = ({
                 label="Company"
                 name="company"
                 autoComplete="organization"
+                variant="aura"
                 data-testid="company-input"
               />
               <Input
@@ -89,12 +96,14 @@ const AddAddress = ({
                 name="address_1"
                 required
                 autoComplete="address-line1"
+                variant="aura"
                 data-testid="address-1-input"
               />
               <Input
                 label="Apartment, suite, etc."
                 name="address_2"
                 autoComplete="address-line2"
+                variant="aura"
                 data-testid="address-2-input"
               />
               <div className="grid grid-cols-[144px_1fr] gap-x-2">
@@ -103,6 +112,7 @@ const AddAddress = ({
                   name="postal_code"
                   required
                   autoComplete="postal-code"
+                  variant="aura"
                   data-testid="postal-code-input"
                 />
                 <Input
@@ -110,6 +120,7 @@ const AddAddress = ({
                   name="city"
                   required
                   autoComplete="locality"
+                  variant="aura"
                   data-testid="city-input"
                 />
               </div>
@@ -117,6 +128,7 @@ const AddAddress = ({
                 label="Province / State"
                 name="province"
                 autoComplete="address-level1"
+                variant="aura"
                 data-testid="state-input"
               />
               <CountrySelect
@@ -130,12 +142,13 @@ const AddAddress = ({
                 label="Phone"
                 name="phone"
                 autoComplete="phone"
+                variant="aura"
                 data-testid="phone-input"
               />
             </div>
             {formState.error && (
               <div
-                className="text-rose-500 text-small-regular py-2"
+                className="py-2 text-[14px] text-rose-500"
                 data-testid="address-error"
               >
                 {formState.error}
@@ -148,12 +161,17 @@ const AddAddress = ({
                 type="reset"
                 variant="secondary"
                 onClick={close}
-                className="h-10"
+                className="h-10 rounded-full border-aura-forest/20 bg-[#f5efe4] px-5 text-[11px] font-bold uppercase tracking-[0.14em] text-aura-forest hover:!bg-aura-forest hover:!text-aura-cream"
                 data-testid="cancel-button"
               >
                 Cancel
               </Button>
-              <SubmitButton data-testid="save-button">Save</SubmitButton>
+              <SubmitButton
+                data-testid="save-button"
+                className="h-10 rounded-full !bg-aura-gold px-5 text-[11px] font-bold uppercase tracking-[0.14em] !text-aura-forest hover:!bg-aura-forest hover:!text-aura-cream"
+              >
+                Save
+              </SubmitButton>
             </div>
           </Modal.Footer>
         </form>

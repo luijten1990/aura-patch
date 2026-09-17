@@ -19,9 +19,11 @@ const OrderSummary = ({ order }: OrderSummaryProps) => {
 
   return (
     <div>
-      <h2 className="text-base-semi">Order Summary</h2>
-      <div className="text-small-regular text-ui-fg-base my-2">
-        <div className="flex items-center justify-between text-base-regular text-ui-fg-base mb-2">
+      <h2 className="aura-display text-[24px] font-normal leading-none">
+        Order summary
+      </h2>
+      <div className="my-2 text-[14px] text-aura-forest/70">
+        <div className="mb-2 flex items-center justify-between text-[15px] text-aura-forest">
           <span>Subtotal</span>
           <span>{getAmount(order.subtotal)}</span>
         </div>
@@ -47,10 +49,12 @@ const OrderSummary = ({ order }: OrderSummaryProps) => {
             <span>{getAmount(order.tax_total)}</span>
           </div>
         </div>
-        <div className="h-px w-full border-b border-gray-200 border-dashed my-4" />
-        <div className="flex items-center justify-between text-base-regular text-ui-fg-base mb-2">
+        <div className="my-4 h-px w-full border-b border-dashed border-aura-forest/20" />
+        <div className="mb-2 flex items-center justify-between text-[15px] text-aura-forest">
           <span>Total</span>
-          <span>{getAmount(order.total)}</span>
+          <span className="aura-display text-[28px] leading-none">
+            {getAmount(order.total)}
+          </span>
         </div>
       </div>
     </div>

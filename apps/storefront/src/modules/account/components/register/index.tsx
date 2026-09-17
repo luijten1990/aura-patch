@@ -6,7 +6,7 @@ import { LOGIN_VIEW } from "@modules/account/templates/login-template"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import { Heading, Text } from "@modules/common/components/ui"
+import { Text } from "@modules/common/components/ui"
 import { signup } from "@lib/data/customer"
 
 type Props = {
@@ -22,12 +22,9 @@ const Register = ({ setCurrentView }: Props) => {
       data-testid="register-page"
     >
       <span className="aura-eyebrow text-aura-gold">Account</span>
-      <Heading
-        level="h1"
-        className="aura-display mt-3 text-[40px] font-normal leading-none small:text-[48px]"
-      >
+      <h1 className="aura-display mt-3 text-[40px] font-normal leading-none small:text-[48px]">
         Create an account
-      </Heading>
+      </h1>
       <Text className="mt-4 mb-8 text-[15px] leading-7 text-aura-forest/65">
         Join Aura Patch for a simpler checkout and a more personal shopping
         experience.

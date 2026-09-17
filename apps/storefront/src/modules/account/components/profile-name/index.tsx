@@ -61,6 +61,7 @@ const ProfileName: React.FC<MyInformationProps> = ({ customer }) => {
             name="first_name"
             required
             defaultValue={customer.first_name ?? ""}
+            variant="aura"
             data-testid="first-name-input"
           />
           <Input
@@ -68,6 +69,7 @@ const ProfileName: React.FC<MyInformationProps> = ({ customer }) => {
             name="last_name"
             required
             defaultValue={customer.last_name ?? ""}
+            variant="aura"
             data-testid="last-name-input"
           />
         </div>

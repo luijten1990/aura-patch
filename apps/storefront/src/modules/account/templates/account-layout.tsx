@@ -1,7 +1,6 @@
 import React from "react"
 
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import { Heading, Text } from "@modules/common/components/ui"
 
 import AccountNav from "../components/account-nav"
 import { HttpTypes } from "@medusajs/types"
@@ -35,16 +34,13 @@ const AccountLayout: React.FC<AccountLayoutProps> = ({
         )}
         <div className="mt-10 flex flex-col items-start justify-between gap-6 border-t border-aura-forest/15 pt-8 small:flex-row small:items-end">
           <div>
-            <Heading
-              level="h3"
-              className="aura-display text-[28px] font-normal leading-none"
-            >
+            <h3 className="aura-display text-[28px] font-normal leading-none">
               Got questions?
-            </Heading>
-            <Text className="mt-3 max-w-[28rem] text-[15px] leading-7 text-aura-forest/65">
+            </h3>
+            <p className="mt-3 max-w-[28rem] text-[15px] leading-7 text-aura-forest/65">
               You can find frequently asked questions and answers on our FAQ
               page.
-            </Text>
+            </p>
           </div>
           <LocalizedClientLink href="/#faq" className="aura-button-outline">
             View FAQ

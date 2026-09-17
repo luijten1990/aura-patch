@@ -26,8 +26,10 @@ export default async function Addresses(props: {
   return (
     <div className="w-full" data-testid="addresses-page-wrapper">
       <div className="mb-8 flex flex-col gap-y-4">
-        <h1 className="text-2xl-semi">Shipping Addresses</h1>
-        <p className="text-base-regular">
+        <h1 className="aura-display text-[36px] font-normal leading-none small:text-[44px]">
+          Shipping Addresses
+        </h1>
+        <p className="max-w-[36rem] text-[15px] leading-7 text-aura-forest/65">
           View and update your shipping addresses, you can add as many as you
           like. Saving your addresses will make them available during checkout.
         </p>

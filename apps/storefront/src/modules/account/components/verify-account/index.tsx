@@ -34,36 +34,49 @@ const VerifyAccount = () => {
 
   return (
     <div
-      className="max-w-sm w-full flex flex-col items-center text-center gap-y-4"
+      className="flex w-full max-w-[440px] flex-col items-center rounded-[1.75rem] border border-aura-forest/15 bg-[#f5efe4] px-6 py-8 text-center small:px-8 small:py-10"
       data-testid="verify-account-page"
     >
-      <h1 className="text-large-semi uppercase">Email verification</h1>
+      <span className="aura-eyebrow text-aura-gold">Account</span>
+      <h1 className="aura-display mt-3 text-[40px] font-normal leading-none small:text-[48px]">
+        Email verification
+      </h1>
 
       {state === "verifying" && (
-        <p className="text-base-regular text-ui-fg-base">
+        <p className="mt-4 text-[15px] leading-7 text-aura-forest/65">
           Verifying your email...
         </p>
       )}
 
       {state === "success" && (
         <>
-          <p className="text-base-regular text-ui-fg-base">
+          <p className="mt-4 text-[15px] leading-7 text-aura-forest/65">
             Your email is verified. You can now sign in to your account.
           </p>
-          <LocalizedClientLink href="/account">
-            <Button variant="primary">Go to sign in</Button>
+          <LocalizedClientLink href="/account" className="mt-6">
+            <Button
+              variant="primary"
+              className="min-h-12 rounded-full !bg-aura-gold px-6 text-[11px] font-bold uppercase tracking-[0.16em] !text-aura-forest hover:!bg-aura-forest hover:!text-aura-cream"
+            >
+              Go to sign in
+            </Button>
           </LocalizedClientLink>
         </>
       )}
 
       {state === "error" && (
         <>
-          <p className="text-base-regular text-ui-fg-base">
+          <p className="mt-4 text-[15px] leading-7 text-aura-forest/65">
             This verification link is invalid or has expired. Sign in to receive
             a new verification email.
           </p>
-          <LocalizedClientLink href="/account">
-            <Button variant="secondary">Go to sign in</Button>
+          <LocalizedClientLink href="/account" className="mt-6">
+            <Button
+              variant="secondary"
+              className="min-h-12 rounded-full border-aura-forest/20 bg-[#f7f4ed] px-6 text-[11px] font-bold uppercase tracking-[0.16em] text-aura-forest hover:!bg-aura-forest hover:!text-aura-cream"
+            >
+              Go to sign in
+            </Button>
           </LocalizedClientLink>
         </>
       )}

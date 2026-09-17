@@ -13,7 +13,7 @@ type AccountInfoProps = {
   errorMessage?: string
   clearState: () => void
   children?: React.ReactNode
-  'data-testid'?: string
+  "data-testid"?: string
 }
 
 const AccountInfo = ({
@@ -24,7 +24,7 @@ const AccountInfo = ({
   clearState,
   errorMessage = "An error occurred, please try again",
   children,
-  'data-testid': dataTestid
+  "data-testid": dataTestid,
 }: AccountInfoProps) => {
   const { state, close, toggle } = useToggleState()
 
@@ -42,13 +42,15 @@ const AccountInfo = ({
   }, [isSuccess, close])
 
   return (
-    <div className="text-small-regular" data-testid={dataTestid}>
+    <div className="text-[15px] text-aura-forest" data-testid={dataTestid}>
       <div className="flex items-end justify-between">
         <div className="flex flex-col">
-          <span className="uppercase text-ui-fg-base">{label}</span>
-          <div className="flex items-center flex-1 basis-0 justify-end gap-x-4">
+          <span className="aura-eyebrow text-aura-gold">{label}</span>
+          <div className="mt-2 flex flex-1 basis-0 items-center justify-end gap-x-4">
             {typeof currentInfo === "string" ? (
-              <span className="font-semibold" data-testid="current-info">{currentInfo}</span>
+              <span className="font-semibold" data-testid="current-info">
+                {currentInfo}
+              </span>
             ) : (
               currentInfo
             )}
@@ -57,7 +59,7 @@ const AccountInfo = ({
         <div>
           <Button
             variant="secondary"
-            className="w-[100px] min-h-[25px] py-1"
+            className="h-9 min-h-[25px] w-[100px] rounded-full border-aura-forest/20 bg-[#f5efe4] py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-aura-forest hover:!bg-aura-forest hover:!text-aura-cream"
             onClick={handleToggle}
             type={state ? "reset" : "button"}
             data-testid="edit-button"
@@ -73,7 +75,7 @@ const AccountInfo = ({
         <Disclosure.Panel
           static
           className={clx(
-            "transition-[max-height,opacity] duration-300 ease-in-out overflow-hidden",
+            "overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out",
             {
               "max-h-[1000px] opacity-100": isSuccess,
               "max-h-0 opacity-0": !isSuccess,
@@ -81,7 +83,7 @@ const AccountInfo = ({
           )}
           data-testid="success-message"
         >
-          <Badge className="p-2 my-4" color="green">
+          <Badge className="my-4 p-2" color="green">
             <span>{label} updated succesfully</span>
           </Badge>
         </Disclosure.Panel>
@@ -92,7 +94,7 @@ const AccountInfo = ({
         <Disclosure.Panel
           static
           className={clx(
-            "transition-[max-height,opacity] duration-300 ease-in-out overflow-hidden",
+            "overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out",
             {
               "max-h-[1000px] opacity-100": isError,
               "max-h-0 opacity-0": !isError,
@@ -100,7 +102,7 @@ const AccountInfo = ({
           )}
           data-testid="error-message"
         >
-          <Badge className="p-2 my-4" color="red">
+          <Badge className="my-4 p-2" color="red">
             <span>{errorMessage}</span>
           </Badge>
         </Disclosure.Panel>
@@ -110,7 +112,7 @@ const AccountInfo = ({
         <Disclosure.Panel
           static
           className={clx(
-            "transition-[max-height,opacity] duration-300 ease-in-out overflow-visible",
+            "overflow-visible transition-[max-height,opacity] duration-300 ease-in-out",
             {
               "max-h-[1000px] opacity-100": state,
               "max-h-0 opacity-0": !state,
@@ -119,10 +121,10 @@ const AccountInfo = ({
         >
           <div className="flex flex-col gap-y-2 py-4">
             <div>{children}</div>
-            <div className="flex items-center justify-end mt-2">
+            <div className="mt-2 flex items-center justify-end">
               <Button
                 isLoading={pending}
-                className="w-full small:max-w-[140px]"
+                className="w-full rounded-full !bg-aura-gold px-6 text-[11px] font-bold uppercase tracking-[0.16em] !text-aura-forest hover:!bg-aura-forest hover:!text-aura-cream small:max-w-[180px]"
                 type="submit"
                 data-testid="save-button"
               >

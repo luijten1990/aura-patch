@@ -3,7 +3,7 @@ import { LOGIN_VIEW } from "@modules/account/templates/login-template"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
 import Input from "@modules/common/components/input"
-import { Heading, Text } from "@modules/common/components/ui"
+import { Text } from "@modules/common/components/ui"
 import { useActionState } from "react"
 
 type Props = {
@@ -19,12 +19,9 @@ const Login = ({ setCurrentView }: Props) => {
       data-testid="login-page"
     >
       <span className="aura-eyebrow text-aura-gold">Account</span>
-      <Heading
-        level="h1"
-        className="aura-display mt-3 text-[40px] font-normal leading-none small:text-[48px]"
-      >
+      <h1 className="aura-display mt-3 text-[40px] font-normal leading-none small:text-[48px]">
         Welcome back
-      </Heading>
+      </h1>
       <Text className="mt-4 mb-8 text-[15px] leading-7 text-aura-forest/65">
         Sign in to access an enhanced shopping experience.
       </Text>

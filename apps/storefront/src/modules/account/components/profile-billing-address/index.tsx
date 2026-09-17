@@ -107,6 +107,7 @@ const ProfileBillingAddress: React.FC<MyInformationProps> = ({
               name="first_name"
               defaultValue={billingAddress?.first_name || undefined}
               required
+              variant="aura"
               data-testid="billing-first-name-input"
             />
             <Input
@@ -114,6 +115,7 @@ const ProfileBillingAddress: React.FC<MyInformationProps> = ({
               name="last_name"
               defaultValue={billingAddress?.last_name || undefined}
               required
+              variant="aura"
               data-testid="billing-last-name-input"
             />
           </div>
@@ -121,6 +123,7 @@ const ProfileBillingAddress: React.FC<MyInformationProps> = ({
             label="Company"
             name="company"
             defaultValue={billingAddress?.company || undefined}
+            variant="aura"
             data-testid="billing-company-input"
           />
           <Input
@@ -130,6 +133,7 @@ const ProfileBillingAddress: React.FC<MyInformationProps> = ({
             autoComplete="phone"
             required
             defaultValue={billingAddress?.phone ?? customer?.phone ?? ""}
+            variant="aura"
             data-testid="billing-phone-input"
           />
           <Input
@@ -137,12 +141,14 @@ const ProfileBillingAddress: React.FC<MyInformationProps> = ({
             name="address_1"
             defaultValue={billingAddress?.address_1 || undefined}
             required
+            variant="aura"
             data-testid="billing-address-1-input"
           />
           <Input
             label="Apartment, suite, etc."
             name="address_2"
             defaultValue={billingAddress?.address_2 || undefined}
+            variant="aura"
             data-testid="billing-address-2-input"
           />
           <div className="grid grid-cols-[144px_1fr] gap-x-2">
@@ -151,6 +157,7 @@ const ProfileBillingAddress: React.FC<MyInformationProps> = ({
               name="postal_code"
               defaultValue={billingAddress?.postal_code || undefined}
               required
+              variant="aura"
               data-testid="billing-postcal-code-input"
             />
             <Input
@@ -158,6 +165,7 @@ const ProfileBillingAddress: React.FC<MyInformationProps> = ({
               name="city"
               defaultValue={billingAddress?.city || undefined}
               required
+              variant="aura"
               data-testid="billing-city-input"
             />
           </div>
@@ -165,6 +173,7 @@ const ProfileBillingAddress: React.FC<MyInformationProps> = ({
             label="Province"
             name="province"
             defaultValue={billingAddress?.province || undefined}
+            variant="aura"
             data-testid="billing-province-input"
           />
           <NativeSelect
