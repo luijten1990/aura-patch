@@ -26,13 +26,17 @@ export class EasyshipFulfillmentService extends AbstractFulfillmentProviderServi
     ]
   }
   async validateOption() { return true }
-  async canCalculate() { return true }
+  async canCalculate(data?: Record<string, unknown>) {
+    return this.optionId(this.asOptionData(data)) === INTERNATIONAL_OPTION_ID
+  }
 
   async validateFulfillmentData(optionData: Record<string, unknown>, data: Record<string, unknown>, context: ValidateFulfillmentDataContext) {
     const destination = context.shipping_address as Address | undefined
     const origin = context.from_location?.address as Address | undefined
     this.assertDestination(optionData, destination)
-    this.assertAddress(origin, "warehouse")
+    if (this.optionId(optionData) !== DOMESTIC_OPTION_ID) {
+      this.assertAddress(origin, "warehouse")
+    }
     return { ...data, easyship_origin: origin, easyship_option_id: this.optionId(optionData) }
   }
 
@@ -138,6 +142,14 @@ export class EasyshipFulfillmentService extends AbstractFulfillmentProviderServi
 
   private charge(rate: EasyRate) {
     return rate.total_charge ?? rate.shipment_charge_total ?? Number.POSITIVE_INFINITY
+  }
+
+  private asOptionData(data: Record<string, unknown> | undefined) {
+    const nested = data?.optionData
+    if (nested && typeof nested === "object") {
+      return nested as Record<string, unknown>
+    }
+    return data
   }
 
   private optionId(optionData: Record<string, unknown> | undefined) {

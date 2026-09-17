@@ -228,13 +228,25 @@ export async function setShippingMethod({
     ...(await getAuthHeaders()),
   }
 
-  return sdk.store.cart
-    .addShippingMethod(cartId, { option_id: shippingMethodId }, {}, headers)
-    .then(async () => {
-      const cartCacheTag = await getCacheTag("carts")
-      revalidateTag(cartCacheTag)
-    })
-    .catch(medusaError)
+  try {
+    await sdk.store.cart.addShippingMethod(
+      cartId,
+      { option_id: shippingMethodId },
+      {},
+      headers
+    )
+    const cartCacheTag = await getCacheTag("carts")
+    revalidateTag(cartCacheTag)
+    return { ok: true as const }
+  } catch (error) {
+    const fetchError = error as { message?: string }
+    return {
+      ok: false as const,
+      error:
+        fetchError.message ||
+        "Unable to save that shipping option. Please try again.",
+    }
+  }
 }
 
 export async function initiatePaymentSession(

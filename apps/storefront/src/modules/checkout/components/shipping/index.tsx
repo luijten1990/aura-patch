@@ -140,15 +140,25 @@ const Shipping: React.FC<ShippingProps> = ({
       return id
     })
 
-    await setShippingMethod({ cartId: cart.id, shippingMethodId: id })
-      .catch((err) => {
-        setShippingMethodId(currentId)
+    try {
+      const result = await setShippingMethod({
+        cartId: cart.id,
+        shippingMethodId: id,
+      })
 
-        setError(err.message)
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
+      if (!result.ok) {
+        setShippingMethodId(currentId)
+        setError(result.error)
+        return
+      }
+
+      router.refresh()
+    } catch (err) {
+      setShippingMethodId(currentId)
+      setError(err instanceof Error ? err.message : "Unable to save that shipping option.")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -393,7 +403,7 @@ const Shipping: React.FC<ShippingProps> = ({
               className="mt-6 rounded-full !bg-aura-gold px-7 text-[12px] font-semibold uppercase tracking-[0.12em] !text-aura-forest hover:!bg-aura-forest hover:!text-aura-cream"
               onClick={handleSubmit}
               isLoading={isLoading}
-              disabled={!cart.shipping_methods?.[0]}
+              disabled={!shippingMethodId || isLoading}
               data-testid="submit-delivery-option-button"
             >
               Continue to payment
