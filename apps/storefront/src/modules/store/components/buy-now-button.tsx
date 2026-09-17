@@ -24,6 +24,7 @@ export default function BuyNowButton({
         variantId,
         quantity: 1,
         countryCode: countryCode as string,
+        purchaseType: "subscription",
       })
       router.push(`/${countryCode}/checkout`)
       router.refresh()
@@ -47,7 +48,7 @@ export default function BuyNowButton({
         ? "Preparing checkout…"
         : status === "error"
         ? "Please try again"
-        : "Buy now"}
+        : "Subscribe & save"}
     </button>
   )
 }

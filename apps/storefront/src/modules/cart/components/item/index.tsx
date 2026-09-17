@@ -1,8 +1,9 @@
 "use client"
 
 import { Table, Text, clx } from "@modules/common/components/ui"
-import { updateLineItem } from "@lib/data/cart"
+import { setCartPurchaseType, updateLineItem } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
+import { useRouter } from "next/navigation"
 import CartItemSelect from "@modules/cart/components/cart-item-select"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import DeleteButton from "@modules/common/components/delete-button"
@@ -18,11 +19,14 @@ type ItemProps = {
   item: HttpTypes.StoreCartLineItem
   type?: "full" | "preview"
   currencyCode: string
+  isSubscription?: boolean
 }
 
-const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
+const Item = ({ item, type = "full", currencyCode, isSubscription }: ItemProps) => {
+  const router = useRouter()
   const [updating, setUpdating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [switching, setSwitching] = useState(false)
 
   const changeQuantity = async (quantity: number) => {
     setError(null)
@@ -78,6 +82,35 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
           {item.product_title}
         </Text>
         <div className="mt-1 text-[12px] text-aura-forest/55">
+          {isSubscription || item.metadata?.purchase_type === "subscription" ? (
+            <p className="mb-1 text-aura-gold">Subscribe & Save · 20% off · renews monthly</p>
+          ) : (
+            <p className="mb-1">One-time purchase</p>
+          )}
+          {type === "full" && (
+            <button
+              type="button"
+              disabled={switching}
+              onClick={async () => {
+                setSwitching(true)
+                try {
+                  await setCartPurchaseType(isSubscription ? "one_time" : "subscription")
+                  router.refresh()
+                } catch (err) {
+                  setError(err instanceof Error ? err.message : "Unable to update purchase type.")
+                } finally {
+                  setSwitching(false)
+                }
+              }}
+              className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-aura-forest/70 underline decoration-aura-gold decoration-2 underline-offset-4"
+            >
+              {switching
+                ? "Updating…"
+                : isSubscription
+                ? "Switch to one-time"
+                : "Switch to Subscribe & Save 20%"}
+            </button>
+          )}
           <LineItemOptions
             variant={item.variant}
             data-testid="product-variant"

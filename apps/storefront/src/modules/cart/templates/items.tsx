@@ -47,6 +47,9 @@ const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
                       key={item.id}
                       item={item}
                       currencyCode={cart?.currency_code}
+                      isSubscription={
+                        cart?.metadata?.subscription_interval === "monthly"
+                      }
                     />
                   )
                 })

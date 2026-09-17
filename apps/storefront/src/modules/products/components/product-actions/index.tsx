@@ -2,6 +2,12 @@
 
 import { addToCart } from "@lib/data/cart"
 import { useIntersection } from "@lib/hooks/use-in-view"
+import { convertToLocale } from "@lib/util/money"
+import {
+  SUBSCRIBE_PERCENT,
+  subscriptionAmount,
+  type PurchaseType,
+} from "@lib/util/subscription"
 import { HttpTypes } from "@medusajs/types"
 import { Button } from "@modules/common/components/ui"
 import Divider from "@modules/common/components/divider"
@@ -38,6 +44,7 @@ export default function ProductActions({
 
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
   const [isAdding, setIsAdding] = useState(false)
+  const [purchaseType, setPurchaseType] = useState<PurchaseType>("subscription")
   const countryCode = useParams().countryCode as string
 
   // If there is only 1 variant, preselect the options
@@ -130,6 +137,7 @@ export default function ProductActions({
       variantId: selectedVariant.id,
       quantity: 1,
       countryCode,
+      purchaseType,
     })
 
     setIsAdding(false)
@@ -160,7 +168,71 @@ export default function ProductActions({
           )}
         </div>
 
-        <ProductPrice product={product} variant={selectedVariant} />
+        <ProductPrice
+          product={product}
+          variant={selectedVariant}
+          purchaseType={purchaseType}
+        />
+
+        <div className="flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={() => setPurchaseType("subscription")}
+            className={`rounded-2xl border px-4 py-3 text-left transition-colors ${
+              purchaseType === "subscription"
+                ? "border-aura-gold bg-aura-gold/15"
+                : "border-aura-forest/15 bg-white/40"
+            }`}
+            data-testid="subscribe-option"
+          >
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="text-[12px] font-bold uppercase tracking-[0.14em] text-aura-forest">
+                Subscribe & Save {SUBSCRIBE_PERCENT}%
+              </span>
+              {selectedVariant?.calculated_price?.calculated_amount != null && (
+                <span className="text-[14px] font-semibold text-aura-forest">
+                  {convertToLocale({
+                    amount: subscriptionAmount(
+                      selectedVariant.calculated_price.calculated_amount
+                    ),
+                    currency_code:
+                      selectedVariant.calculated_price.currency_code || "usd",
+                  })}
+                  /mo
+                </span>
+              )}
+            </div>
+            <p className="mt-1 text-[13px] leading-5 text-aura-forest/65">
+              Every month we charge your card, ship a new box, and buy the
+              label. Cancel anytime from your account.
+            </p>
+          </button>
+          <button
+            type="button"
+            onClick={() => setPurchaseType("one_time")}
+            className={`rounded-2xl border px-4 py-3 text-left transition-colors ${
+              purchaseType === "one_time"
+                ? "border-aura-gold bg-aura-gold/15"
+                : "border-aura-forest/15 bg-white/40"
+            }`}
+            data-testid="one-time-option"
+          >
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="text-[12px] font-bold uppercase tracking-[0.14em] text-aura-forest">
+                One-time purchase
+              </span>
+              {selectedVariant?.calculated_price?.calculated_amount != null && (
+                <span className="text-[14px] font-semibold text-aura-forest">
+                  {convertToLocale({
+                    amount: selectedVariant.calculated_price.calculated_amount,
+                    currency_code:
+                      selectedVariant.calculated_price.currency_code || "usd",
+                  })}
+                </span>
+              )}
+            </div>
+          </button>
+        </div>
 
         <Button
           onClick={handleAddToCart}
@@ -180,6 +252,8 @@ export default function ProductActions({
             ? "Select variant"
             : !inStock || !isValidVariant
             ? "Out of stock"
+            : purchaseType === "subscription"
+            ? "Subscribe & save"
             : "Add to cart"}
         </Button>
         <MobileActions
@@ -192,6 +266,7 @@ export default function ProductActions({
           isAdding={isAdding}
           show={!inView}
           optionsDisabled={!!disabled || isAdding}
+          purchaseType={purchaseType}
         />
       </div>
     </>

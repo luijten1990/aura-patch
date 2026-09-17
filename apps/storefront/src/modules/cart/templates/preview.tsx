@@ -36,6 +36,9 @@ const ItemsPreviewTemplate = ({ cart }: ItemsTemplateProps) => {
                       item={item}
                       type="preview"
                       currencyCode={cart.currency_code}
+                      isSubscription={
+                        cart.metadata?.subscription_interval === "monthly"
+                      }
                     />
                   )
                 })

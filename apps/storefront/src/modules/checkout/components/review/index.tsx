@@ -6,6 +6,7 @@ import PaymentButton from "../payment-button"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { useSearchParams } from "next/navigation"
 import { HttpTypes } from "@medusajs/types"
+import { isSubscriptionCart } from "@lib/util/subscription"
 
 const Review = ({ cart }: { cart: HttpTypes.StoreCart }) => {
   const searchParams = useSearchParams()
@@ -57,6 +58,14 @@ const Review = ({ cart }: { cart: HttpTypes.StoreCart }) => {
                   Privacy Policy
                 </LocalizedClientLink>
                 .
+                {isSubscriptionCart(cart) && (
+                  <>
+                    {" "}
+                    Subscribe & Save charges your card monthly at 20% off,
+                    places a new order, and buys a shipping label until you
+                    cancel from your account.
+                  </>
+                )}
               </Text>
             </div>
           </div>

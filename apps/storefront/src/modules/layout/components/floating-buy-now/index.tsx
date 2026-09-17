@@ -31,7 +31,12 @@ export default function FloatingBuyNow({
     if (!variantId || disabled || status === "adding") return
     setStatus("adding")
     try {
-      await addToCart({ variantId, quantity: 1, countryCode: countryCode as string })
+      await addToCart({
+        variantId,
+        quantity: 1,
+        countryCode: countryCode as string,
+        purchaseType: "subscription",
+      })
       router.push(`/${countryCode}/checkout`)
       router.refresh()
     } catch {
@@ -50,7 +55,7 @@ export default function FloatingBuyNow({
         aria-live="polite"
       >
         <span className="text-[11px] font-bold uppercase tracking-[0.17em]">
-          {disabled ? "Out of stock" : status === "adding" ? "Preparing checkout…" : status === "error" ? "Please try again" : "Buy now"}
+          {disabled ? "Out of stock" : status === "adding" ? "Preparing checkout…" : status === "error" ? "Please try again" : "Subscribe & save"}
         </span>
         <span className="border-l border-current/25 pl-6 text-[15px] font-semibold">{price}</span>
       </button>

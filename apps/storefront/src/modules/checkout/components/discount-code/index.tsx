@@ -12,6 +12,7 @@ import React from "react"
 
 import { applyPromotions } from "@lib/data/cart"
 import { convertToLocale } from "@lib/util/money"
+import { SUBSCRIBE_CODE } from "@lib/util/subscription"
 import { HttpTypes } from "@medusajs/types"
 import Trash from "@modules/common/icons/trash"
 import ErrorMessage from "../error-message"
@@ -140,7 +141,9 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({
                         <Badge
                           color={promotion.is_automatic ? "green" : "grey"}
                         >
-                          {promotion.code}
+                          {promotion.code === SUBSCRIBE_CODE
+                            ? "Subscribe & Save 20%"
+                            : promotion.code}
                         </Badge>{" "}
                         (
                         {promotion.application_method?.value !== undefined &&
@@ -166,7 +169,8 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({
                         )} */}
                       </span>
                     </Text>
-                    {!promotion.is_automatic && (
+                    {!promotion.is_automatic &&
+                      promotion.code !== SUBSCRIBE_CODE && (
                       <button
                         className="flex items-center"
                         onClick={() => {

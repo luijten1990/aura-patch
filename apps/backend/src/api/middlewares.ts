@@ -1,4 +1,5 @@
 import {
+  authenticate,
   defineMiddlewares,
   validateAndTransformBody,
 } from "@medusajs/framework/http"
@@ -40,6 +41,10 @@ export default defineMiddlewares({
       matcher: "/store/welcome-offer",
       method: "POST",
       middlewares: [validateAndTransformBody(PostStoreWelcomeOfferSchema)],
+    },
+    {
+      matcher: "/store/customers/me/subscriptions*",
+      middlewares: [authenticate("customer", ["session", "bearer"])],
     },
     {
       matcher: "/store/*",

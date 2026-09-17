@@ -1,14 +1,20 @@
-import { clx } from "@modules/common/components/ui"
-
 import { getProductPrice } from "@lib/util/get-product-price"
+import { convertToLocale } from "@lib/util/money"
+import {
+  SUBSCRIBE_PERCENT,
+  subscriptionAmount,
+  type PurchaseType,
+} from "@lib/util/subscription"
 import { HttpTypes } from "@medusajs/types"
 
 export default function ProductPrice({
   product,
   variant,
+  purchaseType = "subscription",
 }: {
   product: HttpTypes.StoreProduct
   variant?: HttpTypes.StoreProductVariant
+  purchaseType?: PurchaseType
 }) {
   const { cheapestPrice, variantPrice } = getProductPrice({
     product,
@@ -21,37 +27,31 @@ export default function ProductPrice({
     return <div className="block w-28 h-7 rounded bg-aura-sage animate-pulse" />
   }
 
+  const isSubscribe = purchaseType === "subscription"
+  const displayAmount = isSubscribe
+    ? subscriptionAmount(selectedPrice.calculated_price_number)
+    : selectedPrice.calculated_price_number
+  const displayPrice = convertToLocale({
+    amount: displayAmount,
+    currency_code: selectedPrice.currency_code,
+  })
+
   return (
     <div className="flex flex-col text-aura-forest">
-      <span
-        className={clx("aura-display text-[30px]", {
-          "text-ui-fg-interactive": selectedPrice.price_type === "sale",
-        })}
-      >
+      <span className="aura-display text-[30px]">
         {!variant && "From "}
-        <span
-          data-testid="product-price"
-          data-value={selectedPrice.calculated_price_number}
-        >
-          {selectedPrice.calculated_price}
+        <span data-testid="product-price" data-value={displayAmount}>
+          {displayPrice}
         </span>
+        {isSubscribe && (
+          <span className="ml-1 text-[16px] font-sans font-medium">/mo</span>
+        )}
       </span>
-      {selectedPrice.price_type === "sale" && (
-        <>
-          <p>
-            <span className="text-ui-fg-subtle">Original: </span>
-            <span
-              className="line-through"
-              data-testid="original-product-price"
-              data-value={selectedPrice.original_price_number}
-            >
-              {selectedPrice.original_price}
-            </span>
-          </p>
-          <span className="text-ui-fg-interactive">
-            -{selectedPrice.percentage_diff}%
-          </span>
-        </>
+      {isSubscribe && (
+        <p className="mt-1 text-[13px] text-aura-forest/60">
+          <span className="line-through">{selectedPrice.calculated_price}</span>
+          {" "}Save {SUBSCRIBE_PERCENT}% with auto-renew
+        </p>
       )}
     </div>
   )

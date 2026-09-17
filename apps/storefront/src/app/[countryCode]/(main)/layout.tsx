@@ -12,6 +12,8 @@ import WelcomePopup from "@modules/layout/components/welcome-popup"
 import FloatingBuyNow from "@modules/layout/components/floating-buy-now"
 import { listProducts } from "@lib/data/products"
 import { getProductPrice } from "@lib/util/get-product-price"
+import { convertToLocale } from "@lib/util/money"
+import { subscriptionAmount } from "@lib/util/subscription"
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
@@ -27,7 +29,15 @@ export default async function PageLayout(props: { children: React.ReactNode; par
   })
   const auraProduct = featuredResponse.products[0]
   const auraVariant = auraProduct?.variants?.[0]
-  const auraPrice = auraProduct ? getProductPrice({ product: auraProduct }).cheapestPrice?.calculated_price : undefined
+  const auraCheapest = auraProduct
+    ? getProductPrice({ product: auraProduct }).cheapestPrice
+    : undefined
+  const auraPrice = auraCheapest
+    ? `${convertToLocale({
+        amount: subscriptionAmount(auraCheapest.calculated_price_number),
+        currency_code: auraCheapest.currency_code,
+      })}/mo`
+    : undefined
   const auraInStock = !!auraVariant && (
     !auraVariant.manage_inventory ||
     !!auraVariant.allow_backorder ||

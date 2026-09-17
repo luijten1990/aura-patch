@@ -15,6 +15,13 @@ import {
 } from "./cookies"
 import { getRegion } from "./regions"
 import { getLocale } from "./locale-actions"
+import {
+  isSubscriptionCart,
+  SUBSCRIBE_CODE,
+  SUBSCRIPTION_INTERVAL,
+  SUBSCRIPTION_PERIOD,
+  type PurchaseType,
+} from "@lib/util/subscription"
 
 /**
  * Retrieves a cart by its ID. If no ID is provided, it will use the cart ID from the cookies.
@@ -24,7 +31,7 @@ import { getLocale } from "./locale-actions"
 export async function retrieveCart(cartId?: string, fields?: string) {
   const id = cartId || (await getCartId())
   fields ??=
-    "*items, *region, *items.product, *items.variant, *items.thumbnail, *items.metadata, +items.total, *promotions, +shipping_methods.name"
+    "metadata, *items, *region, *items.product, *items.variant, *items.thumbnail, *items.metadata, +items.total, *promotions, +shipping_methods.name"
 
   if (!id) {
     return null
@@ -118,10 +125,12 @@ export async function addToCart({
   variantId,
   quantity,
   countryCode,
+  purchaseType = "subscription",
 }: {
   variantId: string
   quantity: number
   countryCode: string
+  purchaseType?: PurchaseType
 }) {
   if (!variantId) {
     throw new Error("Missing variant ID when adding to cart")
@@ -143,6 +152,9 @@ export async function addToCart({
       {
         variant_id: variantId,
         quantity,
+        metadata: {
+          purchase_type: purchaseType,
+        },
       },
       {},
       headers
@@ -155,6 +167,46 @@ export async function addToCart({
       revalidateTag(fulfillmentCacheTag)
     })
     .catch(medusaError)
+
+  await syncCartPurchaseType(purchaseType)
+}
+
+async function syncCartPurchaseType(purchaseType: PurchaseType) {
+  const cart = await retrieveCart()
+  if (!cart) {
+    return
+  }
+
+  const subscribe = purchaseType === "subscription"
+  const existingCodes = (cart.promotions || [])
+    .map((promotion) => promotion.code)
+    .filter((code): code is string => Boolean(code))
+    .filter((code) => code !== SUBSCRIBE_CODE)
+
+  try {
+    await updateCart({
+      metadata: {
+        ...(cart.metadata || {}),
+        subscription_interval: subscribe ? SUBSCRIPTION_INTERVAL : "",
+        subscription_period: subscribe ? SUBSCRIPTION_PERIOD : 0,
+      },
+      promo_codes: subscribe
+        ? [...existingCodes.filter((code) => code !== "ILOVEAURA"), SUBSCRIBE_CODE]
+        : existingCodes,
+    })
+  } catch {
+    await updateCart({
+      metadata: {
+        ...(cart.metadata || {}),
+        subscription_interval: subscribe ? SUBSCRIPTION_INTERVAL : "",
+        subscription_period: subscribe ? SUBSCRIPTION_PERIOD : 0,
+      },
+    })
+  }
+}
+
+export async function setCartPurchaseType(purchaseType: PurchaseType) {
+  await syncCartPurchaseType(purchaseType)
 }
 
 export async function updateLineItem({
@@ -257,8 +309,18 @@ export async function initiatePaymentSession(
     ...(await getAuthHeaders()),
   }
 
+  const payload = isSubscriptionCart(cart)
+    ? {
+        ...data,
+        data: {
+          ...(data.data || {}),
+          setup_future_usage: "off_session",
+        },
+      }
+    : data
+
   return sdk.store.payment
-    .initiatePaymentSession(cart, data, {}, headers)
+    .initiatePaymentSession(cart, payload, {}, headers)
     .then(async (resp) => {
       const cartCacheTag = await getCacheTag("carts")
       revalidateTag(cartCacheTag)
@@ -424,27 +486,46 @@ export async function placeOrder(cartId?: string) {
     ...(await getAuthHeaders()),
   }
 
-  const cartRes = await sdk.store.cart
-    .complete(id, {}, headers)
-    .then(async (cartRes) => {
+  const cart = await retrieveCart(id)
+  const completePath = isSubscriptionCart(cart)
+    ? `/store/carts/${id}/subscribe`
+    : null
+
+  const cartRes = (
+    completePath
+      ? sdk.client.fetch<{
+          type: "cart"
+          cart: HttpTypes.StoreCart
+        } | {
+          type: "order"
+          order: HttpTypes.StoreOrder
+        }>(completePath, {
+          method: "POST",
+          headers,
+        })
+      : sdk.store.cart.complete(id, {}, headers)
+  )
+    .then(async (response) => {
       const cartCacheTag = await getCacheTag("carts")
       revalidateTag(cartCacheTag)
-      return cartRes
+      return response
     })
     .catch(medusaError)
 
-  if (cartRes?.type === "order") {
+  const result = await cartRes
+
+  if (result?.type === "order") {
     const countryCode =
-      cartRes.order.shipping_address?.country_code?.toLowerCase()
+      result.order.shipping_address?.country_code?.toLowerCase()
 
     const orderCacheTag = await getCacheTag("orders")
     revalidateTag(orderCacheTag)
 
     removeCartId()
-    redirect(`/${countryCode}/order/${cartRes?.order.id}/confirmed`)
+    redirect(`/${countryCode}/order/${result.order.id}/confirmed`)
   }
 
-  return cartRes.cart
+  return result.cart
 }
 
 /**

@@ -28,6 +28,13 @@ const sections = [
     ],
   },
   {
+    title: "Subscriptions",
+    copy: [
+      "If you choose Subscribe & Save, you authorize Aura Patch to charge the payment method used at checkout for the discounted subscription price every month until you cancel. Each month we place a new paid order and purchase a shipping label for the same items and address. The 20% subscription discount applies to the product price and does not stack with the ILOVEAURA welcome offer.",
+      "You can cancel from your account at any time. Cancellation stops future renewals; orders already placed or already in fulfillment are not reversed by a cancellation. Shipping, taxes, and duties may still apply to each renewal at the rates in effect for that shipment.",
+    ],
+  },
+  {
     title: "Health and wellness information",
     copy: [
       "Aura Patch products and website content are intended for general wellness and informational purposes only. They are not medical advice and are not intended to diagnose, treat, cure, or prevent any disease. Statements about our products have not been evaluated by the U.S. Food and Drug Administration unless expressly stated otherwise.",

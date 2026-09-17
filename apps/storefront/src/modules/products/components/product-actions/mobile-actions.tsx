@@ -7,6 +7,8 @@ import ChevronDown from "@modules/common/icons/chevron-down"
 import X from "@modules/common/icons/x"
 
 import { getProductPrice } from "@lib/util/get-product-price"
+import { convertToLocale } from "@lib/util/money"
+import { subscriptionAmount, type PurchaseType } from "@lib/util/subscription"
 import OptionSelect from "./option-select"
 import { HttpTypes } from "@medusajs/types"
 import { isSimpleProduct } from "@lib/util/product"
@@ -21,6 +23,7 @@ type MobileActionsProps = {
   isAdding?: boolean
   show: boolean
   optionsDisabled: boolean
+  purchaseType?: PurchaseType
 }
 
 const MobileActions: React.FC<MobileActionsProps> = ({
@@ -33,6 +36,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
   isAdding,
   show,
   optionsDisabled,
+  purchaseType = "subscription",
 }) => {
   const { state, open, close } = useToggleState()
 
@@ -91,7 +95,19 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                         selectedPrice.price_type === "sale",
                     })}
                   >
-                    {selectedPrice.calculated_price}
+                  {purchaseType === "subscription" ? (
+                    <span>
+                      {convertToLocale({
+                        amount: subscriptionAmount(
+                          selectedPrice.calculated_price_number
+                        ),
+                        currency_code: selectedPrice.currency_code,
+                      })}
+                      /mo
+                    </span>
+                  ) : (
+                    selectedPrice.calculated_price
+                  )}
                   </span>
                 </div>
               ) : (
@@ -127,6 +143,8 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                   ? "Select variant"
                   : !inStock
                   ? "Out of stock"
+                  : purchaseType === "subscription"
+                  ? "Subscribe"
                   : "Add to cart"}
               </Button>
             </div>

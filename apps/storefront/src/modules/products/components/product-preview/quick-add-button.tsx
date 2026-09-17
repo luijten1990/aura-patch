@@ -24,6 +24,7 @@ export default function QuickAddButton({
         variantId,
         quantity: 1,
         countryCode: countryCode as string,
+        purchaseType: "subscription",
       })
       setStatus("added")
       router.refresh()
