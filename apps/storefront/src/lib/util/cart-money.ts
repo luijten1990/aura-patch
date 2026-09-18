@@ -1,4 +1,17 @@
 import { HttpTypes } from "@medusajs/types"
+import {
+  isSubscriptionCart,
+  SUBSCRIBE_CODE,
+  subscriptionAmount,
+} from "@lib/util/subscription"
+
+type MoneyItem = {
+  total?: number | null
+  original_total?: number | null
+  unit_price?: number | null
+  quantity?: number
+  metadata?: Record<string, unknown> | null
+}
 
 type MoneyCart = {
   currency_code?: string | null
@@ -8,35 +21,37 @@ type MoneyCart = {
   shipping_subtotal?: number | null
   discount_subtotal?: number | null
   tax_total?: number | null
+  metadata?: Record<string, unknown> | null
+  promotions?: { code?: string | null }[] | null
   region?: { currency_code?: string | null } | null
-  items?: {
-    total?: number | null
-    unit_price?: number | null
-    quantity?: number
-  }[] | null
+  items?: MoneyItem[] | null
 }
 
 export const cartCurrencyCode = (cart?: MoneyCart | null) =>
   cart?.currency_code || cart?.region?.currency_code || "usd"
 
 export const lineItemAmount = (
-  item?: {
-    total?: number | null
-    unit_price?: number | null
-    quantity?: number
-  } | null
+  item?: MoneyItem | null,
+  subscribeCart?: boolean
 ) => {
-  const fallback = (Number(item?.unit_price) || 0) * (item?.quantity || 1)
+  const original = (Number(item?.unit_price) || 0) * (item?.quantity || 1)
+  const apiTotal =
+    item?.total != null && item.total > 0 ? item.total : original
+  const itemIsSubscribe =
+    subscribeCart || item?.metadata?.purchase_type === "subscription"
 
-  if (item?.total != null && item.total > 0) {
-    return item.total
+  if (itemIsSubscribe && original > 0) {
+    return Math.min(apiTotal, subscriptionAmount(original))
   }
 
-  return fallback
+  return apiTotal || original
 }
 
 export const cartItemsAmount = (cart?: MoneyCart | null) =>
-  (cart?.items || []).reduce((sum, item) => sum + lineItemAmount(item), 0)
+  (cart?.items || []).reduce(
+    (sum, item) => sum + lineItemAmount(item, isSubscriptionCart(cart)),
+    0
+  )
 
 export const cartNeedsTotalsRefresh = (cart?: MoneyCart | null) => {
   const pricedItems = cartItemsAmount(cart)
@@ -50,19 +65,43 @@ export const cartNeedsTotalsRefresh = (cart?: MoneyCart | null) => {
 }
 
 export const withCartMoney = <T extends MoneyCart>(cart: T) => {
+  const subscribe = isSubscriptionCart(cart)
+  const hasSubscribePromo = Boolean(
+    cart.promotions?.some((promotion) => promotion.code === SUBSCRIBE_CODE)
+  )
+  const itemsAmount = cartItemsAmount(cart)
+  const originalItems = (cart.items || []).reduce(
+    (sum, item) =>
+      sum + (Number(item.unit_price) || 0) * (item.quantity || 1),
+    0
+  )
   const item_subtotal =
-    cart.item_subtotal && cart.item_subtotal > 0
+    subscribe || hasSubscribePromo
+      ? itemsAmount
+      : cart.item_subtotal && cart.item_subtotal > 0
       ? cart.item_subtotal
       : cart.subtotal && cart.subtotal > 0
       ? cart.subtotal
-      : cartItemsAmount(cart)
-  const total = cart.total && cart.total > 0 ? cart.total : item_subtotal
+      : itemsAmount
+  const discount_subtotal = Math.max(
+    Number(cart.discount_subtotal) || 0,
+    originalItems - item_subtotal
+  )
+  const shipping = Number(cart.shipping_subtotal) || 0
+  const tax = Number(cart.tax_total) || 0
+  const total =
+    subscribe || hasSubscribePromo
+      ? item_subtotal + shipping + tax
+      : cart.total && cart.total > 0
+      ? cart.total
+      : item_subtotal + shipping + tax
 
   return {
     ...cart,
     currency_code: cartCurrencyCode(cart),
     item_subtotal,
-    subtotal: cart.subtotal && cart.subtotal > 0 ? cart.subtotal : item_subtotal,
+    subtotal: item_subtotal,
+    discount_subtotal,
     total,
   } as T & HttpTypes.StoreCart
 }

@@ -4,7 +4,6 @@ import { sdk } from "@lib/config"
 import medusaError from "@lib/util/medusa-error"
 import { HttpTypes } from "@medusajs/types"
 import { revalidateTag } from "next/cache"
-import { after } from "next/server"
 import { redirect } from "next/navigation"
 import {
   getAuthHeaders,
@@ -32,32 +31,12 @@ import {
 const CART_FIELDS =
   "metadata, currency_code, *items, *region, *items.product, *items.variant, *items.thumbnail, *items.metadata, +items.total, +items.subtotal, +items.original_total, *promotions, +shipping_methods.name, +total, +subtotal, +item_subtotal, +shipping_subtotal, +discount_subtotal, +tax_total"
 
-const cartWriteLocks = new Map<string, Promise<void>>()
-
-const runSerializedCartWrite = async (
-  cartId: string,
-  write: () => Promise<void>
-) => {
-  const previous = cartWriteLocks.get(cartId) ?? Promise.resolve()
-  let release: () => void = () => undefined
-  const current = new Promise<void>((resolve) => {
-    release = resolve
-  })
-  cartWriteLocks.set(
-    cartId,
-    previous.catch(() => undefined).then(() => current)
-  )
-
-  await previous.catch(() => undefined)
-
-  try {
-    await write()
-  } finally {
-    release()
-    if (cartWriteLocks.get(cartId) === current) {
-      cartWriteLocks.delete(cartId)
-    }
+const revalidateByTag = async (tag: string) => {
+  const cacheTag = await getCacheTag(tag)
+  if (!cacheTag) {
+    return
   }
+  revalidateTag(cacheTag)
 }
 
 export async function retrieveCart(cartId?: string, fields?: string) {
@@ -116,15 +95,12 @@ export async function getOrSetCart(countryCode: string) {
     cart = cartResp.cart
 
     await setCartId(cart.id)
-
-    const cartCacheTag = await getCacheTag("carts")
-    revalidateTag(cartCacheTag)
+    await revalidateByTag("carts")
   }
 
   if (cart && cart?.region_id !== region.id) {
     await sdk.store.cart.update(cart.id, { region_id: region.id }, {}, headers)
-    const cartCacheTag = await getCacheTag("carts")
-    revalidateTag(cartCacheTag)
+    await revalidateByTag("carts")
   }
 
   return cart
@@ -144,12 +120,8 @@ export async function updateCart(data: HttpTypes.StoreUpdateCart) {
   return sdk.store.cart
     .update(cartId, data, {}, headers)
     .then(async ({ cart }: { cart: HttpTypes.StoreCart }) => {
-      const cartCacheTag = await getCacheTag("carts")
-      revalidateTag(cartCacheTag)
-
-      const fulfillmentCacheTag = await getCacheTag("fulfillment")
-      revalidateTag(fulfillmentCacheTag)
-
+      await revalidateByTag("carts")
+      await revalidateByTag("fulfillment")
       return cart
     })
     .catch(medusaError)
@@ -176,85 +148,28 @@ export async function addToCart({
     throw new Error("Error retrieving or creating cart")
   }
 
-  await runSerializedCartWrite(cart.id, async () => {
-    const currentCart = await retrieveCart(cart.id, CART_FIELDS)
-    const existingItem = currentCart?.items?.find(
-      (item) => item.variant_id === variantId
-    )
-
-    const headers = {
-      ...(await getAuthHeaders()),
-    }
-
-    if (existingItem?.id) {
-      const nextQuantity =
-        purchaseType === "subscription"
-          ? quantity
-          : existingItem.quantity + quantity
-
-      if (existingItem.quantity !== nextQuantity) {
-        await sdk.store.cart
-          .updateLineItem(
-            cart.id,
-            existingItem.id,
-            { quantity: nextQuantity },
-            {},
-            headers
-          )
-          .catch(medusaError)
-      }
-    } else {
-      await sdk.store.cart
-        .createLineItem(
-          cart.id,
-          {
-            variant_id: variantId,
-            quantity,
-            metadata: {
-              purchase_type: purchaseType,
-            },
-          },
-          {},
-          headers
-        )
-        .catch(medusaError)
-    }
-
-    if (purchaseType === "subscription") {
-      const syncedCart = await retrieveCart(cart.id, "id,*items")
-      const syncedItem = syncedCart?.items?.find(
-        (item) => item.variant_id === variantId
-      )
-
-      if (syncedItem?.id && syncedItem.quantity !== quantity) {
-        await sdk.store.cart
-          .updateLineItem(
-            cart.id,
-            syncedItem.id,
-            { quantity },
-            {},
-            headers
-          )
-          .catch(medusaError)
-      }
-    }
-
-    const cartCacheTag = await getCacheTag("carts")
-    revalidateTag(cartCacheTag)
-
-    const fulfillmentCacheTag = await getCacheTag("fulfillment")
-    revalidateTag(fulfillmentCacheTag)
-  })
-
-  // Metadata and SUBSCRIBE20 can wait. Awaiting them here also
-  // recalculates live shipping and can freeze the button for 20s+.
-  try {
-    after(() => {
-      void syncCartPurchaseType(purchaseType).catch(() => undefined)
-    })
-  } catch {
-    void syncCartPurchaseType(purchaseType).catch(() => undefined)
+  const headers = {
+    ...(await getAuthHeaders()),
   }
+
+  await sdk.store.cart
+    .createLineItem(
+      cart.id,
+      {
+        variant_id: variantId,
+        quantity,
+        metadata: {
+          purchase_type: purchaseType,
+        },
+      },
+      {},
+      headers
+    )
+    .catch(medusaError)
+
+  await revalidateByTag("carts")
+  await revalidateByTag("fulfillment")
+  void syncCartPurchaseType(purchaseType).catch(() => undefined)
 }
 
 async function syncCartPurchaseType(purchaseType: PurchaseType) {

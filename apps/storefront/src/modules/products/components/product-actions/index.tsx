@@ -42,12 +42,25 @@ export default function ProductActions({
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  const [options, setOptions] = useState<Record<string, string | undefined>>({})
   const [isAdding, setIsAdding] = useState(false)
   const [addError, setAddError] = useState<string | null>(null)
   const [purchaseType, setPurchaseType] = useState<PurchaseType>("subscription")
   const addingRef = useRef(false)
-  const countryCode = useParams().countryCode as string
+  const params = useParams()
+  const countryCode = (
+    Array.isArray(params.countryCode)
+      ? params.countryCode[0]
+      : params.countryCode
+  ) as string
+
+  const [options, setOptions] = useState<Record<string, string | undefined>>(
+    () => {
+      if (product.variants?.length === 1) {
+        return optionsAsKeymap(product.variants[0].options) ?? {}
+      }
+      return {}
+    }
+  )
 
   // If there is only 1 variant, preselect the options
   useEffect(() => {
@@ -62,11 +75,20 @@ export default function ProductActions({
       return
     }
 
-    return product.variants.find((v) => {
+    const matched = product.variants.find((v) => {
       const variantOptions = optionsAsKeymap(v.options)
       return isEqual(variantOptions, options)
     })
-  }, [product.variants, options])
+    if (matched) {
+      return matched
+    }
+
+    const variantFromUrl = searchParams.get("v_id")
+    return (
+      product.variants.find((variant) => variant.id === variantFromUrl) ||
+      product.variants[0]
+    )
+  }, [product.variants, options, searchParams])
 
   // update the options when a variant is selected
   const setOptionValue = (optionId: string, value: string) => {
@@ -78,6 +100,9 @@ export default function ProductActions({
 
   //check if the selected options produce a valid variant
   const isValidVariant = useMemo(() => {
+    if ((product.variants?.length ?? 0) <= 1) {
+      return true
+    }
     return product.variants?.some((v) => {
       const variantOptions = optionsAsKeymap(v.options)
       return isEqual(variantOptions, options)
@@ -130,30 +155,36 @@ export default function ProductActions({
   const inView = useIntersection(actionsRef, "0px")
 
   // add the selected variant to the cart
-  const handleAddToCart = async () => {
-    if (!selectedVariant?.id || addingRef.current) {
+  const handleAddToCart = async (nextPurchaseType: PurchaseType = purchaseType) => {
+    const variantId = selectedVariant?.id || product.variants?.[0]?.id
+    if (!variantId || addingRef.current) {
       return
     }
 
     addingRef.current = true
+    setPurchaseType(nextPurchaseType)
     setAddError(null)
     setIsAdding(true)
 
     try {
       await addToCart({
-        variantId: selectedVariant.id,
+        variantId,
         quantity: 1,
-        countryCode,
-        purchaseType,
+        countryCode: countryCode || "us",
+        purchaseType: nextPurchaseType,
       })
-      router.push(`/${countryCode}/cart`)
+      router.push(`/${countryCode || "us"}/cart`)
       router.refresh()
     } catch (error) {
       addingRef.current = false
-      setAddError(
+      const message =
         error instanceof Error && error.message
           ? error.message
           : "Could not add Aura Patch to the cart. Please try again."
+      setAddError(
+        message.toLowerCase().includes("server components")
+          ? "Could not add Aura Patch to the cart. Please try again."
+          : message
       )
       setIsAdding(false)
     }
@@ -194,7 +225,9 @@ export default function ProductActions({
           <button
             type="button"
             disabled={isAdding}
-            onClick={() => setPurchaseType("subscription")}
+            onClick={() => {
+              void handleAddToCart("subscription")
+            }}
             className={`rounded-2xl border px-4 py-3 text-left transition-colors ${
               purchaseType === "subscription"
                 ? "border-aura-gold bg-aura-gold/15"
@@ -226,7 +259,9 @@ export default function ProductActions({
           </button>
           <button
             type="button"
-            onClick={() => setPurchaseType("one_time")}
+            onClick={() => {
+              void handleAddToCart("one_time")
+            }}
             className={`rounded-2xl border px-4 py-3 text-left transition-colors ${
               purchaseType === "one_time"
                 ? "border-aura-gold bg-aura-gold/15"
@@ -252,7 +287,9 @@ export default function ProductActions({
         </div>
 
         <Button
-          onClick={handleAddToCart}
+          onClick={() => {
+            void handleAddToCart()
+          }}
           disabled={
             !inStock ||
             !selectedVariant ||
