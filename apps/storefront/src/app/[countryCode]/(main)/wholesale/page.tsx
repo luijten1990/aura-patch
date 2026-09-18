@@ -44,7 +44,7 @@ export default function WholesalePage() {
         <div className="relative mx-auto aspect-[4/5] w-full max-w-[500px] overflow-hidden rounded-[2rem] bg-aura-sage/55">
           <div className="absolute inset-[12%] rounded-full bg-aura-sage blur-3xl" />
           <Image
-            src="/images/aura-patch-front-original.jpeg"
+            src="/images/aura-patch-front-original.webp"
             alt="Aura Patch 30-day wellness pouch"
             fill
             priority

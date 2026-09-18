@@ -35,7 +35,7 @@ const campaignTiles = [
   ["/images/ambassador-daily-ritual.webp", "Wellness", "in real life"],
   ["/images/ambassador-apply.webp", "Share your ritual", "in your own voice"],
   ["/images/ambassador-create.webp", "Create with intention", "earn as you inspire"],
-  ["/images/aura-patch-front-original.jpeg", "Join the Aura community", "today"],
+  ["/images/aura-patch-front-original.webp", "Join the Aura community", "today"],
 ]
 
 const programFaqs = [
@@ -69,7 +69,7 @@ export default function AmbassadorsPage() {
         </div>
         <div className="relative mx-auto aspect-[4/5] w-full max-w-[510px] overflow-hidden rounded-[2rem]">
           <Image
-            src="/images/aura-patch-how-it-works.jpeg"
+            src="/images/aura-patch-how-it-works.webp"
             alt="Woman wearing an Aura wellness patch"
             fill
             priority

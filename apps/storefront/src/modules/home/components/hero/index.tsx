@@ -51,7 +51,7 @@ const Hero = ({ product }: HeroProps) => {
             <LocalizedClientLink href={productHref} className="group relative block">
               <div className="relative aspect-[4/5] overflow-hidden">
                 <Image
-                  src="/images/aura-patch-front-original.jpeg"
+                  src="/images/aura-patch-front-original.webp"
                   alt="Aura Patch 30-day pouch"
                   fill
                   priority
@@ -103,7 +103,7 @@ const Hero = ({ product }: HeroProps) => {
           </ol>
           <div className="relative min-h-[480px] overflow-hidden rounded-[2rem] small:min-h-[580px]">
             <Image
-              src="/images/aura-patch-how-it-works.jpeg"
+              src="/images/aura-patch-how-it-works.webp"
               alt="Woman applying an Aura Patch to her upper arm"
               fill
               className="object-cover object-center"

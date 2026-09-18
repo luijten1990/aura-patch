@@ -32,8 +32,8 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   const displayImages =
     product.handle === "aura-patch"
       ? [
-          { id: "aura-patch-front", url: "/images/aura-patch-front-original.jpeg", rank: 0 },
-          { id: "aura-patch-back", url: "/images/aura-patch-back-original.jpeg", rank: 1 },
+          { id: "aura-patch-front", url: "/images/aura-patch-front-original.webp", rank: 0 },
+          { id: "aura-patch-back", url: "/images/aura-patch-back-original.webp", rank: 1 },
         ]
       : images
 

@@ -7,7 +7,7 @@ const products = [
     categories: "Immune · Defense · Wellness",
     phrase: "Your Daily Defense.",
     description: "Aura™ is a daily optimization patch designed to support immune resilience, antioxidant defenses, and whole-body vitality. Combining stabilized allicin, essential nutrients, botanicals, adaptogens, and probiotics, Aura™ provides comprehensive support for maintaining your body’s natural defenses and staying at your best.",
-    image: "/images/aura-patch-front-original.jpeg",
+    image: "/images/aura-patch-front-original.webp",
     status: "Available now",
     ingredients: ["Stabilized Allicin", "Organic Ashwagandha", "Vitamin C", "Zinc Picolinate", "Kale", "Vitamin A", "Ginger", "Vitamin D3 + K2", "Rhodiola", "BCAA + EAA Blend", "Holy Basil", "NAC", "Raspberry Ketones", "Ba Ja Tian", "Prunella Vulgaris", "Lactobacillus casei", "Lactobacillus paracasei", "Bifidobacterium longum", "Lemon Powder"],
   },

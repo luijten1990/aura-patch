@@ -43,7 +43,7 @@ export default async function ProductPreview({
           <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-aura-sage/45">
             <div className="absolute inset-[12%] rounded-full bg-aura-sage/75 blur-3xl" />
             <Image
-              src="/images/aura-patch-front-original.jpeg"
+              src="/images/aura-patch-front-original.webp"
               alt="Aura Patch 30-day pouch"
               fill
               className="object-contain p-5 mix-blend-multiply transition-transform duration-700 group-hover:scale-[1.025] small:p-7"
