@@ -26,8 +26,8 @@ export class EasyshipFulfillmentService extends AbstractFulfillmentProviderServi
     ]
   }
   async validateOption() { return true }
-  async canCalculate(data?: Record<string, unknown>) {
-    return this.optionId(this.asOptionData(data)) === INTERNATIONAL_OPTION_ID
+  async canCalculate(data: Parameters<AbstractFulfillmentProviderService["canCalculate"]>[0]) {
+    return this.optionId(this.asOptionData(data as unknown as Record<string, unknown>)) === INTERNATIONAL_OPTION_ID
   }
 
   async validateFulfillmentData(optionData: Record<string, unknown>, data: Record<string, unknown>, context: ValidateFulfillmentDataContext) {

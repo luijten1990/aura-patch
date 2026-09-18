@@ -183,25 +183,23 @@ async function syncCartPurchaseType(purchaseType: PurchaseType) {
     .filter((code): code is string => Boolean(code))
     .filter((code) => code !== SUBSCRIBE_CODE)
 
+  const metadata = {
+    ...(cart.metadata || {}),
+    subscription_interval: subscribe ? SUBSCRIPTION_INTERVAL : "",
+    subscription_period: subscribe ? SUBSCRIPTION_PERIOD : 0,
+  }
+
+  await updateCart({ metadata })
+
   try {
-    await updateCart({
-      metadata: {
-        ...(cart.metadata || {}),
-        subscription_interval: subscribe ? SUBSCRIPTION_INTERVAL : "",
-        subscription_period: subscribe ? SUBSCRIPTION_PERIOD : 0,
-      },
-      promo_codes: subscribe
+    await applyPromotions(
+      subscribe
         ? [...existingCodes.filter((code) => code !== "ILOVEAURA"), SUBSCRIBE_CODE]
-        : existingCodes,
-    })
+        : existingCodes
+    )
   } catch {
-    await updateCart({
-      metadata: {
-        ...(cart.metadata || {}),
-        subscription_interval: subscribe ? SUBSCRIPTION_INTERVAL : "",
-        subscription_period: subscribe ? SUBSCRIPTION_PERIOD : 0,
-      },
-    })
+    // SUBSCRIBE20 is created by a backend job after deploy. Keep the
+    // subscription cart even if the code is not live yet.
   }
 }
 

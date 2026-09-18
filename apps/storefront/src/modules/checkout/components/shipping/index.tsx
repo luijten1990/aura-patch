@@ -267,17 +267,11 @@ const Shipping: React.FC<ShippingProps> = ({
                     </span>
                   )}
                   {_shippingMethods?.map((option) => {
-                    const isDisabled =
-                      option.price_type === "calculated" &&
-                      !isLoadingPrices &&
-                      typeof calculatedPricesMap[option.id] !== "number"
-
                     return (
                       <Radio
                         key={option.id}
                         value={option.id}
                         data-testid="delivery-option-radio"
-                        disabled={isDisabled}
                         className={clx(
                           "mb-2 flex cursor-pointer items-center justify-between rounded-[1.25rem] border bg-[#f5efe4] px-6 py-4 text-[14px] text-aura-forest",
                           {
@@ -285,8 +279,6 @@ const Shipping: React.FC<ShippingProps> = ({
                               option.id === shippingMethodId,
                             "border-aura-forest/15 hover:border-aura-forest/40":
                               option.id !== shippingMethodId,
-                            "cursor-not-allowed opacity-50 hover:border-aura-forest/15":
-                              isDisabled,
                           }
                         )}
                       >
