@@ -1,6 +1,5 @@
 "use client"
 import { Radio, RadioGroup } from "@headlessui/react"
-import { setShippingMethod } from "@lib/data/cart"
 import { calculatePriceForShippingOption } from "@lib/data/fulfillment"
 import { convertToLocale } from "@lib/util/money"
 import { CheckCircleSolid, Loader } from "@medusajs/icons"
@@ -140,14 +139,26 @@ const Shipping: React.FC<ShippingProps> = ({
     })
 
     try {
-      const result = await setShippingMethod({
-        cartId: cart.id,
-        shippingMethodId: id,
+      const response = await fetch("/api/cart/shipping-method", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          cartId: cart.id,
+          shippingMethodId: id,
+        }),
       })
+      const result = (await response.json().catch(() => null)) as
+        | { ok: true }
+        | { ok: false; error?: string }
+        | null
 
-      if (!result.ok) {
+      if (!response.ok || !result?.ok) {
         setShippingMethodId(currentId)
-        setError(result.error)
+        setError(
+          result && "error" in result && result.error
+            ? result.error
+            : "Unable to save that shipping option. Please try again."
+        )
         return
       }
 
