@@ -11,13 +11,14 @@ export const metadata: Metadata = {
 }
 
 export default async function Checkout() {
-  const cart = await retrieveCart()
+  const [cart, customer] = await Promise.all([
+    retrieveCart(),
+    retrieveCustomer(),
+  ])
 
   if (!cart) {
     return notFound()
   }
-
-  const customer = await retrieveCustomer()
 
   return (
     <div className="content-container py-12 small:py-20">

@@ -1,59 +1,43 @@
 import { Metadata } from "next"
+import { Suspense } from "react"
 
-import { retrieveCart } from "@lib/data/cart"
 import { retrieveCustomer } from "@lib/data/customer"
 import { getBaseURL } from "@lib/util/env"
-import CartMismatchBanner from "@modules/layout/components/cart-mismatch-banner"
+import CartMismatchBannerLoader from "@modules/layout/components/cart-mismatch-banner/loader"
 import Footer from "@modules/layout/templates/footer"
 import Nav from "@modules/layout/templates/nav"
 import WelcomePopup from "@modules/layout/components/welcome-popup"
-import FloatingBuyNow from "@modules/layout/components/floating-buy-now"
-import { listProducts } from "@lib/data/products"
-import { getProductPrice } from "@lib/util/get-product-price"
-import { convertToLocale } from "@lib/util/money"
-import { subscriptionAmount } from "@lib/util/subscription"
+import FloatingBuyNowLoader from "@modules/layout/components/floating-buy-now/loader"
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
 }
 
+async function LoggedInBanners() {
+  const customer = await retrieveCustomer()
+
+  if (!customer) {
+    return null
+  }
+
+  return <CartMismatchBannerLoader customer={customer} />
+}
+
 export default async function PageLayout(props: { children: React.ReactNode; params: Promise<{ countryCode: string }> }) {
   const { countryCode } = await props.params
-  const [customer, cart, featuredResponse] = await Promise.all([
-    retrieveCustomer(),
-    retrieveCart(),
-    listProducts({
-      countryCode,
-      queryParams: { handle: "aura-patch", limit: 1 },
-    }).then(({ response }) => response),
-  ])
-  const auraProduct = featuredResponse.products[0]
-  const auraVariant = auraProduct?.variants?.[0]
-  const auraCheapest = auraProduct
-    ? getProductPrice({ product: auraProduct }).cheapestPrice
-    : undefined
-  const auraPrice = auraCheapest
-    ? `${convertToLocale({
-        amount: subscriptionAmount(auraCheapest.calculated_price_number),
-        currency_code: auraCheapest.currency_code,
-      })}/mo`
-    : undefined
-  const auraInStock = !!auraVariant && (
-    !auraVariant.manage_inventory ||
-    !!auraVariant.allow_backorder ||
-    (auraVariant.inventory_quantity ?? 0) > 0
-  )
 
   return (
     <>
       <Nav />
-      {customer && cart && (
-        <CartMismatchBanner customer={customer} cart={cart} />
-      )}
+      <Suspense fallback={null}>
+        <LoggedInBanners />
+      </Suspense>
       <WelcomePopup />
       {props.children}
       <Footer />
-      <FloatingBuyNow variantId={auraVariant?.id} price={auraPrice || "$49.99"} disabled={!auraInStock} />
+      <Suspense fallback={null}>
+        <FloatingBuyNowLoader countryCode={countryCode} />
+      </Suspense>
     </>
   )
 }

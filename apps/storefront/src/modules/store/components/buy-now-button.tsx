@@ -1,6 +1,6 @@
 "use client"
 
-import { addToCart } from "@lib/data/cart"
+import { addLineItemRequest } from "@lib/util/cart-client"
 import { useParams, useRouter } from "next/navigation"
 import { useRef, useState } from "react"
 
@@ -22,14 +22,13 @@ export default function BuyNowButton({
     addingRef.current = true
     setStatus("adding")
     try {
-      await addToCart({
+      await addLineItemRequest({
         variantId,
         quantity: 1,
         countryCode: countryCode as string,
         purchaseType: "subscription",
       })
-      router.push(`/${countryCode}/checkout`)
-      router.refresh()
+      router.push(`/${countryCode}/checkout?step=address`)
     } catch {
       addingRef.current = false
       setStatus("error")

@@ -8,6 +8,18 @@ import Shipping from "@modules/checkout/components/shipping"
 import { listCartShippingMethods } from "@lib/data/fulfillment"
 import { Suspense } from "react"
 
+async function AddressSection({
+  cart,
+  customer,
+}: {
+  cart: HttpTypes.StoreCart
+  customer: HttpTypes.StoreCustomer | null
+}) {
+  const regions = await listRegions().catch(() => [])
+
+  return <Addresses cart={cart} customer={customer} regions={regions} />
+}
+
 async function DeliverySection({ cart }: { cart: HttpTypes.StoreCart }) {
   const shippingMethods = await listCartShippingMethods(cart.id)
 
@@ -19,7 +31,13 @@ async function DeliverySection({ cart }: { cart: HttpTypes.StoreCart }) {
   )
 }
 
-export default async function CheckoutForm({
+async function PaymentSection({ cart }: { cart: HttpTypes.StoreCart }) {
+  const paymentMethods = await listCartPaymentMethods(cart.region?.id ?? "")
+
+  return <Payment cart={cart} availablePaymentMethods={paymentMethods ?? []} />
+}
+
+export default function CheckoutForm({
   cart,
   customer,
 }: {
@@ -30,15 +48,16 @@ export default async function CheckoutForm({
     return null
   }
 
-  const [paymentMethods, regions] = await Promise.all([
-    listCartPaymentMethods(cart.region?.id ?? ""),
-    listRegions().catch(() => []),
-  ])
-
   return (
     <div className="w-full grid grid-cols-1 gap-y-8">
-      <Suspense fallback={null}>
-        <Addresses cart={cart} customer={customer} regions={regions} />
+      <Suspense
+        fallback={
+          <div className="py-6 text-[14px] text-aura-forest/55">
+            Loading shipping address…
+          </div>
+        }
+      >
+        <AddressSection cart={cart} customer={customer} />
       </Suspense>
 
       <Suspense
@@ -52,12 +71,10 @@ export default async function CheckoutForm({
       </Suspense>
 
       <Suspense fallback={null}>
-        <Payment cart={cart} availablePaymentMethods={paymentMethods ?? []} />
+        <PaymentSection cart={cart} />
       </Suspense>
 
-      <Suspense fallback={null}>
-        <Review cart={cart} />
-      </Suspense>
+      <Review cart={cart} />
     </div>
   )
 }

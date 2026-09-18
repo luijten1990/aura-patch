@@ -121,7 +121,6 @@ export async function updateCart(data: HttpTypes.StoreUpdateCart) {
     .update(cartId, data, {}, headers)
     .then(async ({ cart }: { cart: HttpTypes.StoreCart }) => {
       await revalidateByTag("carts")
-      await revalidateByTag("fulfillment")
       return cart
     })
     .catch(medusaError)
@@ -167,8 +166,8 @@ export async function addToCart({
     )
     .catch(medusaError)
 
-  await revalidateByTag("carts")
-  await revalidateByTag("fulfillment")
+  void revalidateByTag("carts")
+  void revalidateByTag("fulfillment")
   void syncCartPurchaseType(purchaseType).catch(() => undefined)
 }
 

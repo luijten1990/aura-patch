@@ -1,7 +1,7 @@
 "use client"
 
-import { addToCart } from "@lib/data/cart"
-import { useParams, useRouter } from "next/navigation"
+import { addLineItemRequest } from "@lib/util/cart-client"
+import { useParams } from "next/navigation"
 import { useRef, useState } from "react"
 
 export default function QuickAddButton({
@@ -12,7 +12,6 @@ export default function QuickAddButton({
   disabled?: boolean
 }) {
   const { countryCode } = useParams()
-  const router = useRouter()
   const [status, setStatus] = useState<"idle" | "adding" | "added" | "error">("idle")
   const addingRef = useRef(false)
 
@@ -22,7 +21,7 @@ export default function QuickAddButton({
     addingRef.current = true
     setStatus("adding")
     try {
-      await addToCart({
+      await addLineItemRequest({
         variantId,
         quantity: 1,
         countryCode: countryCode as string,
@@ -30,7 +29,6 @@ export default function QuickAddButton({
       })
       setStatus("added")
       addingRef.current = false
-      router.refresh()
       window.setTimeout(() => setStatus("idle"), 1800)
     } catch {
       addingRef.current = false

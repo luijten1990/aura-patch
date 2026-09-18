@@ -6,7 +6,6 @@ import { CheckCircleSolid } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import Divider from "@modules/common/components/divider"
 import { Heading, Text } from "@modules/common/components/ui"
-import Spinner from "@modules/common/icons/spinner"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useActionState } from "react"
 import BillingAddress from "../billing_address"
@@ -27,7 +26,9 @@ const Addresses = ({
   const router = useRouter()
   const pathname = usePathname()
 
-  const isOpen = searchParams.get("step") === "address"
+  const isOpen =
+    searchParams.get("step") === "address" ||
+    !cart?.shipping_address?.address_1
 
   const { state: sameAsBilling, toggle: toggleSameAsBilling } = useToggleState(
     cart?.shipping_address && cart?.billing_address
@@ -175,8 +176,8 @@ const Addresses = ({
                 </div>
               </div>
             ) : (
-              <div>
-                <Spinner />
+              <div className="text-[14px] text-aura-forest/55">
+                Add a shipping address to continue.
               </div>
             )}
           </div>

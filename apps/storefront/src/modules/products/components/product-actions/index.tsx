@@ -1,6 +1,6 @@
 "use client"
 
-import { addToCart } from "@lib/data/cart"
+import { addLineItemRequest } from "@lib/util/cart-client"
 import { useIntersection } from "@lib/hooks/use-in-view"
 import { convertToLocale } from "@lib/util/money"
 import {
@@ -167,14 +167,13 @@ export default function ProductActions({
     setIsAdding(true)
 
     try {
-      await addToCart({
+      await addLineItemRequest({
         variantId,
         quantity: 1,
         countryCode: countryCode || "us",
         purchaseType: nextPurchaseType,
       })
       router.push(`/${countryCode || "us"}/cart`)
-      router.refresh()
     } catch (error) {
       addingRef.current = false
       const message =
