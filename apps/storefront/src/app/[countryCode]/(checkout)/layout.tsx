@@ -25,13 +25,13 @@ export default function CheckoutLayout({
             className="flex shrink-0 items-center gap-2.5"
             data-testid="store-link"
           >
-            <span className="relative h-10 w-10 overflow-hidden rounded-full small:h-11 small:w-11">
+            <span className="relative h-10 w-10 small:h-11 small:w-11">
               <Image
-                src="/images/aura-flower-of-life.webp"
+                src="/images/aura-logo-white.webp"
                 alt=""
                 fill
                 priority
-                className="aura-logo-mark object-cover"
+                className="aura-logo-mark object-contain"
                 sizes="44px"
               />
             </span>

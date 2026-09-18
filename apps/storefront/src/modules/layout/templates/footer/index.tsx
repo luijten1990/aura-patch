@@ -27,12 +27,12 @@ export default function Footer() {
               href="/"
               className="flex items-center gap-4"
             >
-              <span className="relative h-16 w-16 overflow-hidden rounded-full">
+              <span className="relative h-16 w-16">
                 <Image
-                  src="/images/aura-flower-of-life.webp"
+                  src="/images/aura-logo-white.webp"
                   alt=""
                   fill
-                  className="aura-logo-mark object-cover"
+                  className="aura-logo-mark object-contain"
                   sizes="64px"
                 />
               </span>

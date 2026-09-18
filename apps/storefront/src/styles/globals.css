@@ -57,8 +57,7 @@
   }
 
   .aura-logo-mark {
-    filter: grayscale(1) contrast(5);
-    mix-blend-mode: screen;
+    object-fit: contain;
   }
 
   .content-container {
