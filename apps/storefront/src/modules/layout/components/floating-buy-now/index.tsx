@@ -2,7 +2,7 @@
 
 import { addToCart } from "@lib/data/cart"
 import { useParams, usePathname, useRouter } from "next/navigation"
-import { useState } from "react"
+import { useRef, useState } from "react"
 
 export default function FloatingBuyNow({
   variantId,
@@ -17,19 +17,22 @@ export default function FloatingBuyNow({
   const { countryCode } = useParams()
   const router = useRouter()
   const [status, setStatus] = useState<"idle" | "adding" | "error">("idle")
+  const addingRef = useRef(false)
 
   if (
     pathname.includes("/cart") ||
     pathname.includes("/checkout") ||
     pathname.includes("/order/") ||
     pathname.includes("/account") ||
-    pathname.includes("/products/")
+    pathname.includes("/products/") ||
+    pathname.includes("/store")
   ) {
     return null
   }
 
   const buyNow = async () => {
-    if (!variantId || disabled || status === "adding") return
+    if (!variantId || disabled || addingRef.current) return
+    addingRef.current = true
     setStatus("adding")
     try {
       await addToCart({
@@ -41,6 +44,7 @@ export default function FloatingBuyNow({
       router.push(`/${countryCode}/checkout`)
       router.refresh()
     } catch {
+      addingRef.current = false
       setStatus("error")
       window.setTimeout(() => setStatus("idle"), 2200)
     }

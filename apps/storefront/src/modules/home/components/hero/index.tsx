@@ -2,7 +2,6 @@ import { HttpTypes } from "@medusajs/types"
 import { getProductPrice } from "@lib/util/get-product-price"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import IngredientsShowcase from "@modules/home/components/ingredients-showcase"
-import AuraIngredientsGallery from "@modules/products/components/aura-ingredients-gallery"
 import ContactForm from "@modules/home/components/contact-form"
 import NewsletterSignup from "@modules/home/components/newsletter-signup"
 import Image from "next/image"
@@ -227,7 +226,6 @@ const Hero = ({ product }: HeroProps) => {
       </section>
 
       <IngredientsShowcase />
-      <AuraIngredientsGallery />
 
       <section className="aura-shell py-16 small:py-24">
         <div className="flex flex-col gap-8 small:flex-row small:items-end small:justify-between">

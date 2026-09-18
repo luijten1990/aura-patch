@@ -51,7 +51,7 @@ const Shipping: React.FC<ShippingProps> = ({
   availableShippingMethods,
 }) => {
   const [isLoading, setIsLoading] = useState(false)
-  const [isLoadingPrices, setIsLoadingPrices] = useState(true)
+  const [isLoadingPrices, setIsLoadingPrices] = useState(false)
 
   const [showPickupOptions, setShowPickupOptions] =
     useState<string>(PICKUP_OPTION_OFF)
@@ -80,14 +80,13 @@ const Shipping: React.FC<ShippingProps> = ({
   const hasPickupOptions = !!_pickupMethods?.length
 
   useEffect(() => {
-    setIsLoadingPrices(true)
-
     if (_shippingMethods?.length) {
       const promises = _shippingMethods
-        .filter((sm) => sm.price_type === "calculated")
+        .filter((sm) => sm.price_type === "calculated" && sm.amount == null)
         .map((sm) => calculatePriceForShippingOption(sm.id, cart.id))
 
       if (promises.length) {
+        setIsLoadingPrices(true)
         Promise.allSettled(promises).then((res) => {
           const pricesMap: Record<string, number> = {}
           res

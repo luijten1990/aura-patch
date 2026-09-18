@@ -2,7 +2,7 @@
 
 import { addToCart } from "@lib/data/cart"
 import { useParams, useRouter } from "next/navigation"
-import { useState } from "react"
+import { useRef, useState } from "react"
 
 export default function QuickAddButton({
   variantId,
@@ -14,10 +14,12 @@ export default function QuickAddButton({
   const { countryCode } = useParams()
   const router = useRouter()
   const [status, setStatus] = useState<"idle" | "adding" | "added" | "error">("idle")
+  const addingRef = useRef(false)
 
   const handleAdd = async () => {
-    if (!variantId || disabled || status === "adding") return
+    if (!variantId || disabled || addingRef.current) return
 
+    addingRef.current = true
     setStatus("adding")
     try {
       await addToCart({
@@ -27,9 +29,11 @@ export default function QuickAddButton({
         purchaseType: "subscription",
       })
       setStatus("added")
+      addingRef.current = false
       router.refresh()
       window.setTimeout(() => setStatus("idle"), 1800)
     } catch {
+      addingRef.current = false
       setStatus("error")
       window.setTimeout(() => setStatus("idle"), 2200)
     }

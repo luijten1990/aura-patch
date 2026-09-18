@@ -7,7 +7,7 @@ export const listRegions = async () => {
   return await sdk.client
     .fetch<{ regions: HttpTypes.StoreRegion[] }>(`/store/regions`, {
       method: "GET",
-      cache: "no-store",
+      next: { revalidate: 3600, tags: ["regions"] },
     })
     .then(({ regions }) => regions)
 }
@@ -16,7 +16,7 @@ export const retrieveRegion = async (id: string) => {
   return await sdk.client
     .fetch<{ region: HttpTypes.StoreRegion }>(`/store/regions/${id}`, {
       method: "GET",
-      cache: "no-store",
+      next: { revalidate: 3600, tags: ["regions"] },
     })
     .then(({ region }) => region)
 }

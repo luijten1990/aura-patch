@@ -69,10 +69,7 @@ export default async function Nav() {
               Shop
             </LocalizedClientLink>
 
-            <LocalizedClientLink
-              href="/#ingredients"
-              className="hover:opacity-70 transition-opacity"
-            >
+            <LocalizedClientLink href="/#formulations" className="hover:opacity-70 transition-opacity">
               Ingredients
             </LocalizedClientLink>
 

@@ -2,7 +2,7 @@
 
 import { addToCart } from "@lib/data/cart"
 import { useParams, useRouter } from "next/navigation"
-import { useState } from "react"
+import { useRef, useState } from "react"
 
 export default function BuyNowButton({
   variantId,
@@ -14,10 +14,12 @@ export default function BuyNowButton({
   const { countryCode } = useParams()
   const router = useRouter()
   const [status, setStatus] = useState<"idle" | "adding" | "error">("idle")
+  const addingRef = useRef(false)
 
   const buyNow = async () => {
-    if (!variantId || disabled || status === "adding") return
+    if (!variantId || disabled || addingRef.current) return
 
+    addingRef.current = true
     setStatus("adding")
     try {
       await addToCart({
@@ -29,6 +31,7 @@ export default function BuyNowButton({
       router.push(`/${countryCode}/checkout`)
       router.refresh()
     } catch {
+      addingRef.current = false
       setStatus("error")
       window.setTimeout(() => setStatus("idle"), 2200)
     }

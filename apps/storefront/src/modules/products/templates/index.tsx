@@ -10,7 +10,6 @@ import SkeletonRelatedProducts from "@modules/skeletons/templates/skeleton-relat
 import { notFound } from "next/navigation"
 import { HttpTypes } from "@medusajs/types"
 
-import ProductActionsWrapper from "./product-actions-wrapper"
 import AuraIngredientsGallery from "@modules/products/components/aura-ingredients-gallery"
 
 type ProductTemplateProps = {
@@ -53,17 +52,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
         </div>
         <div className="relative z-20 flex flex-col small:sticky small:top-28 w-full gap-y-8 rounded-[1.5rem] border border-aura-forest/10 bg-white/35 p-6">
           <ProductOnboardingCta />
-          <Suspense
-            fallback={
-              <ProductActions
-                disabled={true}
-                product={product}
-                region={region}
-              />
-            }
-          >
-            <ProductActionsWrapper id={product.id} region={region} />
-          </Suspense>
+          <ProductActions product={product} region={region} />
         </div>
       </div>
       {product.handle === "aura-patch" && <AuraIngredientsGallery />}

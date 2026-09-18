@@ -19,12 +19,14 @@ export const metadata: Metadata = {
 
 export default async function PageLayout(props: { children: React.ReactNode; params: Promise<{ countryCode: string }> }) {
   const { countryCode } = await props.params
-  const customer = await retrieveCustomer()
-  const cart = await retrieveCart()
-  const { response: featuredResponse } = await listProducts({
-    countryCode,
-    queryParams: { handle: "aura-patch", limit: 1 },
-  })
+  const [customer, cart, featuredResponse] = await Promise.all([
+    retrieveCustomer(),
+    retrieveCart(),
+    listProducts({
+      countryCode,
+      queryParams: { handle: "aura-patch", limit: 1 },
+    }).then(({ response }) => response),
+  ])
   const auraProduct = featuredResponse.products[0]
   const auraVariant = auraProduct?.variants?.[0]
   const auraCheapest = auraProduct

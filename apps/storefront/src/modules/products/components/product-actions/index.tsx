@@ -46,6 +46,7 @@ export default function ProductActions({
   const [isAdding, setIsAdding] = useState(false)
   const [addError, setAddError] = useState<string | null>(null)
   const [purchaseType, setPurchaseType] = useState<PurchaseType>("subscription")
+  const addingRef = useRef(false)
   const countryCode = useParams().countryCode as string
 
   // If there is only 1 variant, preselect the options
@@ -130,10 +131,11 @@ export default function ProductActions({
 
   // add the selected variant to the cart
   const handleAddToCart = async () => {
-    if (!selectedVariant?.id || isAdding) {
+    if (!selectedVariant?.id || addingRef.current) {
       return
     }
 
+    addingRef.current = true
     setAddError(null)
     setIsAdding(true)
 
@@ -147,6 +149,7 @@ export default function ProductActions({
       router.push(`/${countryCode}/cart`)
       router.refresh()
     } catch (error) {
+      addingRef.current = false
       setAddError(
         error instanceof Error && error.message
           ? error.message
@@ -191,13 +194,7 @@ export default function ProductActions({
           <button
             type="button"
             disabled={isAdding}
-            onClick={() => {
-              if (purchaseType === "subscription") {
-                void handleAddToCart()
-                return
-              }
-              setPurchaseType("subscription")
-            }}
+            onClick={() => setPurchaseType("subscription")}
             className={`rounded-2xl border px-4 py-3 text-left transition-colors ${
               purchaseType === "subscription"
                 ? "border-aura-gold bg-aura-gold/15"

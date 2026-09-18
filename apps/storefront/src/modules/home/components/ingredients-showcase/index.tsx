@@ -34,6 +34,7 @@ const products = [
 ]
 
 const IngredientsShowcase = () => (
+  <div id="ingredients">
   <section id="formulations" className="bg-aura-forest py-16 text-aura-cream small:py-24">
     <div className="aura-shell">
       <div className="grid gap-10 small:grid-cols-[0.9fr_1.1fr] small:items-end">
@@ -80,6 +81,7 @@ const IngredientsShowcase = () => (
       </div>
     </div>
   </section>
+  </div>
 )
 
 export default IngredientsShowcase
