@@ -168,7 +168,12 @@ export async function addToCart({
     })
     .catch(medusaError)
 
-  await syncCartPurchaseType(purchaseType)
+  try {
+    await syncCartPurchaseType(purchaseType)
+  } catch {
+    // Line item is already in the cart. Do not fail add-to-cart if the
+    // subscribe metadata or SUBSCRIBE20 code cannot be applied yet.
+  }
 }
 
 async function syncCartPurchaseType(purchaseType: PurchaseType) {
@@ -189,7 +194,12 @@ async function syncCartPurchaseType(purchaseType: PurchaseType) {
     subscription_period: subscribe ? SUBSCRIPTION_PERIOD : 0,
   }
 
-  await updateCart({ metadata })
+  try {
+    await updateCart({ metadata })
+  } catch {
+    // Cart updates can fail while shipping is recalculated. The line item
+    // already stores purchase_type, so checkout can still subscribe.
+  }
 
   try {
     await applyPromotions(

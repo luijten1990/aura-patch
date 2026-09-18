@@ -17,7 +17,7 @@ const NavCountrySelect = ({
 
   return (
     <div
-      className="hidden small:flex items-center"
+      className="relative hidden overflow-visible small:flex items-center"
       onMouseEnter={toggleState.open}
       onMouseLeave={toggleState.close}
     >

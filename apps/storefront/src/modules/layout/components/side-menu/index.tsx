@@ -120,6 +120,7 @@ const SideMenu = ({ regions, locales, currentLocale }: SideMenuProps) => {
                           <CountrySelect
                             toggleState={countryToggleState}
                             regions={regions}
+                            dropdownPlacement="top"
                           />
                         )}
                         <ArrowRightMini

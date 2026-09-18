@@ -11,15 +11,31 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
 
   const { data: [cart] } = await query.graph({
     entity: "cart",
-    fields: ["id", "metadata"],
+    fields: ["id", "metadata", "items.metadata"],
     filters: {
       id: req.params.id,
     },
   })
 
   const metadata = (cart?.metadata || {}) as Record<string, unknown>
-  const interval = metadata.subscription_interval
-  const period = Number(metadata.subscription_period)
+  let interval = metadata.subscription_interval
+  let period = Number(metadata.subscription_period)
+
+  const hasSubscribeItem = Boolean(
+    (cart?.items || []).some((item) => {
+      const itemMetadata = (item?.metadata || {}) as Record<string, unknown>
+      return itemMetadata.purchase_type === "subscription"
+    })
+  )
+
+  if (
+    interval !== SubscriptionInterval.MONTHLY &&
+    interval !== SubscriptionInterval.YEARLY &&
+    hasSubscribeItem
+  ) {
+    interval = SubscriptionInterval.MONTHLY
+    period = 1
+  }
 
   if (
     interval !== SubscriptionInterval.MONTHLY &&

@@ -6,10 +6,18 @@ export const SUBSCRIPTION_PERIOD = 1
 export type PurchaseType = "subscription" | "one_time"
 
 export const isSubscriptionCart = (
-  cart?: { metadata?: Record<string, unknown> | null } | null
+  cart?: {
+    metadata?: Record<string, unknown> | null
+    items?: { metadata?: Record<string, unknown> | null }[] | null
+  } | null
 ) =>
-  cart?.metadata?.subscription_interval === SUBSCRIPTION_INTERVAL &&
-  Number(cart?.metadata?.subscription_period) > 0
+  (cart?.metadata?.subscription_interval === SUBSCRIPTION_INTERVAL &&
+    Number(cart?.metadata?.subscription_period) > 0) ||
+  Boolean(
+    cart?.items?.some(
+      (item) => item.metadata?.purchase_type === "subscription"
+    )
+  )
 
 export const subscriptionAmount = (amount: number) =>
   amount * ((100 - SUBSCRIBE_PERCENT) / 100)

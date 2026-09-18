@@ -133,14 +133,18 @@ export default function ProductActions({
 
     setIsAdding(true)
 
-    await addToCart({
-      variantId: selectedVariant.id,
-      quantity: 1,
-      countryCode,
-      purchaseType,
-    })
-
-    setIsAdding(false)
+    try {
+      await addToCart({
+        variantId: selectedVariant.id,
+        quantity: 1,
+        countryCode,
+        purchaseType,
+      })
+      router.push(`/${countryCode}/cart`)
+      router.refresh()
+    } finally {
+      setIsAdding(false)
+    }
   }
 
   return (
@@ -177,7 +181,13 @@ export default function ProductActions({
         <div className="flex flex-col gap-2">
           <button
             type="button"
-            onClick={() => setPurchaseType("subscription")}
+            onClick={() => {
+              if (purchaseType === "subscription") {
+                void handleAddToCart()
+                return
+              }
+              setPurchaseType("subscription")
+            }}
             className={`rounded-2xl border px-4 py-3 text-left transition-colors ${
               purchaseType === "subscription"
                 ? "border-aura-gold bg-aura-gold/15"

@@ -21,7 +21,7 @@ export default async function Nav() {
   return (
     <div className="sticky top-0 inset-x-0 z-50">
       <header className="bg-[#17382f] text-[#f6f0e5]">
-        <nav className="content-container h-[66px] flex items-center justify-between">
+        <nav className="content-container relative z-[60] flex h-[66px] items-center justify-between overflow-visible">
 
           {/* Mobile menu */}
           <div className="small:hidden flex items-center">

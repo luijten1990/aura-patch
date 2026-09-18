@@ -18,6 +18,5 @@ export default async function ensureSubscribePromotionJob(
 
 export const config = {
   name: "ensure-subscribe-promotion",
-  schedule: "* * * * *",
-  numberOfExecutions: 12,
+  schedule: "*/5 * * * *",
 }
