@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto"
 import { AbstractFulfillmentProviderService } from "@medusajs/framework/utils"
 import type {
   CreateFulfillmentResult,
@@ -75,8 +76,11 @@ export class UspsFulfillmentService extends AbstractFulfillmentProviderService {
     const destination = context.shipping_address as Address | undefined
     const origin = context.from_location?.address as Address | undefined
     this.assertDomesticAddress(destination, "shipping")
-    this.assertDomesticAddress(origin, "stock-location")
-    return { ...data, usps_origin: origin }
+    // Origin is required when buying a label, not when attaching a rate at checkout.
+    if (origin?.country_code?.toLowerCase() === "us") {
+      return { ...data, usps_origin: origin }
+    }
+    return { ...data }
   }
 
   async validateOption(data: Record<string, unknown>) {
@@ -106,6 +110,7 @@ export class UspsFulfillmentService extends AbstractFulfillmentProviderService {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
         "X-Payment-Authorization-Token": paymentAuthorizationToken,
+        "X-Idempotency-Key": randomUUID(),
       },
       body: JSON.stringify({
         imageInfo: {
@@ -221,13 +226,25 @@ export class UspsFulfillmentService extends AbstractFulfillmentProviderService {
     const pdfPartStart = raw.indexOf(pdfHeader)
     if (!metadataMatch || pdfPartStart === -1) throw new Error("USPS label response was missing label metadata or PDF")
 
-    const pdfDataStart = raw.indexOf(Buffer.from("\r\n\r\n"), pdfPartStart) + 4
+    const pdfHeaderEnd = raw.indexOf(Buffer.from("\r\n\r\n"), pdfPartStart)
+    const pdfDataStart = pdfHeaderEnd + 4
     const pdfEnd = raw.indexOf(marker, pdfDataStart) - 2
-    if (pdfDataStart < 4 || pdfEnd <= pdfDataStart) throw new Error("USPS label PDF could not be read")
+    if (pdfHeaderEnd === -1 || pdfEnd <= pdfDataStart) {
+      throw new Error("USPS label PDF could not be read")
+    }
+
+    const pdfPart = raw.subarray(pdfDataStart, pdfEnd)
+    const pdfBuffer = pdfPart.subarray(0, 4).toString() === "%PDF"
+      ? pdfPart
+      : Buffer.from(pdfPart.toString("utf8").replace(/\s/g, ""), "base64")
+
+    if (pdfBuffer.subarray(0, 4).toString() !== "%PDF") {
+      throw new Error("USPS label image was not a valid PDF")
+    }
 
     return {
       metadata: JSON.parse(metadataMatch[1]) as UspsLabelMetadata,
-      pdfBase64: raw.subarray(pdfDataStart, pdfEnd).toString("base64"),
+      pdfBase64: pdfBuffer.toString("base64"),
     }
   }
 

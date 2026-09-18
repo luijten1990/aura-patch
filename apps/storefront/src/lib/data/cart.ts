@@ -237,11 +237,8 @@ export async function updateLineItem({
   await sdk.store.cart
     .updateLineItem(cartId, lineId, { quantity }, {}, headers)
     .then(async () => {
-      const cartCacheTag = await getCacheTag("carts")
-      revalidateTag(cartCacheTag)
-
-      const fulfillmentCacheTag = await getCacheTag("fulfillment")
-      revalidateTag(fulfillmentCacheTag)
+      await revalidateByTag("carts")
+      await revalidateByTag("fulfillment")
     })
     .catch(medusaError)
 }
@@ -264,11 +261,8 @@ export async function deleteLineItem(lineId: string) {
   await sdk.store.cart
     .deleteLineItem(cartId, lineId, {}, headers)
     .then(async () => {
-      const cartCacheTag = await getCacheTag("carts")
-      revalidateTag(cartCacheTag)
-
-      const fulfillmentCacheTag = await getCacheTag("fulfillment")
-      revalidateTag(fulfillmentCacheTag)
+      await revalidateByTag("carts")
+      await revalidateByTag("fulfillment")
     })
     .catch(medusaError)
 }
@@ -291,18 +285,38 @@ export async function setShippingMethod({
       {},
       headers
     )
-    const cartCacheTag = await getCacheTag("carts")
-    revalidateTag(cartCacheTag)
-    return { ok: true as const }
   } catch (error) {
-    const fetchError = error as { message?: string }
     return {
       ok: false as const,
-      error:
-        fetchError.message ||
-        "Unable to save that shipping option. Please try again.",
+      error: shippingMethodError(error),
     }
   }
+
+  try {
+    await revalidateByTag("carts")
+  } catch {
+    // Shipping is already saved; skip empty-tag / cache errors so checkout can continue.
+  }
+
+  return { ok: true as const }
+}
+
+function shippingMethodError(error: unknown): string {
+  const err = error as {
+    message?: string
+    response?: { data?: { message?: string } | string }
+  }
+  const data = err.response?.data
+  if (typeof data === "object" && data?.message) {
+    return data.message
+  }
+  if (typeof data === "string" && data.trim()) {
+    return data
+  }
+  if (err.message && err.message !== "An unknown error occurred") {
+    return err.message
+  }
+  return "Unable to save that shipping option. Please try again."
 }
 
 export async function initiatePaymentSession(
@@ -326,8 +340,7 @@ export async function initiatePaymentSession(
   return sdk.store.payment
     .initiatePaymentSession(cart, payload, {}, headers)
     .then(async (resp) => {
-      const cartCacheTag = await getCacheTag("carts")
-      revalidateTag(cartCacheTag)
+      await revalidateByTag("carts")
       return resp
     })
     .catch(medusaError)
@@ -347,11 +360,8 @@ export async function applyPromotions(codes: string[]) {
   return sdk.store.cart
     .update(cartId, { promo_codes: codes }, {}, headers)
     .then(async () => {
-      const cartCacheTag = await getCacheTag("carts")
-      revalidateTag(cartCacheTag)
-
-      const fulfillmentCacheTag = await getCacheTag("fulfillment")
-      revalidateTag(fulfillmentCacheTag)
+      await revalidateByTag("carts")
+      await revalidateByTag("fulfillment")
     })
     .catch(medusaError)
 }
@@ -510,8 +520,7 @@ export async function placeOrder(cartId?: string) {
       : sdk.store.cart.complete(id, {}, headers)
   )
     .then(async (response) => {
-      const cartCacheTag = await getCacheTag("carts")
-      revalidateTag(cartCacheTag)
+      await revalidateByTag("carts")
       return response
     })
     .catch(medusaError)
@@ -522,8 +531,7 @@ export async function placeOrder(cartId?: string) {
     const countryCode =
       result.order.shipping_address?.country_code?.toLowerCase()
 
-    const orderCacheTag = await getCacheTag("orders")
-    revalidateTag(orderCacheTag)
+    await revalidateByTag("orders")
 
     removeCartId()
     redirect(`/${countryCode}/order/${result.order.id}/confirmed`)
@@ -547,15 +555,11 @@ export async function updateRegion(countryCode: string, currentPath: string) {
 
   if (cartId) {
     await updateCart({ region_id: region.id })
-    const cartCacheTag = await getCacheTag("carts")
-    revalidateTag(cartCacheTag)
+    await revalidateByTag("carts")
   }
 
-  const regionCacheTag = await getCacheTag("regions")
-  revalidateTag(regionCacheTag)
-
-  const productsCacheTag = await getCacheTag("products")
-  revalidateTag(productsCacheTag)
+  await revalidateByTag("regions")
+  await revalidateByTag("products")
 
   redirect(`/${countryCode}${currentPath}`)
 }
