@@ -1,3 +1,4 @@
+import { lineItemAmount } from "@lib/util/cart-money"
 import { getPercentageDiff } from "@lib/util/get-percentage-diff"
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
@@ -14,9 +15,8 @@ const LineItemPrice = ({
   style = "default",
   currencyCode,
 }: LineItemPriceProps) => {
-  const { total, original_total } = item
-  const originalPrice = original_total ?? 0
-  const currentPrice = total ?? 0
+  const currentPrice = lineItemAmount(item)
+  const originalPrice = item.original_total ?? currentPrice
   const hasReducedPrice = currentPrice < originalPrice
 
   return (

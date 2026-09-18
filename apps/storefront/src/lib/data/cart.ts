@@ -23,16 +23,20 @@ import {
   SUBSCRIPTION_PERIOD,
   type PurchaseType,
 } from "@lib/util/subscription"
+import { cartNeedsTotalsRefresh } from "@lib/util/cart-money"
 
 /**
  * Retrieves a cart by its ID. If no ID is provided, it will use the cart ID from the cookies.
  * @param cartId - optional - The ID of the cart to retrieve.
  * @returns The cart object if found, or null if not found.
  */
+const CART_FIELDS =
+  "metadata, currency_code, *items, *region, *items.product, *items.variant, *items.thumbnail, *items.metadata, +items.total, +items.subtotal, +items.original_total, *promotions, +shipping_methods.name, +total, +subtotal, +item_subtotal, +shipping_subtotal, +discount_subtotal, +tax_total"
+
 export async function retrieveCart(cartId?: string, fields?: string) {
   const id = cartId || (await getCartId())
-  fields ??=
-    "metadata, *items, *region, *items.product, *items.variant, *items.thumbnail, *items.metadata, +items.total, *promotions, +shipping_methods.name"
+  const isFull = fields == null
+  fields ??= CART_FIELDS
 
   if (!id) {
     return null
@@ -46,18 +50,32 @@ export async function retrieveCart(cartId?: string, fields?: string) {
     ...(await getCacheOptions("carts")),
   }
 
-  return await sdk.client
-    .fetch<HttpTypes.StoreCartResponse>(`/store/carts/${id}`, {
-      method: "GET",
-      query: {
-        fields,
-      },
-      headers,
-      next,
-      cache: "no-store",
-    })
-    .then(({ cart }: { cart: HttpTypes.StoreCart }) => cart)
-    .catch(() => null)
+  const loadCart = () =>
+    sdk.client
+      .fetch<HttpTypes.StoreCartResponse>(`/store/carts/${id}`, {
+        method: "GET",
+        query: {
+          fields,
+        },
+        headers,
+        next,
+        cache: "no-store",
+      })
+      .then(({ cart }: { cart: HttpTypes.StoreCart }) => cart)
+      .catch(() => null)
+
+  let cart = await loadCart()
+
+  if (isFull && cart && cartNeedsTotalsRefresh(cart)) {
+    try {
+      await sdk.store.cart.update(id, {}, {}, headers)
+    } catch {
+      // Shipping quotes can fail; still return the cart with unit prices.
+    }
+    cart = await loadCart()
+  }
+
+  return cart
 }
 
 export async function getOrSetCart(countryCode: string) {

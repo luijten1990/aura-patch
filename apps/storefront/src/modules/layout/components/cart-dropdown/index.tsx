@@ -7,6 +7,7 @@ import {
   Transition,
 } from "@headlessui/react"
 import { convertToLocale } from "@lib/util/money"
+import { cartCurrencyCode, cartItemsAmount } from "@lib/util/cart-money"
 import { HttpTypes } from "@medusajs/types"
 import { Button } from "@modules/common/components/ui"
 import DeleteButton from "@modules/common/components/delete-button"
@@ -35,7 +36,8 @@ const CartDropdown = ({
       return acc + item.quantity
     }, 0) || 0
 
-  const subtotal = cartState?.subtotal ?? 0
+  const subtotal = cartState?.subtotal ?? cartItemsAmount(cartState)
+  const currencyCode = cartCurrencyCode(cartState)
   const itemRef = useRef<number>(totalItems || 0)
 
   const timedOpen = () => {
@@ -168,7 +170,7 @@ const CartDropdown = ({
                               <LineItemPrice
                                 item={item}
                                 style="tight"
-                                currencyCode={cartState.currency_code}
+                                currencyCode={currencyCode}
                               />
                             </div>
                           </div>
@@ -195,7 +197,7 @@ const CartDropdown = ({
                     >
                       {convertToLocale({
                         amount: subtotal,
-                        currency_code: cartState.currency_code,
+                        currency_code: currencyCode,
                       })}
                     </span>
                   </div>

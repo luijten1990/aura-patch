@@ -1,5 +1,6 @@
 "use client"
 
+import { withCartMoney } from "@lib/util/cart-money"
 import { Button, Heading } from "@modules/common/components/ui"
 
 import CartTotals from "@modules/common/components/cart-totals"
@@ -35,7 +36,7 @@ const Summary = ({ cart }: SummaryProps) => {
       </Heading>
       <DiscountCode cart={cart} variant="aura" />
       <Divider className="border-aura-forest/15" />
-      <CartTotals totals={cart} variant="aura" />
+      <CartTotals totals={withCartMoney(cart)} variant="aura" />
       <LocalizedClientLink
         href={"/checkout?step=" + step}
         data-testid="checkout-button"

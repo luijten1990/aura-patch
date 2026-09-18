@@ -1,5 +1,6 @@
 "use client"
 
+import { cartCurrencyCode } from "@lib/util/cart-money"
 import repeat from "@lib/util/repeat"
 import { HttpTypes } from "@medusajs/types"
 import { Table, clx } from "@modules/common/components/ui"
@@ -35,7 +36,7 @@ const ItemsPreviewTemplate = ({ cart }: ItemsTemplateProps) => {
                       key={item.id}
                       item={item}
                       type="preview"
-                      currencyCode={cart.currency_code}
+                      currencyCode={cartCurrencyCode(cart)}
                       isSubscription={
                         cart.metadata?.subscription_interval === "monthly"
                       }

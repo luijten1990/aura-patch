@@ -42,13 +42,18 @@ export class EasyshipFulfillmentService extends AbstractFulfillmentProviderServi
   }
 
   async calculatePrice(optionData: CalculateShippingOptionPriceDTO["optionData"], data: CalculateShippingOptionPriceDTO["data"], context: CalculateShippingOptionPriceDTO["context"]) {
-    const destination = context.shipping_address as Address | undefined
-    const origin = (data.easyship_origin || context.from_location?.address) as Address | undefined
-    this.assertDestination(optionData, destination)
-    this.assertAddress(origin, "warehouse")
-    const domestic = this.isDomestic(optionData, destination)
-    const rate = await this.quoteRate(origin!, destination!, domestic)
-    return { calculated_amount: Math.round(this.charge(rate) * 100), is_calculated_price_tax_inclusive: false }
+    try {
+      const destination = context.shipping_address as Address | undefined
+      const origin = (data.easyship_origin || context.from_location?.address) as Address | undefined
+      this.assertDestination(optionData, destination)
+      this.assertAddress(origin, "warehouse")
+      const domestic = this.isDomestic(optionData, destination)
+      const rate = await this.quoteRate(origin!, destination!, domestic)
+      return { calculated_amount: Math.round(this.charge(rate) * 100), is_calculated_price_tax_inclusive: false }
+    } catch (error) {
+      console.error("Easyship calculatePrice skipped so cart totals can complete", error)
+      return { calculated_amount: 0, is_calculated_price_tax_inclusive: false }
+    }
   }
 
   async createFulfillment(

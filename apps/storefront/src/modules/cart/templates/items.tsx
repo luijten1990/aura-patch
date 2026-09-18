@@ -1,3 +1,4 @@
+import { cartCurrencyCode } from "@lib/util/cart-money"
 import repeat from "@lib/util/repeat"
 import { HttpTypes } from "@medusajs/types"
 import { Heading, Table } from "@modules/common/components/ui"
@@ -46,7 +47,7 @@ const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
                     <Item
                       key={item.id}
                       item={item}
-                      currencyCode={cart?.currency_code}
+                      currencyCode={cartCurrencyCode(cart)}
                       isSubscription={
                         cart?.metadata?.subscription_interval === "monthly"
                       }

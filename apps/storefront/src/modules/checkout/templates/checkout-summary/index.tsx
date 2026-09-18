@@ -1,3 +1,4 @@
+import { withCartMoney } from "@lib/util/cart-money"
 import { Heading } from "@modules/common/components/ui"
 
 import ItemsPreviewTemplate from "@modules/cart/templates/preview"
@@ -16,7 +17,7 @@ const CheckoutSummary = ({ cart }: { cart: HttpTypes.StoreCart }) => {
           In your cart
         </Heading>
         <div className="mt-6">
-          <CartTotals totals={cart} variant="aura" />
+          <CartTotals totals={withCartMoney(cart)} variant="aura" />
         </div>
         <ItemsPreviewTemplate cart={cart} />
         <div className="mt-6">
