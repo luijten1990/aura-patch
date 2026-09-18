@@ -22,7 +22,8 @@ export default function FloatingBuyNow({
     pathname.includes("/cart") ||
     pathname.includes("/checkout") ||
     pathname.includes("/order/") ||
-    pathname.includes("/account")
+    pathname.includes("/account") ||
+    pathname.includes("/products/")
   ) {
     return null
   }

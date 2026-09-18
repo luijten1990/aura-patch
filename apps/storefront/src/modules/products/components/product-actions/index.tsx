@@ -44,6 +44,7 @@ export default function ProductActions({
 
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
   const [isAdding, setIsAdding] = useState(false)
+  const [addError, setAddError] = useState<string | null>(null)
   const [purchaseType, setPurchaseType] = useState<PurchaseType>("subscription")
   const countryCode = useParams().countryCode as string
 
@@ -86,7 +87,7 @@ export default function ProductActions({
     const params = new URLSearchParams(searchParams.toString())
     const value = isValidVariant ? selectedVariant?.id : null
 
-    if (params.get("v_id") === value) {
+    if (isAdding || params.get("v_id") === value) {
       return
     }
 
@@ -97,7 +98,7 @@ export default function ProductActions({
     }
 
     router.replace(pathname + "?" + params.toString())
-  }, [selectedVariant, isValidVariant])
+  }, [selectedVariant, isValidVariant, isAdding])
 
   // check if the selected variant is in stock
   const inStock = useMemo(() => {
@@ -129,8 +130,11 @@ export default function ProductActions({
 
   // add the selected variant to the cart
   const handleAddToCart = async () => {
-    if (!selectedVariant?.id) return null
+    if (!selectedVariant?.id || isAdding) {
+      return
+    }
 
+    setAddError(null)
     setIsAdding(true)
 
     try {
@@ -142,7 +146,12 @@ export default function ProductActions({
       })
       router.push(`/${countryCode}/cart`)
       router.refresh()
-    } finally {
+    } catch (error) {
+      setAddError(
+        error instanceof Error && error.message
+          ? error.message
+          : "Could not add Aura Patch to the cart. Please try again."
+      )
       setIsAdding(false)
     }
   }
@@ -181,6 +190,7 @@ export default function ProductActions({
         <div className="flex flex-col gap-2">
           <button
             type="button"
+            disabled={isAdding}
             onClick={() => {
               if (purchaseType === "subscription") {
                 void handleAddToCart()
@@ -254,11 +264,16 @@ export default function ProductActions({
             !isValidVariant
           }
           variant="primary"
-          className="w-full h-12 !rounded-full !bg-aura-gold !text-aura-forest uppercase tracking-[0.12em] hover:!bg-aura-forest hover:!text-aura-cream"
-          isLoading={isAdding}
+          className={`w-full h-12 !rounded-full uppercase tracking-[0.12em] ${
+            isAdding
+              ? "!bg-aura-forest !text-aura-cream !opacity-100"
+              : "!bg-aura-gold !text-aura-forest hover:!bg-aura-forest hover:!text-aura-cream"
+          }`}
           data-testid="add-product-button"
         >
-          {!selectedVariant
+          {isAdding
+            ? "Adding to cart..."
+            : !selectedVariant
             ? "Select variant"
             : !inStock || !isValidVariant
             ? "Out of stock"
@@ -266,6 +281,11 @@ export default function ProductActions({
             ? "Subscribe & save"
             : "Add to cart"}
         </Button>
+        {addError && (
+          <p className="text-[13px] leading-5 text-red-800" role="alert">
+            {addError}
+          </p>
+        )}
         <MobileActions
           product={product}
           variant={selectedVariant}

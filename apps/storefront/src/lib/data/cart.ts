@@ -4,6 +4,7 @@ import { sdk } from "@lib/config"
 import medusaError from "@lib/util/medusa-error"
 import { HttpTypes } from "@medusajs/types"
 import { revalidateTag } from "next/cache"
+import { after } from "next/server"
 import { redirect } from "next/navigation"
 import {
   getAuthHeaders,
@@ -168,11 +169,14 @@ export async function addToCart({
     })
     .catch(medusaError)
 
+  // Metadata and SUBSCRIBE20 can wait. Awaiting them here also
+  // recalculates live shipping and can freeze the button for 20s+.
   try {
-    await syncCartPurchaseType(purchaseType)
+    after(() => {
+      void syncCartPurchaseType(purchaseType).catch(() => undefined)
+    })
   } catch {
-    // Line item is already in the cart. Do not fail add-to-cart if the
-    // subscribe metadata or SUBSCRIBE20 code cannot be applied yet.
+    void syncCartPurchaseType(purchaseType).catch(() => undefined)
   }
 }
 

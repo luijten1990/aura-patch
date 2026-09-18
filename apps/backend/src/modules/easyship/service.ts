@@ -17,6 +17,7 @@ const INTERNATIONAL_OPTION_ID = "easyship-international"
 export class EasyshipFulfillmentService extends AbstractFulfillmentProviderService {
   static identifier = "easyship"
   protected readonly options_: Options
+  private readonly rateCache = new Map<string, { rate: EasyRate; at: number }>()
   constructor(_: Record<string, unknown>, options: Options) { super(); this.options_ = options }
 
   async getFulfillmentOptions(): Promise<FulfillmentOption[]> {
@@ -81,7 +82,7 @@ export class EasyshipFulfillmentService extends AbstractFulfillmentProviderServi
         printing_options: { format: "pdf", label: "4x6", commercial_invoice: "A4", packing_slip: "none" },
       },
       parcels: [this.parcel()],
-    })
+    }, 30000)
     const shipment = (result.shipment || result) as Record<string, unknown>
     const shipmentId = this.firstString(shipment, ["easyship_shipment_id", "shipment_id", "id"])
     const trackingNumber = this.firstString(shipment, ["tracking_number"])
@@ -111,21 +112,41 @@ export class EasyshipFulfillmentService extends AbstractFulfillmentProviderServi
   async cancelFulfillment() { return {} }
 
   private async quoteRate(origin: Address, destination: Address, domestic: boolean) {
-    const response = await this.request("/rates", {
-      origin_address: this.address(origin),
-      destination_address: this.address(destination),
-      parcels: [this.parcel()],
-      ...(domestic ? {} : { incoterms: "DDP", calculate_tax_and_duties: true }),
-    })
-    const rates = (response.rates || []) as EasyRate[]
-    const valid = rates.filter((rate) => rate.currency === "USD" && Number.isFinite(this.charge(rate)))
-    if (!valid.length) {
-      throw new MedusaError(
-        MedusaError.Types.UNEXPECTED_STATE,
-        "No USD Easyship rate is available for this destination"
-      )
+    const key = [
+      domestic ? "domestic" : "intl",
+      origin.country_code,
+      origin.postal_code,
+      destination.country_code,
+      destination.postal_code,
+    ].join("|").toLowerCase()
+    const cached = this.rateCache.get(key)
+    if (cached && Date.now() - cached.at < 15 * 60 * 1000) {
+      return cached.rate
     }
-    return domestic ? this.pickDomesticRate(valid) : this.pickCheapest(valid)
+    try {
+      const response = await this.request("/rates", {
+        origin_address: this.address(origin),
+        destination_address: this.address(destination),
+        parcels: [this.parcel()],
+        ...(domestic ? {} : { incoterms: "DDP", calculate_tax_and_duties: true }),
+      }, 4000)
+      const rates = (response.rates || []) as EasyRate[]
+      const valid = rates.filter((rate) => rate.currency === "USD" && Number.isFinite(this.charge(rate)))
+      if (!valid.length) {
+        throw new MedusaError(
+          MedusaError.Types.UNEXPECTED_STATE,
+          "No USD Easyship rate is available for this destination"
+        )
+      }
+      const rate = domestic ? this.pickDomesticRate(valid) : this.pickCheapest(valid)
+      this.rateCache.set(key, { rate, at: Date.now() })
+      return rate
+    } catch (error) {
+      if (cached) {
+        return cached.rate
+      }
+      throw error
+    }
   }
 
   private pickDomesticRate(rates: EasyRate[]) {
@@ -213,8 +234,27 @@ export class EasyshipFulfillmentService extends AbstractFulfillmentProviderServi
     }
     return undefined
   }
-  private async request(path: string, body: Record<string, unknown>) {
-    const response = await fetch(`${this.options_.baseUrl}/2024-09${path}`, { method: "POST", headers: { Authorization: `Bearer ${this.options_.apiToken}`, "Content-Type": "application/json" }, body: JSON.stringify(body) })
+  private async request(path: string, body: Record<string, unknown>, timeoutMs = 4000) {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), timeoutMs)
+    let response: Response
+    try {
+      response = await fetch(`${this.options_.baseUrl}/2024-09${path}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${this.options_.apiToken}`, "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      })
+    } catch (error) {
+      throw new MedusaError(
+        MedusaError.Types.UNEXPECTED_STATE,
+        error instanceof Error && error.name === "AbortError"
+          ? "Easyship rate request timed out"
+          : `Easyship request failed: ${error instanceof Error ? error.message : "unknown error"}`
+      )
+    } finally {
+      clearTimeout(timer)
+    }
     const result = await response.json() as Record<string, unknown>
     if (!response.ok) {
       throw new MedusaError(
