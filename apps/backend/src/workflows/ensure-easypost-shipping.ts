@@ -325,10 +325,14 @@ const ensureEasyPostShippingStep = createStep(
       }
     }
 
-    const internationalZones = [
-      ...zones,
-      extraInternationalZone,
-    ].filter((zone): zone is ServiceZoneRecord => Boolean(zone?.id) && !isUsOnlyZone(zone))
+    const internationalZones = [...zones, extraInternationalZone].filter(
+      (zone): zone is ServiceZoneRecord => {
+        if (!zone?.id) {
+          return false
+        }
+        return !isUsOnlyZone(zone)
+      }
+    )
     for (const zone of internationalZones) {
       for (const option of zone.shipping_options || []) {
         if (!option.id || !isFreeStandardOption(option)) {
