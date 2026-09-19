@@ -2,9 +2,15 @@
 
 import { isManual, isStripeLike } from "@lib/constants"
 import { placeOrder } from "@lib/data/cart"
+import { confirmStripePayment } from "@lib/util/confirm-stripe-payment"
 import { HttpTypes } from "@medusajs/types"
 import { Button } from "@modules/common/components/ui"
-import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
+import {
+  ExpressCheckoutElement,
+  PaymentElement,
+  useElements,
+  useStripe,
+} from "@stripe/react-stripe-js"
 import { useParams } from "next/navigation"
 import React, { useState } from "react"
 import ErrorMessage from "../error-message"
@@ -81,7 +87,10 @@ const StripePaymentButton = ({
     // `useElements()` can remain available after a route change even when its
     // Payment Element has been unmounted. Guarding this prevents Stripe's
     // opaque IntegrationError and gives the shopper a recoverable message.
-    if (!elements.getElement(PaymentElement)) {
+    if (
+      !elements.getElement(PaymentElement) &&
+      !elements.getElement(ExpressCheckoutElement)
+    ) {
       setErrorMessage(
         "Your payment form is no longer available. Return to Payment and try again."
       )
@@ -90,61 +99,20 @@ const StripePaymentButton = ({
 
     setSubmitting(true)
 
-    await stripe
-      .confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/api/payment-return?cart_id=${cart.id}&country_code=${countryCode}`,
-          payment_method_data: {
-            billing_details: {
-              name:
-                cart.billing_address?.first_name +
-                " " +
-                cart.billing_address?.last_name,
-              address: {
-                city: cart.billing_address?.city ?? undefined,
-                country: cart.billing_address?.country_code ?? undefined,
-                line1: cart.billing_address?.address_1 ?? undefined,
-                line2: cart.billing_address?.address_2 ?? undefined,
-                postal_code: cart.billing_address?.postal_code ?? undefined,
-                state: cart.billing_address?.province ?? undefined,
-              },
-              email: cart.email,
-              phone: cart.billing_address?.phone ?? undefined,
-            },
-          },
-        },
-        // Only leave the site when the selected method actually requires it, so
-        // card payments still complete inline.
-        redirect: "if_required",
-      })
-      .then(({ error, paymentIntent }) => {
-        if (error) {
-          const pi = error.payment_intent
+    const result = await confirmStripePayment({
+      stripe,
+      elements,
+      cart,
+      countryCode,
+    })
 
-          if (
-            (pi && pi.status === "requires_capture") ||
-            (pi && pi.status === "succeeded")
-          ) {
-            onPaymentCompleted()
-            return
-          }
+    if (result.authorized) {
+      await onPaymentCompleted()
+      return
+    }
 
-          setErrorMessage(error.message || null)
-          setSubmitting(false)
-          return
-        }
-
-        if (
-          paymentIntent.status === "requires_capture" ||
-          paymentIntent.status === "succeeded"
-        ) {
-          onPaymentCompleted()
-          return
-        }
-
-        setSubmitting(false)
-      })
+    setErrorMessage(result.message)
+    setSubmitting(false)
   }
 
   return (

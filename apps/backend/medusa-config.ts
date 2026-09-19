@@ -19,6 +19,9 @@ const stripeProvider =
           options: {
             apiKey: process.env.STRIPE_API_KEY,
             webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+            // Lets Payment Element / Express Checkout offer PayPal, Google Pay,
+            // Apple Pay, and other methods enabled on the Stripe account.
+            automatic_payment_methods: true,
           },
         },
       ]

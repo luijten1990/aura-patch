@@ -175,6 +175,7 @@ const Payment = ({
                         paymentProviderId={paymentMethod.id}
                         selectedPaymentOptionId={selectedPaymentMethod}
                         paymentInfoMap={paymentInfoMap}
+                        cart={cart}
                         setError={setError}
                         setPaymentComplete={setPaymentComplete}
                       />
