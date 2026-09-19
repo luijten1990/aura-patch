@@ -4,7 +4,7 @@ import { sdk } from "@lib/config"
 import medusaError from "@lib/util/medusa-error"
 import { HttpTypes } from "@medusajs/types"
 import { revalidateTag } from "next/cache"
-import { redirect } from "next/navigation"
+import { redirect, unstable_rethrow } from "next/navigation"
 import {
   getAuthHeaders,
   getCacheOptions,
@@ -29,7 +29,7 @@ import {
  * @returns The cart object if found, or null if not found.
  */
 const CART_FIELDS =
-  "metadata, currency_code, *items, *region, *items.product, *items.variant, *items.thumbnail, *items.metadata, +items.total, +items.subtotal, +items.original_total, *promotions, +shipping_methods.name, +total, +subtotal, +item_subtotal, +shipping_subtotal, +discount_subtotal, +tax_total"
+  "metadata, email, currency_code, *items, *region, *items.product, *items.variant, *items.thumbnail, *items.metadata, +items.total, +items.subtotal, +items.original_total, *promotions, *shipping_address, *billing_address, *shipping_methods, +shipping_methods.name, *payment_collection, *payment_collection.payment_sessions, +total, +subtotal, +item_subtotal, +shipping_subtotal, +discount_subtotal, +tax_total"
 
 const revalidateByTag = async (tag: string) => {
   const cacheTag = await getCacheTag(tag)
@@ -420,67 +420,77 @@ export async function submitPromotionForm(
   }
 }
 
-// TODO: Pass a POJO instead of a form entity here
-export async function setAddresses(currentState: unknown, formData: FormData) {
-  let countryCode = ""
-
-  try {
-    if (!formData) {
-      throw new Error("No form data found when setting addresses")
-    }
-    const cartId = await getCartId()
-    if (!cartId) {
-      throw new Error("No existing cart found when setting addresses")
-    }
-
-    countryCode = String(
-      formData.get("shipping_address.country_code") || ""
-    ).toLowerCase()
-    const region = await getRegion(countryCode)
-
-    if (!region) {
-      return "Shipping is not available to the selected country. Add that country to a Medusa region first."
-    }
-
-    const data = {
-      region_id: region.id,
-      shipping_address: {
-        first_name: formData.get("shipping_address.first_name"),
-        last_name: formData.get("shipping_address.last_name"),
-        address_1: formData.get("shipping_address.address_1"),
-        address_2: "",
-        company: formData.get("shipping_address.company"),
-        postal_code: formData.get("shipping_address.postal_code"),
-        city: formData.get("shipping_address.city"),
-        country_code: countryCode,
-        province: formData.get("shipping_address.province"),
-        phone: formData.get("shipping_address.phone"),
-      },
-      email: formData.get("email"),
-    } as any
-
-    const sameAsBilling = formData.get("same_as_billing")
-    if (sameAsBilling === "on") data.billing_address = data.shipping_address
-
-    if (sameAsBilling !== "on")
-      data.billing_address = {
-        first_name: formData.get("billing_address.first_name"),
-        last_name: formData.get("billing_address.last_name"),
-        address_1: formData.get("billing_address.address_1"),
-        address_2: "",
-        company: formData.get("billing_address.company"),
-        postal_code: formData.get("billing_address.postal_code"),
-        city: formData.get("billing_address.city"),
-        country_code: formData.get("billing_address.country_code"),
-        province: formData.get("billing_address.province"),
-        phone: formData.get("billing_address.phone"),
-      }
-    await updateCart(data)
-  } catch (e: any) {
-    return e.message
+export async function saveCheckoutAddresses(formData: FormData) {
+  if (!formData) {
+    throw new Error("No form data found when setting addresses")
+  }
+  const cartId = await getCartId()
+  if (!cartId) {
+    throw new Error("No existing cart found when setting addresses")
   }
 
-  redirect(`/${countryCode}/checkout?step=delivery`)
+  const countryCode = String(
+    formData.get("shipping_address.country_code") || ""
+  ).toLowerCase()
+  const region = await getRegion(countryCode)
+
+  if (!region) {
+    throw new Error(
+      "Shipping is not available to the selected country. Add that country to a Medusa region first."
+    )
+  }
+
+  const data = {
+    region_id: region.id,
+    shipping_address: {
+      first_name: formData.get("shipping_address.first_name"),
+      last_name: formData.get("shipping_address.last_name"),
+      address_1: formData.get("shipping_address.address_1"),
+      address_2: "",
+      company: formData.get("shipping_address.company"),
+      postal_code: formData.get("shipping_address.postal_code"),
+      city: formData.get("shipping_address.city"),
+      country_code: countryCode,
+      province: formData.get("shipping_address.province"),
+      phone: formData.get("shipping_address.phone"),
+    },
+    email: formData.get("email"),
+  } as HttpTypes.StoreUpdateCart & { email?: FormDataEntryValue | null }
+
+  const sameAsBilling = formData.get("same_as_billing")
+  if (sameAsBilling === "on") {
+    data.billing_address = data.shipping_address
+  } else {
+    data.billing_address = {
+      first_name: formData.get("billing_address.first_name"),
+      last_name: formData.get("billing_address.last_name"),
+      address_1: formData.get("billing_address.address_1"),
+      address_2: "",
+      company: formData.get("billing_address.company"),
+      postal_code: formData.get("billing_address.postal_code"),
+      city: formData.get("billing_address.city"),
+      country_code: formData.get("billing_address.country_code"),
+      province: formData.get("billing_address.province"),
+      phone: formData.get("billing_address.phone"),
+    }
+  }
+
+  await updateCart(data)
+  return countryCode
+}
+
+// TODO: Pass a POJO instead of a form entity here
+export async function setAddresses(currentState: unknown, formData: FormData) {
+  try {
+    const countryCode = await saveCheckoutAddresses(formData)
+    const checkoutCountry =
+      String(formData.get("checkout_country") || countryCode).toLowerCase() ||
+      countryCode
+    redirect(`/${checkoutCountry}/checkout?step=delivery`)
+  } catch (e: any) {
+    unstable_rethrow(e)
+    return e.message
+  }
 }
 
 /**

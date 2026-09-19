@@ -45,6 +45,17 @@ function formatAddress(address: HttpTypes.StoreCartAddress) {
   return ret
 }
 
+function hasValidCalculatedAmount(
+  option: HttpTypes.StoreCartShippingOption,
+  calculatedPricesMap: Record<string, number>
+) {
+  if (option.price_type !== "calculated") {
+    return option.amount != null
+  }
+  const amount = calculatedPricesMap[option.id] ?? option.amount
+  return typeof amount === "number" && amount > 0
+}
+
 const Shipping: React.FC<ShippingProps> = ({
   cart,
   availableShippingMethods,
@@ -91,8 +102,8 @@ const Shipping: React.FC<ShippingProps> = ({
           res
             .filter((r) => r.status === "fulfilled")
             .forEach((p) => {
-              if (p.value?.id) {
-                pricesMap[p.value.id] = p.value.amount ?? 0
+              if (p.value?.id && typeof p.value.amount === "number" && p.value.amount > 0) {
+                pricesMap[p.value.id] = p.value.amount
               }
             })
 
@@ -110,6 +121,30 @@ const Shipping: React.FC<ShippingProps> = ({
       setShowPickupOptions(PICKUP_OPTION_ON)
     }
   }, [availableShippingMethods])
+
+  const selectedMethod = _shippingMethods?.find((option) => option.id === shippingMethodId)
+  const selectedRateReady = selectedMethod
+    ? hasValidCalculatedAmount(selectedMethod, calculatedPricesMap)
+    : false
+  const calculatedOptions =
+    _shippingMethods?.filter((option) => option.price_type === "calculated") || []
+  const onlyCalculatedRates = Boolean(
+    _shippingMethods?.length &&
+      calculatedOptions.length === _shippingMethods.length
+  )
+  const ratesUnavailable = Boolean(
+    !isLoadingPrices &&
+      ((selectedMethod?.price_type === "calculated" && !selectedRateReady) ||
+        (onlyCalculatedRates &&
+          calculatedOptions.every(
+            (option) => !hasValidCalculatedAmount(option, calculatedPricesMap)
+          )))
+  )
+  const deliveryError =
+    error ||
+    (ratesUnavailable
+      ? "Shipping rates temporarily unavailable"
+      : null)
 
   const handleEdit = () => {
     router.push(pathname + "?step=delivery", { scroll: false })
@@ -306,15 +341,15 @@ const Shipping: React.FC<ShippingProps> = ({
                               amount: option.amount!,
                               currency_code: cart?.currency_code,
                             })
-                          ) : calculatedPricesMap[option.id] ? (
+                          ) : hasValidCalculatedAmount(option, calculatedPricesMap) ? (
                             convertToLocale({
-                              amount: calculatedPricesMap[option.id],
+                              amount: calculatedPricesMap[option.id] ?? option.amount!,
                               currency_code: cart?.currency_code,
                             })
                           ) : isLoadingPrices ? (
                             <Loader />
                           ) : (
-                            "-"
+                            "Unavailable"
                           )}
                         </span>
                       </Radio>
@@ -397,7 +432,7 @@ const Shipping: React.FC<ShippingProps> = ({
 
           <div>
             <ErrorMessage
-              error={error}
+              error={deliveryError}
               data-testid="delivery-option-error-message"
             />
             <Button
@@ -405,7 +440,12 @@ const Shipping: React.FC<ShippingProps> = ({
               className="mt-6 rounded-full !bg-aura-gold px-7 text-[12px] font-semibold uppercase tracking-[0.12em] !text-aura-forest hover:!bg-aura-forest hover:!text-aura-cream"
               onClick={handleSubmit}
               isLoading={isLoading}
-              disabled={!shippingMethodId || isLoading}
+              disabled={
+                !shippingMethodId ||
+                isLoading ||
+                ratesUnavailable ||
+                (selectedMethod?.price_type === "calculated" && !selectedRateReady)
+              }
               data-testid="submit-delivery-option-button"
             >
               Continue to payment

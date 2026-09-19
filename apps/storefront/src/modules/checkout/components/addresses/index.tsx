@@ -1,17 +1,15 @@
 "use client"
-import { setAddresses } from "@lib/data/cart"
 import useToggleState from "@lib/hooks/use-toggle-state"
 import compareAddresses from "@lib/util/compare-addresses"
 import { CheckCircleSolid } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import Divider from "@modules/common/components/divider"
-import { Heading, Text } from "@modules/common/components/ui"
+import { Heading, Text, Button } from "@modules/common/components/ui"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useActionState } from "react"
+import { FormEvent, useState } from "react"
 import BillingAddress from "../billing_address"
 import ErrorMessage from "../error-message"
 import ShippingAddress from "../shipping-address"
-import { SubmitButton } from "../submit-button"
 
 const Addresses = ({
   cart,
@@ -40,7 +38,45 @@ const Addresses = ({
     router.push(pathname + "?step=address")
   }
 
-  const [message, formAction] = useActionState(setAddresses, null)
+  const checkoutCountry = pathname.split("/").filter(Boolean)[0] || "us"
+  const [message, setMessage] = useState<string | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setMessage(null)
+    setIsSaving(true)
+    try {
+      const response = await fetch("/api/cart/addresses", {
+        method: "POST",
+        body: new FormData(event.currentTarget),
+      })
+      const result = (await response.json().catch(() => null)) as
+        | { ok: true }
+        | { ok: false; error?: string }
+        | null
+
+      if (!response.ok || !result?.ok) {
+        setMessage(
+          result && "error" in result && result.error
+            ? result.error
+            : "Unable to save that address. Please try again."
+        )
+        return
+      }
+
+      router.push(`${pathname}?step=delivery`)
+      router.refresh()
+    } catch (error) {
+      setMessage(
+        error instanceof Error && error.message
+          ? error.message
+          : "Unable to save that address. Please try again."
+      )
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   return (
     <div>
@@ -65,8 +101,14 @@ const Addresses = ({
         )}
       </div>
       {isOpen ? (
-        <form action={formAction}>
+        <form onSubmit={handleSubmit}>
           <div className="pb-8">
+            <input type="hidden" name="checkout_country" value={checkoutCountry} />
+            <input
+              type="hidden"
+              name="same_as_billing"
+              value={sameAsBilling ? "on" : "off"}
+            />
             <ShippingAddress
               customer={customer}
               checked={sameAsBilling}
@@ -87,12 +129,15 @@ const Addresses = ({
                 <BillingAddress cart={cart} regions={regions} />
               </div>
             )}
-            <SubmitButton
+            <Button
+              type="submit"
+              size="large"
+              isLoading={isSaving}
               className="mt-6 rounded-full !bg-aura-gold px-7 text-[12px] font-semibold uppercase tracking-[0.12em] !text-aura-forest hover:!bg-aura-forest hover:!text-aura-cream"
               data-testid="submit-address-button"
             >
               Continue to delivery
-            </SubmitButton>
+            </Button>
             <ErrorMessage error={message} data-testid="address-error-message" />
           </div>
         </form>

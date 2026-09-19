@@ -117,9 +117,9 @@ export async function middleware(request: NextRequest) {
   // if the country code is available, use it, otherwise use the default region
   const country = countryCode || DEFAULT_REGION
   const firstPathSegment = request.nextUrl.pathname.split("/")[1]?.toLowerCase()
-  const urlHasCountry = firstPathSegment === country.toLowerCase()
+  const hasCountryPrefix = /^[a-z]{2}$/.test(firstPathSegment || "")
 
-  if (urlHasCountry) {
+  if (hasCountryPrefix) {
     if (!cacheIdCookie) {
       const response = NextResponse.next()
       response.cookies.set("_medusa_cache_id", cacheId, {

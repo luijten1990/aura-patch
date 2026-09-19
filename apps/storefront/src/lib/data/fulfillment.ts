@@ -53,7 +53,10 @@ export const calculatePriceForShippingOption = async (
       }
     )
     .then(({ shipping_option }) => shipping_option)
-    .catch((_e) => {
-      return null
+    .catch(() => {
+      return {
+        id: optionId,
+        amount: null,
+      } as HttpTypes.StoreCartShippingOption
     })
 }

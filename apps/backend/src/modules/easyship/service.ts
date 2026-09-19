@@ -20,6 +20,9 @@ export class EasyshipFulfillmentService extends AbstractFulfillmentProviderServi
   private readonly rateCache = new Map<string, { rate: EasyRate; at: number }>()
   constructor(_: Record<string, unknown>, options: Options) { super(); this.options_ = options }
 
+  private readonly inflightQuotes = new Map<string, Promise<EasyRate>>()
+  private readonly failedQuotes = new Map<string, { at: number; message: string }>()
+
   async getFulfillmentOptions(): Promise<FulfillmentOption[]> {
     return [
       { id: INTERNATIONAL_OPTION_ID, name: "Live international rate" },
@@ -33,7 +36,7 @@ export class EasyshipFulfillmentService extends AbstractFulfillmentProviderServi
 
   async validateFulfillmentData(optionData: Record<string, unknown>, data: Record<string, unknown>, context: ValidateFulfillmentDataContext) {
     const destination = context.shipping_address as Address | undefined
-    const origin = context.from_location?.address as Address | undefined
+    const origin = this.originAddress(data, context)
     this.assertDestination(optionData, destination)
     if (this.optionId(optionData) !== DOMESTIC_OPTION_ID) {
       this.assertAddress(origin, "warehouse")
@@ -42,21 +45,21 @@ export class EasyshipFulfillmentService extends AbstractFulfillmentProviderServi
   }
 
   async calculatePrice(optionData: CalculateShippingOptionPriceDTO["optionData"], data: CalculateShippingOptionPriceDTO["data"], context: CalculateShippingOptionPriceDTO["context"]) {
-    try {
-      const destination = context.shipping_address as Address | undefined
-      const country = destination?.country_code?.toLowerCase()
-      if (!country || country === "us") {
-        return { calculated_amount: 0, is_calculated_price_tax_inclusive: false }
-      }
-      const origin = (data.easyship_origin || context.from_location?.address) as Address | undefined
-      this.assertDestination(optionData, destination)
-      this.assertAddress(origin, "warehouse")
-      const rate = await this.quoteRate(origin!, destination!, false)
-      return { calculated_amount: Math.round(this.charge(rate) * 100), is_calculated_price_tax_inclusive: false }
-    } catch (error) {
-      console.error("Easyship calculatePrice skipped so cart totals can complete", error)
+    const destination = context.shipping_address as Address | undefined
+    const country = destination?.country_code?.toLowerCase()
+    if (!country || country === "us") {
       return { calculated_amount: 0, is_calculated_price_tax_inclusive: false }
     }
+    const origin = this.originAddress(data as Record<string, unknown> | undefined, context)
+    if (!this.hasAddress(origin) || !this.hasAddress(destination)) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        "Warehouse or shipping address is missing fields needed for a shipping quote"
+      )
+    }
+    this.assertDestination(optionData, destination)
+    const rate = await this.quoteRate(origin, destination, false)
+    return { calculated_amount: Math.round(this.charge(rate) * 100), is_calculated_price_tax_inclusive: false }
   }
 
   async createFulfillment(
@@ -66,8 +69,8 @@ export class EasyshipFulfillmentService extends AbstractFulfillmentProviderServi
     _fulfillment: Partial<Omit<FulfillmentDTO, "provider_id" | "data" | "items">>
   ): Promise<CreateFulfillmentResult> {
     const destination = order?.shipping_address as Address | undefined
-    const origin = data.easyship_origin as Address | undefined
-    const optionData = { id: data.easyship_option_id || data.id }
+    const origin = this.originAddress(data, { from_location: { address: data?.easyship_origin as Address | undefined } })
+    const optionData = { id: data?.easyship_option_id || data?.id }
     this.assertDestination(optionData, destination)
     this.assertAddress(origin, "warehouse")
     const domestic = this.isDomestic(optionData, destination)
@@ -131,6 +134,30 @@ export class EasyshipFulfillmentService extends AbstractFulfillmentProviderServi
     if (cached && Date.now() - cached.at < 15 * 60 * 1000) {
       return cached.rate
     }
+    const failed = this.failedQuotes.get(key)
+    if (failed && Date.now() - failed.at < 5 * 60 * 1000) {
+      throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, failed.message)
+    }
+    const inflight = this.inflightQuotes.get(key)
+    if (inflight) {
+      return inflight
+    }
+    const request = this.fetchQuote(key, origin, destination, domestic, cached)
+    this.inflightQuotes.set(key, request)
+    try {
+      return await request
+    } finally {
+      this.inflightQuotes.delete(key)
+    }
+  }
+
+  private async fetchQuote(
+    key: string,
+    origin: Address,
+    destination: Address,
+    domestic: boolean,
+    cached: { rate: EasyRate; at: number } | undefined
+  ) {
     try {
       const response = await this.request("/rates", {
         origin_address: this.address(origin),
@@ -148,11 +175,14 @@ export class EasyshipFulfillmentService extends AbstractFulfillmentProviderServi
       }
       const rate = domestic ? this.pickDomesticRate(valid) : this.pickCheapest(valid)
       this.rateCache.set(key, { rate, at: Date.now() })
+      this.failedQuotes.delete(key)
       return rate
     } catch (error) {
       if (cached) {
         return cached.rate
       }
+      const message = error instanceof Error ? error.message : "Shipping rates temporarily unavailable"
+      this.failedQuotes.set(key, { at: Date.now(), message })
       throw error
     }
   }
@@ -267,7 +297,7 @@ export class EasyshipFulfillmentService extends AbstractFulfillmentProviderServi
     if (!response.ok) {
       throw new MedusaError(
         MedusaError.Types.UNEXPECTED_STATE,
-        `Easyship request failed (${response.status}): ${JSON.stringify(result)}`
+        this.easyshipErrorMessage(response.status, result)
       )
     }
     return result
@@ -293,6 +323,29 @@ export class EasyshipFulfillmentService extends AbstractFulfillmentProviderServi
       console.error("Brevo Easyship label email request failed", error)
     }
   }
+  private originAddress(
+    data: Record<string, unknown> | undefined,
+    context?: { from_location?: { address?: Address } }
+  ) {
+    const stored = data?.easyship_origin
+    if (stored && typeof stored === "object") {
+      return stored as Address
+    }
+    return context?.from_location?.address
+  }
+
+  private hasAddress(value: Address | undefined) {
+    return Boolean(value?.address_1 && value.city && value.postal_code && value.country_code)
+  }
+
+  private easyshipErrorMessage(status: number, result: Record<string, unknown>) {
+    const blob = JSON.stringify(result)
+    if (status === 403 && /usage_limit/i.test(blob)) {
+      return "Shipping rates temporarily unavailable"
+    }
+    return `Easyship request failed (${status}): ${blob}`
+  }
+
   private assertAddress(value: Address | undefined, kind: string) {
     if (!value?.address_1 || !value.city || !value.postal_code || !value.country_code) {
       throw new MedusaError(
