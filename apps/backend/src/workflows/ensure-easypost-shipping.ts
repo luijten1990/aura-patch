@@ -9,9 +9,11 @@ import {
   createServiceZonesWorkflow,
   createShippingOptionsWorkflow,
 } from "@medusajs/medusa/core-flows"
-
-const OPTION_ID = "easypost"
-const OPTION_NAME = "EasyPost Shipping"
+import {
+  EASYPOST_RATE_OPTIONS,
+  LEGACY_EASYPOST_OPTION_ID,
+  type EasyPostRateOption,
+} from "../modules/easypost/rate-options"
 
 type GeoZone = { country_code?: string }
 type ShippingOptionRecord = {
@@ -51,8 +53,9 @@ const isLeftoverShippingOption = (option: ShippingOptionRecord) =>
 const isFreeStandardOption = (option: ShippingOptionRecord) =>
   /free standard|standard shipping \(5/.test((option.name || "").toLowerCase())
 
-const isEasyPostOption = (option: ShippingOptionRecord, providerId: string) =>
-  option.provider_id === providerId && option.data?.id === OPTION_ID
+const isLegacyEasyPostOption = (option: ShippingOptionRecord, providerId: string) =>
+  option.provider_id === providerId &&
+  (option.data?.id === LEGACY_EASYPOST_OPTION_ID || option.name === "EasyPost Shipping")
 
 const isUsOnlyZone = (zone: ServiceZoneRecord) => {
   const countries = (zone.geo_zones || [])
@@ -209,27 +212,80 @@ const ensureEasyPostShippingStep = createStep(
     const shippingProfile = (shippingProfiles as ShippingProfileRecord[])[0]
     const createdOptionIds: string[] = []
 
-    const createOption = async (zone: ServiceZoneRecord | undefined, code: string, description: string) => {
+    const createCalculatedOption = async (
+      zone: ServiceZoneRecord | undefined,
+      spec: EasyPostRateOption
+    ) => {
       if (!zone?.id || !shippingProfile?.id) {
         return
       }
-      if ((zone.shipping_options || []).some((option) => isEasyPostOption(option, easypostProviderId))) {
+      if (
+        (zone.shipping_options || []).some(
+          (option) => option.provider_id === easypostProviderId && option.data?.id === spec.id
+        )
+      ) {
         return
       }
       const { result } = await createShippingOptionsWorkflow(container).run({
         input: [
           {
-            name: OPTION_NAME,
+            name: spec.name,
             price_type: "calculated",
             provider_id: easypostProviderId,
             service_zone_id: zone.id,
             shipping_profile_id: shippingProfile.id,
-            data: { id: OPTION_ID },
+            data: { id: spec.id },
             type: {
-              label: "EasyPost",
-              description,
-              code,
+              label: spec.name,
+              description: spec.description,
+              code: spec.code,
             },
+            rules: [
+              { attribute: "enabled_in_store", value: "true", operator: "eq" },
+              { attribute: "is_return", value: "false", operator: "eq" },
+            ],
+          },
+        ],
+      })
+      const createdId = Array.isArray(result) ? result[0]?.id : undefined
+      if (createdId) {
+        createdOptionIds.push(createdId)
+        zone.shipping_options = [...(zone.shipping_options || []), { id: createdId, data: { id: spec.id }, provider_id: easypostProviderId, name: spec.name }]
+      }
+    }
+
+    const createFreeUsOption = async (zone: ServiceZoneRecord | undefined) => {
+      if (!zone?.id || !shippingProfile?.id) {
+        return
+      }
+      if ((zone.shipping_options || []).some(isFreeStandardOption)) {
+        return
+      }
+      const { data: allProviders } = await query.graph({
+        entity: "fulfillment_provider",
+        fields: ["id"],
+      })
+      const manualProviderId = (allProviders as ProviderRecord[]).find((provider) =>
+        provider.id?.includes("manual")
+      )?.id
+      if (!manualProviderId) {
+        return
+      }
+      const { result } = await createShippingOptionsWorkflow(container).run({
+        input: [
+          {
+            name: "Free Standard Shipping (5–7 business days)",
+            price_type: "flat",
+            provider_id: manualProviderId,
+            service_zone_id: zone.id,
+            shipping_profile_id: shippingProfile.id,
+            data: { id: "free-standard-us" },
+            type: {
+              label: "Free Standard",
+              description: "Complimentary domestic shipping.",
+              code: "free-standard",
+            },
+            prices: [{ currency_code: "usd", amount: 0 }],
             rules: [
               { attribute: "enabled_in_store", value: "true", operator: "eq" },
               { attribute: "is_return", value: "false", operator: "eq" },
@@ -243,17 +299,31 @@ const ensureEasyPostShippingStep = createStep(
       }
     }
 
-    await createOption(usZone, "easypost-us", "Live EasyPost rate for United States addresses.")
-    await createOption(
-      existingInternational,
-      "easypost-intl",
-      "Live EasyPost rate for international addresses."
-    )
-    await createOption(
-      extraInternationalZone,
-      "easypost-intl",
-      "Live EasyPost rate for international addresses."
-    )
+    for (const spec of EASYPOST_RATE_OPTIONS.filter((option) => option.zone === "us")) {
+      await createCalculatedOption(usZone, spec)
+    }
+    for (const spec of EASYPOST_RATE_OPTIONS.filter((option) => option.zone === "intl")) {
+      await createCalculatedOption(existingInternational, spec)
+      await createCalculatedOption(extraInternationalZone, spec)
+    }
+    await createFreeUsOption(usZone)
+
+    for (const zone of [...zones, extraInternationalZone, usZone]) {
+      if (!zone?.id) {
+        continue
+      }
+      for (const option of zone.shipping_options || []) {
+        if (!option.id || !isLegacyEasyPostOption(option, easypostProviderId)) {
+          continue
+        }
+        try {
+          await fulfillment.deleteShippingOptions(option.id)
+          removedIds.push(option.id)
+        } catch {
+          // Option is still referenced by a cart or order.
+        }
+      }
+    }
 
     const internationalZones = [
       ...zones,

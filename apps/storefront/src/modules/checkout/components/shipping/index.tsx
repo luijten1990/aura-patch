@@ -45,6 +45,28 @@ function formatAddress(address: HttpTypes.StoreCartAddress) {
   return ret
 }
 
+function shippingMethodRank(option: HttpTypes.StoreCartShippingOption) {
+  const name = (option.name || "").toLowerCase()
+  if (/free standard/.test(name)) {
+    return 0
+  }
+  if (/ground advantage/.test(name)) {
+    return 1
+  }
+  if (/priority/.test(name)) {
+    return 2
+  }
+  if (/ups/.test(name)) {
+    return 3
+  }
+  if (/express/.test(name)) {
+    return 4
+  }
+  if (/standard/.test(name)) {
+    return 5
+  }
+  return 6
+}
 function hasValidCalculatedAmount(
   option: HttpTypes.StoreCartShippingOption,
   calculatedPricesMap: Record<string, number>
@@ -100,7 +122,8 @@ const Shipping: React.FC<ShippingProps> = ({
       }
       return true
     }
-  )
+  )?.slice()
+    .sort((a, b) => shippingMethodRank(a) - shippingMethodRank(b))
 
   const _pickupMethods = availableShippingMethods?.filter(
     (sm) => (sm as unknown as { service_zone?: { fulfillment_set?: { type?: string; location?: { address: HttpTypes.StoreCartAddress } } } }).service_zone?.fulfillment_set?.type === "pickup"
@@ -330,7 +353,17 @@ const Shipping: React.FC<ShippingProps> = ({
                       supported.
                     </span>
                   )}
-                  {_shippingMethods?.map((option) => {
+                  {_shippingMethods
+                    ?.filter((option) => {
+                      if (option.price_type !== "calculated") {
+                        return true
+                      }
+                      if (isLoadingPrices) {
+                        return true
+                      }
+                      return hasValidCalculatedAmount(option, calculatedPricesMap)
+                    })
+                    .map((option) => {
                     return (
                       <Radio
                         key={option.id}

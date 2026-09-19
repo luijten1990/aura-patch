@@ -8,6 +8,11 @@ import type {
   FulfillmentOrderDTO,
   ValidateFulfillmentDataContext,
 } from "@medusajs/framework/types"
+import {
+  EASYPOST_RATE_OPTIONS,
+  LEGACY_EASYPOST_OPTION_ID,
+  matchesEasyPostOption,
+} from "./rate-options"
 
 type Address = {
   address_1?: string
@@ -31,6 +36,7 @@ type Options = {
   itemHsCode?: string
   customsSigner: string
   originName?: string
+  originCompany?: string
   originPhone?: string
   originEmail?: string
   originStreet?: string
@@ -38,6 +44,7 @@ type Options = {
   originState?: string
   originZip?: string
   originCountry?: string
+  originAddressId?: string
   weightOz: number
   lengthIn: number
   widthIn: number
@@ -73,15 +80,14 @@ type EasyPostShipment = {
   error?: { message?: string; errors?: { message?: string }[] }
 }
 
-const OPTION_ID = "easypost"
 const US_TERRITORIES = new Set(["as", "gu", "mp", "pr", "vi"])
 
 export class EasyPostFulfillmentService extends AbstractFulfillmentProviderService {
   static identifier = "easypost"
 
   protected readonly options_: Options
-  private readonly rateCache = new Map<string, { rate: EasyPostRate; at: number }>()
-  private readonly inflightQuotes = new Map<string, Promise<EasyPostRate>>()
+  private readonly rateCache = new Map<string, { rates: EasyPostRate[]; at: number }>()
+  private readonly inflightQuotes = new Map<string, Promise<EasyPostRate[]>>()
   private readonly failedQuotes = new Map<string, { at: number; message: string }>()
 
   constructor(_: Record<string, unknown>, options: Options) {
@@ -90,7 +96,10 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
   }
 
   async getFulfillmentOptions(): Promise<FulfillmentOption[]> {
-    return [{ id: OPTION_ID, name: "EasyPost live rate" }]
+    return EASYPOST_RATE_OPTIONS.map((option) => ({
+      id: option.id,
+      name: option.name,
+    }))
   }
 
   async validateOption() {
@@ -102,7 +111,7 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
   }
 
   async validateFulfillmentData(
-    _optionData: Record<string, unknown>,
+    optionData: Record<string, unknown>,
     data: Record<string, unknown>,
     context: ValidateFulfillmentDataContext
   ) {
@@ -110,7 +119,9 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
     const origin = this.originAddress(data, context as LocationContext)
     this.assertAddress(origin, "warehouse")
     this.assertAddress(destination, "shipping")
-    return { ...data, easypost_origin: origin, easypost_option_id: OPTION_ID }
+    const optionId = this.optionId(optionData, data)
+    await this.quoteRate(origin, destination as Address, optionId)
+    return { ...data, easypost_origin: origin, easypost_option_id: optionId }
   }
 
   async calculatePrice(
@@ -129,7 +140,11 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
         "Warehouse or shipping address is missing fields needed for a shipping quote"
       )
     }
-    const rate = await this.quoteRate(origin as Address, destination as Address)
+    const rate = await this.quoteRate(
+      origin as Address,
+      destination as Address,
+      this.optionId(_optionData as Record<string, unknown>, data as Record<string, unknown>)
+    )
     return {
       calculated_amount: this.customerCharge(rate),
       is_calculated_price_tax_inclusive: false,
@@ -149,8 +164,9 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
     this.assertAddress(origin, "warehouse")
     this.assertAddress(destination, "shipping")
 
-    const quoted = await this.quoteRate(origin as Address, destination as Address)
-    const purchased = await this.buyRate(origin as Address, destination as Address, quoted)
+    const optionId = this.optionId(data, data)
+    const quoted = await this.quoteRate(origin as Address, destination as Address, optionId)
+    const purchased = await this.buyRate(origin as Address, destination as Address, quoted, optionId)
     const rate = purchased.selected_rate || quoted
     const trackingNumber = purchased.tracking_code
     const labelUrl = purchased.postage_label?.label_pdf_url || purchased.postage_label?.label_url
@@ -197,7 +213,24 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
     return {}
   }
 
-  private async quoteRate(origin: Address, destination: Address) {
+  private optionId(
+    optionData?: Record<string, unknown>,
+    data?: Record<string, unknown>
+  ) {
+    const value =
+      optionData?.id ||
+      data?.easypost_option_id ||
+      data?.id ||
+      LEGACY_EASYPOST_OPTION_ID
+    return String(value)
+  }
+
+  private async quoteRate(origin: Address, destination: Address, optionId: string) {
+    const rates = await this.quoteRates(origin, destination)
+    return this.pickRate(rates, destination, optionId)
+  }
+
+  private async quoteRates(origin: Address, destination: Address) {
     const key = [
       origin.country_code,
       origin.postal_code,
@@ -208,7 +241,7 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
       .toLowerCase()
     const cached = this.rateCache.get(key)
     if (cached && Date.now() - cached.at < 15 * 60 * 1000) {
-      return cached.rate
+      return cached.rates
     }
     const failed = this.failedQuotes.get(key)
     if (failed && Date.now() - failed.at < 5 * 60 * 1000) {
@@ -218,7 +251,7 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
     if (inflight) {
       return inflight
     }
-    const request = this.fetchQuote(key, origin, destination, cached)
+    const request = this.fetchRates(key, origin, destination, cached)
     this.inflightQuotes.set(key, request)
     try {
       return await request
@@ -227,21 +260,21 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
     }
   }
 
-  private async fetchQuote(
+  private async fetchRates(
     key: string,
     origin: Address,
     destination: Address,
-    cached: { rate: EasyPostRate; at: number } | undefined
+    cached: { rates: EasyPostRate[]; at: number } | undefined
   ) {
     try {
       const shipment = await this.createShipment(origin, destination, 8000)
-      const rate = this.pickRate(shipment.rates || [], destination)
-      this.rateCache.set(key, { rate, at: Date.now() })
+      const rates = shipment.rates || []
+      this.rateCache.set(key, { rates, at: Date.now() })
       this.failedQuotes.delete(key)
-      return rate
+      return rates
     } catch (error) {
       if (cached) {
-        return cached.rate
+        return cached.rates
       }
       const message =
         error instanceof Error ? error.message : "Shipping rates temporarily unavailable"
@@ -258,7 +291,7 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
       {
         shipment: {
           to_address: this.address(destination),
-          from_address: this.address(origin, true),
+          from_address: this.fromAddress(origin),
           parcel: {
             length: this.options_.lengthIn,
             width: this.options_.widthIn,
@@ -277,7 +310,7 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
     return shipment
   }
 
-  private pickRate(rates: EasyPostRate[], destination: Address) {
+  private pickRate(rates: EasyPostRate[], destination: Address, optionId: string) {
     const usd = rates.filter(
       (rate) => (rate.currency || "USD") === "USD" && Number.isFinite(this.charge(rate)) && this.charge(rate) > 0
     )
@@ -287,21 +320,32 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
         "No USD EasyPost rate is available for this destination"
       )
     }
-    if (!this.isInternational(destination)) {
-      const preferred = usd.filter((rate) => {
-        const blob = `${rate.carrier || ""} ${rate.service || ""}`.toLowerCase()
-        return (
-          blob.includes("groundadvantage") ||
-          blob.includes("priority") ||
-          (blob.includes("ups") && blob.includes("ground") && !blob.includes("surepost"))
-        )
-      })
-      return this.cheapest(preferred.length ? preferred : usd)
+    const matched = usd.filter((rate) =>
+      matchesEasyPostOption(optionId, rate.carrier, rate.service)
+    )
+    if (!matched.length) {
+      throw new MedusaError(
+        MedusaError.Types.UNEXPECTED_STATE,
+        `No EasyPost rate is available for ${optionId}`
+      )
     }
-    return this.cheapest(usd)
+    if (optionId === LEGACY_EASYPOST_OPTION_ID && !this.isInternational(destination)) {
+      const preferred = matched.filter((rate) =>
+        matchesEasyPostOption("easypost-usps-ground", rate.carrier, rate.service) ||
+        matchesEasyPostOption("easypost-usps-priority", rate.carrier, rate.service) ||
+        matchesEasyPostOption("easypost-ups-ground", rate.carrier, rate.service)
+      )
+      return this.cheapest(preferred.length ? preferred : matched)
+    }
+    return this.cheapest(matched)
   }
 
-  private async buyRate(origin: Address, destination: Address, quoted: EasyPostRate) {
+  private async buyRate(
+    origin: Address,
+    destination: Address,
+    quoted: EasyPostRate,
+    optionId: string
+  ) {
     const buy = async (shipmentId: string, rateId: string) =>
       this.request<EasyPostShipment>(
         "POST",
@@ -319,7 +363,9 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
     }
 
     const shipment = await this.createShipment(origin, destination, 30000)
-    const rate = this.matchRate(shipment.rates || [], quoted) || this.pickRate(shipment.rates || [], destination)
+    const rate =
+      this.matchRate(shipment.rates || [], quoted) ||
+      this.pickRate(shipment.rates || [], destination, optionId)
     if (!shipment.id || !rate?.id) {
       throw new MedusaError(
         MedusaError.Types.UNEXPECTED_STATE,
@@ -381,14 +427,24 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
     }
   }
 
+  private fromAddress(origin: Address) {
+    const address = this.address(origin, true)
+    if (this.options_.originAddressId) {
+      return { ...address, id: this.options_.originAddressId }
+    }
+    return address
+  }
+
   private address(value: Address, origin = false) {
     return {
       name:
         [value.first_name, value.last_name].filter(Boolean).join(" ") ||
         value.company ||
         (origin ? this.options_.originName : undefined) ||
-        "Aura Patch",
-      company: value.company,
+        "Aura Patch Co.",
+      company:
+        value.company ||
+        (origin ? this.options_.originCompany || this.options_.originName : undefined),
       street1: value.address_1,
       street2: value.address_2,
       city: value.city,
@@ -400,10 +456,27 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
     }
   }
 
+  private warehouseOrigin(): Address {
+    return {
+      first_name: this.options_.originName,
+      company: this.options_.originCompany || this.options_.originName,
+      address_1: this.options_.originStreet,
+      city: this.options_.originCity,
+      province: this.options_.originState,
+      postal_code: this.options_.originZip,
+      country_code: this.options_.originCountry || "us",
+      phone: this.options_.originPhone,
+      email: this.options_.originEmail,
+    }
+  }
+
   private originAddress(
     data: Record<string, unknown> | undefined,
     context?: LocationContext
   ) {
+    if (this.options_.originStreet || this.options_.originAddressId) {
+      return this.warehouseOrigin()
+    }
     const stored = data?.easypost_origin
     const location = (
       stored && typeof stored === "object"

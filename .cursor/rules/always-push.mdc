@@ -1,0 +1,10 @@
+---
+description: Commit and push completed work to origin without asking
+alwaysApply: true
+---
+
+# Always push
+
+After finishing requested work in this repo, create a git commit (if there are relevant changes) and `git push origin HEAD` without asking first.
+
+Do not commit secrets, `.env`, lockfile hand-edits, `test-results/`, or unrelated untracked files. Use the existing commit-message style. Never force-push to main.

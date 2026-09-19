@@ -45,14 +45,20 @@ const easypostProvider =
             itemValueUsd: Number(process.env.EASYPOST_ITEM_VALUE_USD),
             itemHsCode: process.env.EASYPOST_ITEM_HS_CODE,
             customsSigner: process.env.EASYPOST_CUSTOMS_SIGNER || "Aura Patch",
-            originName: process.env.EASYPOST_ORIGIN_NAME || "Aura Patch",
-            originPhone: process.env.EASYPOST_ORIGIN_PHONE,
-            originEmail: process.env.EASYPOST_ORIGIN_EMAIL || process.env.BREVO_SENDER_EMAIL,
-            originStreet: process.env.EASYPOST_ORIGIN_STREET,
-            originCity: process.env.EASYPOST_ORIGIN_CITY,
-            originState: process.env.EASYPOST_ORIGIN_STATE,
-            originZip: process.env.EASYPOST_ORIGIN_ZIP,
+            originName: process.env.EASYPOST_ORIGIN_NAME || "AURA PATCH CO.",
+            originCompany: process.env.EASYPOST_ORIGIN_COMPANY || "NOOR VENTURES LLC",
+            originPhone: process.env.EASYPOST_ORIGIN_PHONE || "2064862392",
+            originEmail:
+              process.env.EASYPOST_ORIGIN_EMAIL ||
+              process.env.BREVO_SENDER_EMAIL ||
+              "info@getaurapatch.com",
+            originStreet: process.env.EASYPOST_ORIGIN_STREET || "55 Atlanta St SE",
+            originCity: process.env.EASYPOST_ORIGIN_CITY || "Marietta",
+            originState: process.env.EASYPOST_ORIGIN_STATE || "GA",
+            originZip: process.env.EASYPOST_ORIGIN_ZIP || "30060-1977",
             originCountry: process.env.EASYPOST_ORIGIN_COUNTRY || "US",
+            originAddressId: process.env.EASYPOST_ORIGIN_ADDRESS_ID ||
+              "adr_104b49ddb44711f1972a00224804dbec",
             weightOz: Number(process.env.EASYPOST_PACKAGE_WEIGHT_OZ || 3),
             lengthIn: Number(process.env.EASYPOST_PACKAGE_LENGTH_IN),
             widthIn: Number(process.env.EASYPOST_PACKAGE_WIDTH_IN),

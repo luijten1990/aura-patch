@@ -20,42 +20,59 @@ const options = {
 }
 
 const destination = {
-  country_code: "nl",
-  first_name: "Mirjam",
-  last_name: "Luijten",
-  address_1: "Bezuidenhoutseweg 261",
-  city: "Den Haag",
-  postal_code: "2594AN",
+  country_code: "us",
+  first_name: "Test",
+  last_name: "Order",
+  address_1: "100 Market Street",
+  city: "San Francisco",
+  province: "CA",
+  postal_code: "94105",
 }
 
+const rates = [
+  {
+    id: "rate_ground",
+    shipment_id: "shp_test",
+    rate: "6.07",
+    currency: "USD",
+    carrier: "USPS",
+    service: "GroundAdvantage",
+  },
+  {
+    id: "rate_express",
+    shipment_id: "shp_test",
+    rate: "28.40",
+    currency: "USD",
+    carrier: "USPS",
+    service: "PriorityMailExpress",
+  },
+]
+
 describe("EasyPostFulfillmentService", () => {
-  it("does not crash when quote data is missing easypost_origin", async () => {
+  it("quotes the matching EasyPost service instead of the cheapest overall", async () => {
     const originalFetch = global.fetch
-    global.fetch = (async () =>
-      Response.json({
-        id: "shp_test",
-        rates: [
-          {
-            id: "rate_1",
-            shipment_id: "shp_test",
-            rate: "18.40",
-            currency: "USD",
-            carrier: "DHLExpress",
-            service: "ExpressWorldwide",
-          },
-        ],
-      })) as typeof fetch
+    global.fetch = (async () => Response.json({ id: "shp_test", rates })) as typeof fetch
 
     const service = new EasyPostFulfillmentService({}, options)
     try {
       await expect(
         service.calculatePrice(
-          { id: "easypost" },
+          { id: "easypost-usps-ground" },
           {},
           { shipping_address: destination } as never
         )
       ).resolves.toEqual({
-        calculated_amount: 18.4,
+        calculated_amount: 6.07,
+        is_calculated_price_tax_inclusive: false,
+      })
+      await expect(
+        service.calculatePrice(
+          { id: "easypost-express" },
+          {},
+          { shipping_address: destination } as never
+        )
+      ).resolves.toEqual({
+        calculated_amount: 28.4,
         is_calculated_price_tax_inclusive: false,
       })
     } finally {
@@ -63,39 +80,27 @@ describe("EasyPostFulfillmentService", () => {
     }
   })
 
-  it("reuses an in-flight quote instead of calling EasyPost twice", async () => {
+  it("reuses one EasyPost shipment for multiple checkout options", async () => {
     let calls = 0
     const originalFetch = global.fetch
     global.fetch = (async () => {
       calls += 1
       await new Promise((resolve) => setTimeout(resolve, 20))
-      return Response.json({
-        id: "shp_test",
-        rates: [
-          {
-            id: "rate_1",
-            shipment_id: "shp_test",
-            rate: "18.40",
-            currency: "USD",
-            carrier: "DHLExpress",
-            service: "ExpressWorldwide",
-          },
-        ],
-      })
+      return Response.json({ id: "shp_test", rates })
     }) as typeof fetch
 
     const service = new EasyPostFulfillmentService({}, options)
     try {
-      const [first, second] = await Promise.all([
-        service.calculatePrice({ id: "easypost" }, {}, {
+      const [ground, express] = await Promise.all([
+        service.calculatePrice({ id: "easypost-usps-ground" }, {}, {
           shipping_address: destination,
         } as never),
-        service.calculatePrice({ id: "easypost" }, {}, {
+        service.calculatePrice({ id: "easypost-express" }, {}, {
           shipping_address: destination,
         } as never),
       ])
-      expect(first.calculated_amount).toBe(18.4)
-      expect(second.calculated_amount).toBe(18.4)
+      expect(ground.calculated_amount).toBe(6.07)
+      expect(express.calculated_amount).toBe(28.4)
       expect(calls).toBe(1)
     } finally {
       global.fetch = originalFetch
