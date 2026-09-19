@@ -10,7 +10,7 @@ import {
 class SubscriptionModuleService extends MedusaService({
   Subscription,
 }) {
-  getNextOrderDate({
+  async getNextOrderDate({
     last_order_date,
     expiration_date,
     interval,
@@ -20,7 +20,7 @@ class SubscriptionModuleService extends MedusaService({
     expiration_date?: Date | null
     interval: SubscriptionInterval
     period: number
-  }): Date | null {
+  }): Promise<Date | null> {
     const nextOrderDate = new Date(last_order_date)
     if (interval === SubscriptionInterval.MONTHLY) {
       nextOrderDate.setMonth(nextOrderDate.getMonth() + period)
@@ -46,7 +46,7 @@ class SubscriptionModuleService extends MedusaService({
       subscription_date: subscriptionDate,
       last_order_date: subscriptionDate,
       expiration_date: null,
-      next_order_date: this.getNextOrderDate({
+      next_order_date: await this.getNextOrderDate({
         last_order_date: subscriptionDate,
         expiration_date: null,
         interval: data.interval,
@@ -65,7 +65,7 @@ class SubscriptionModuleService extends MedusaService({
     return await this.updateSubscriptions({
       id,
       last_order_date: orderDate,
-      next_order_date: this.getNextOrderDate({
+      next_order_date: await this.getNextOrderDate({
         last_order_date: orderDate,
         expiration_date: subscription.expiration_date,
         interval: subscription.interval,
