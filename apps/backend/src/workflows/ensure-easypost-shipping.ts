@@ -223,7 +223,6 @@ const ensureEasyPostShippingStep = createStep(
               description,
               code,
             },
-            prices: [{ currency_code: "usd", amount: 0 }],
             rules: [
               { attribute: "enabled_in_store", value: "true", operator: "eq" },
               { attribute: "is_return", value: "false", operator: "eq" },

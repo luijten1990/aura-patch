@@ -57,6 +57,12 @@ type EasyPostRate = {
   service?: string
 }
 
+type LocationContext = {
+  from_location?: {
+    address?: Address | Record<string, unknown> | null
+  } | null
+}
+
 type EasyPostShipment = {
   id?: string
   rates?: EasyPostRate[]
@@ -101,7 +107,7 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
     context: ValidateFulfillmentDataContext
   ) {
     const destination = context.shipping_address as Address | undefined
-    const origin = this.originAddress(data, context)
+    const origin = this.originAddress(data, context as LocationContext)
     this.assertAddress(origin, "warehouse")
     this.assertAddress(destination, "shipping")
     return { ...data, easypost_origin: origin, easypost_option_id: OPTION_ID }
@@ -113,14 +119,17 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
     context: CalculateShippingOptionPriceDTO["context"]
   ) {
     const destination = context.shipping_address as Address | undefined
-    const origin = this.originAddress(data as Record<string, unknown> | undefined, context)
+    const origin = this.originAddress(
+      data as Record<string, unknown> | undefined,
+      context as LocationContext
+    )
     if (!this.hasAddress(origin) || !this.hasAddress(destination)) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
         "Warehouse or shipping address is missing fields needed for a shipping quote"
       )
     }
-    const rate = await this.quoteRate(origin, destination)
+    const rate = await this.quoteRate(origin as Address, destination as Address)
     return {
       calculated_amount: Math.round(this.charge(rate) * 100),
       is_calculated_price_tax_inclusive: false,
@@ -140,8 +149,8 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
     this.assertAddress(origin, "warehouse")
     this.assertAddress(destination, "shipping")
 
-    const quoted = await this.quoteRate(origin, destination)
-    const purchased = await this.buyRate(origin, destination, quoted)
+    const quoted = await this.quoteRate(origin as Address, destination as Address)
+    const purchased = await this.buyRate(origin as Address, destination as Address, quoted)
     const rate = purchased.selected_rate || quoted
     const trackingNumber = purchased.tracking_code
     const labelUrl = purchased.postage_label?.label_pdf_url || purchased.postage_label?.label_url
@@ -389,13 +398,14 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
 
   private originAddress(
     data: Record<string, unknown> | undefined,
-    context?: { from_location?: { address?: Address } }
+    context?: LocationContext
   ) {
     const stored = data?.easypost_origin
-    const location =
+    const location = (
       stored && typeof stored === "object"
-        ? (stored as Address)
+        ? stored
         : context?.from_location?.address
+    ) as Address | undefined
     return {
       first_name: location?.first_name || this.options_.originName,
       last_name: location?.last_name,
