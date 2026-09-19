@@ -45,6 +45,12 @@ export type EnsureEasyPostResult = {
 const isRetiredProvider = (providerId?: string) =>
   Boolean(providerId?.includes("usps") || providerId?.includes("easyship"))
 
+const isLeftoverShippingOption = (option: ShippingOptionRecord) =>
+  isRetiredProvider(option.provider_id)
+
+const isFreeStandardOption = (option: ShippingOptionRecord) =>
+  /free standard|standard shipping \(5/.test((option.name || "").toLowerCase())
+
 const isEasyPostOption = (option: ShippingOptionRecord, providerId: string) =>
   option.provider_id === providerId && option.data?.id === OPTION_ID
 
@@ -100,10 +106,10 @@ const ensureEasyPostShippingStep = createStep(
 
     const { data: options } = await query.graph({
       entity: "shipping_option",
-      fields: ["id", "provider_id"],
+      fields: ["id", "name", "provider_id"],
     })
     const retiredIds = (options as ShippingOptionRecord[])
-      .filter((option) => isRetiredProvider(option.provider_id))
+      .filter(isLeftoverShippingOption)
       .map((option) => option.id)
       .filter((id): id is string => Boolean(id))
     const removedIds: string[] = []
@@ -125,6 +131,7 @@ const ensureEasyPostShippingStep = createStep(
         "service_zones.name",
         "service_zones.geo_zones.country_code",
         "service_zones.shipping_options.id",
+        "service_zones.shipping_options.name",
         "service_zones.shipping_options.provider_id",
         "service_zones.shipping_options.data",
       ],
@@ -247,6 +254,24 @@ const ensureEasyPostShippingStep = createStep(
       "easypost-intl",
       "Live EasyPost rate for international addresses."
     )
+
+    const internationalZones = [
+      ...zones,
+      extraInternationalZone,
+    ].filter((zone): zone is ServiceZoneRecord => Boolean(zone?.id) && !isUsOnlyZone(zone))
+    for (const zone of internationalZones) {
+      for (const option of zone.shipping_options || []) {
+        if (!option.id || !isFreeStandardOption(option)) {
+          continue
+        }
+        try {
+          await fulfillment.deleteShippingOptions(option.id)
+          removedIds.push(option.id)
+        } catch {
+          // Option is still referenced by a cart or order.
+        }
+      }
+    }
 
     return new StepResponse<EnsureEasyPostResult>({
       removed_ids: removedIds,

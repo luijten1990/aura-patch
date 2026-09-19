@@ -131,7 +131,7 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
     }
     const rate = await this.quoteRate(origin as Address, destination as Address)
     return {
-      calculated_amount: Math.round(this.charge(rate) * 100),
+      calculated_amount: this.customerCharge(rate),
       is_calculated_price_tax_inclusive: false,
     }
   }
@@ -348,6 +348,10 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
   private charge(rate: EasyPostRate) {
     const amount = Number(rate.rate)
     return Number.isFinite(amount) ? amount : Number.POSITIVE_INFINITY
+  }
+
+  private customerCharge(rate: EasyPostRate) {
+    return Math.round(this.charge(rate) * 100) / 100
   }
 
   private isInternational(destination: Address | undefined) {

@@ -55,7 +55,7 @@ describe("EasyPostFulfillmentService", () => {
           { shipping_address: destination } as never
         )
       ).resolves.toEqual({
-        calculated_amount: 1840,
+        calculated_amount: 18.4,
         is_calculated_price_tax_inclusive: false,
       })
     } finally {
@@ -94,8 +94,8 @@ describe("EasyPostFulfillmentService", () => {
           shipping_address: destination,
         } as never),
       ])
-      expect(first.calculated_amount).toBe(1840)
-      expect(second.calculated_amount).toBe(1840)
+      expect(first.calculated_amount).toBe(18.4)
+      expect(second.calculated_amount).toBe(18.4)
       expect(calls).toBe(1)
     } finally {
       global.fetch = originalFetch

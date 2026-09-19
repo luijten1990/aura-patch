@@ -79,8 +79,27 @@ const Shipping: React.FC<ShippingProps> = ({
 
   const isOpen = searchParams.get("step") === "delivery"
 
+  const shippingCountry = cart.shipping_address?.country_code?.toLowerCase()
+  const isUsShipping = shippingCountry === "us"
   const _shippingMethods = availableShippingMethods?.filter(
-    (sm) => (sm as unknown as { service_zone?: { fulfillment_set?: { type?: string; location?: { address: HttpTypes.StoreCartAddress } } } }).service_zone?.fulfillment_set?.type !== "pickup"
+    (sm) => {
+      const fulfillmentType = (
+        sm as unknown as {
+          service_zone?: { fulfillment_set?: { type?: string } }
+        }
+      ).service_zone?.fulfillment_set?.type
+      if (fulfillmentType === "pickup") {
+        return false
+      }
+      const name = (sm.name || "").toLowerCase()
+      const isFreeStandard =
+        /free standard|standard shipping \(5/.test(name) ||
+        (sm.price_type !== "calculated" && sm.amount === 0)
+      if (isFreeStandard && !isUsShipping) {
+        return false
+      }
+      return true
+    }
   )
 
   const _pickupMethods = availableShippingMethods?.filter(
