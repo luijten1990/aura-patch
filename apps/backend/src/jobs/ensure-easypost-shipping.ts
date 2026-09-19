@@ -22,7 +22,7 @@ export default async function ensureEasyPostShippingJob(
 }
 
 export const config = {
-  name: "ensure-easypost-shipping-options",
+  name: "ensure-easypost-shipping-option-labels",
   schedule: "* * * * *",
   numberOfExecutions: 12,
 }

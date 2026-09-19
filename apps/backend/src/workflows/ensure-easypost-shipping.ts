@@ -219,11 +219,20 @@ const ensureEasyPostShippingStep = createStep(
       if (!zone?.id || !shippingProfile?.id) {
         return
       }
-      if (
-        (zone.shipping_options || []).some(
-          (option) => option.provider_id === easypostProviderId && option.data?.id === spec.id
-        )
-      ) {
+      const existing = (zone.shipping_options || []).find(
+        (option) => option.provider_id === easypostProviderId && option.data?.id === spec.id
+      )
+      if (existing?.id) {
+        if (existing.name !== spec.name) {
+          try {
+            await fulfillment.updateShippingOptions(existing.id, {
+              name: spec.name,
+            })
+            existing.name = spec.name
+          } catch {
+            // Name can stay until the next successful catalog update.
+          }
+        }
         return
       }
       const { result } = await createShippingOptionsWorkflow(container).run({

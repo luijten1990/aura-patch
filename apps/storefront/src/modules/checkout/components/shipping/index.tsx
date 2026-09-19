@@ -67,6 +67,67 @@ function shippingMethodRank(option: HttpTypes.StoreCartShippingOption) {
   }
   return 6
 }
+function shippingOptionCopy(option: HttpTypes.StoreCartShippingOption) {
+  const optionId = String(
+    (option.data as { id?: string } | null | undefined)?.id || ""
+  )
+  const catalog: Record<string, { title: string; detail: string }> = {
+    "easypost-usps-ground": {
+      title: "USPS Ground Advantage",
+      detail: "USPS · tracked · typically 2–5 business days",
+    },
+    "easypost-usps-priority": {
+      title: "USPS Priority Mail",
+      detail: "USPS · tracked · typically 1–3 business days",
+    },
+    "easypost-ups-ground": {
+      title: "UPS Ground",
+      detail: "UPS · tracked · typically 1–5 business days",
+    },
+    "easypost-express": {
+      title: "Express",
+      detail: "USPS Priority Express, UPS Next Day, or similar · typically 1–2 business days",
+    },
+    "easypost-intl-standard": {
+      title: "International Standard",
+      detail: "DHL eCommerce, USPS, or similar · tracked · typically 6–12 business days",
+    },
+    "easypost-intl-express": {
+      title: "International Express",
+      detail: "DHL Express or UPS Worldwide · tracked · typically 1–4 business days",
+    },
+  }
+  if (catalog[optionId]) {
+    return catalog[optionId]
+  }
+  const name = option.name || "Shipping"
+  if (/international express/i.test(name)) {
+    return catalog["easypost-intl-express"]
+  }
+  if (/international standard/i.test(name)) {
+    return catalog["easypost-intl-standard"]
+  }
+  if (/ground advantage/i.test(name)) {
+    return catalog["easypost-usps-ground"]
+  }
+  if (/priority mail/i.test(name)) {
+    return catalog["easypost-usps-priority"]
+  }
+  if (/ups ground/i.test(name)) {
+    return catalog["easypost-ups-ground"]
+  }
+  if (/^express$/i.test(name.trim())) {
+    return catalog["easypost-express"]
+  }
+  if (/free standard/i.test(name)) {
+    return {
+      title: name,
+      detail: "Aura Patch · United States · typically 5–7 business days",
+    }
+  }
+  return { title: name, detail: "" }
+}
+
 function hasValidCalculatedAmount(
   option: HttpTypes.StoreCartShippingOption,
   calculatedPricesMap: Record<string, number>
@@ -364,13 +425,14 @@ const Shipping: React.FC<ShippingProps> = ({
                       return hasValidCalculatedAmount(option, calculatedPricesMap)
                     })
                     .map((option) => {
+                    const copy = shippingOptionCopy(option)
                     return (
                       <Radio
                         key={option.id}
                         value={option.id}
                         data-testid="delivery-option-radio"
                         className={clx(
-                          "mb-2 flex cursor-pointer items-center justify-between rounded-[1.25rem] border bg-[#f5efe4] px-6 py-4 text-[14px] text-aura-forest",
+                          "mb-2 flex cursor-pointer items-center justify-between gap-4 rounded-[1.25rem] border bg-[#f5efe4] px-6 py-4 text-[14px] text-aura-forest",
                           {
                             "border-aura-gold":
                               option.id === shippingMethodId,
@@ -379,15 +441,22 @@ const Shipping: React.FC<ShippingProps> = ({
                           }
                         )}
                       >
-                        <div className="flex items-center gap-x-4">
+                        <div className="flex min-w-0 items-start gap-x-4">
                           <MedusaRadio
                             checked={option.id === shippingMethodId}
                           />
-                          <span className="text-[15px]">
-                            {option.name}
+                          <span className="min-w-0">
+                            <span className="block text-[15px] leading-6">
+                              {copy.title}
+                            </span>
+                            {copy.detail ? (
+                              <span className="mt-1 block text-[12px] leading-5 text-aura-forest/55">
+                                {copy.detail}
+                              </span>
+                            ) : null}
                           </span>
                         </div>
-                        <span className="justify-self-end text-aura-forest">
+                        <span className="shrink-0 text-aura-forest">
                           {option.price_type === "flat" ? (
                             convertToLocale({
                               amount: option.amount!,
