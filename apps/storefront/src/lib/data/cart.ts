@@ -150,21 +150,47 @@ export async function addToCart({
   const headers = {
     ...(await getAuthHeaders()),
   }
+  const detailed = await retrieveCart(cart.id)
+  const existing = (detailed?.items || []).find(
+    (item) => item.variant_id === variantId || item.variant?.id === variantId
+  )
 
-  await sdk.store.cart
-    .createLineItem(
-      cart.id,
-      {
-        variant_id: variantId,
-        quantity,
-        metadata: {
-          purchase_type: purchaseType,
+  try {
+    if (existing?.id) {
+      await sdk.store.cart.updateLineItem(
+        cart.id,
+        existing.id,
+        {
+          quantity,
+          metadata: {
+            ...(existing.metadata || {}),
+            purchase_type: purchaseType,
+          },
         },
-      },
-      {},
-      headers
-    )
-    .catch(medusaError)
+        {},
+        headers
+      )
+    } else {
+      await sdk.store.cart.createLineItem(
+        cart.id,
+        {
+          variant_id: variantId,
+          quantity,
+          metadata: {
+            purchase_type: purchaseType,
+          },
+        },
+        {},
+        headers
+      )
+    }
+  } catch (error) {
+    const message =
+      error instanceof Error && error.message
+        ? error.message
+        : "Could not add Aura Patch to the cart. Please try again."
+    throw new Error(message)
+  }
 
   void revalidateByTag("carts")
   void revalidateByTag("fulfillment")
