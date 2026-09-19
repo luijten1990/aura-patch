@@ -5,17 +5,8 @@ import React, { useContext, useState, type JSX } from "react"
 import Radio from "@modules/common/components/radio"
 
 import { isManual } from "@lib/constants"
-import { placeOrder } from "@lib/data/cart"
-import { confirmStripePayment } from "@lib/util/confirm-stripe-payment"
 import { HttpTypes } from "@medusajs/types"
-import SkeletonCardDetails from "@modules/skeletons/components/skeleton-card-details"
-import {
-  ExpressCheckoutElement,
-  PaymentElement,
-  useElements,
-  useStripe,
-} from "@stripe/react-stripe-js"
-import { unstable_rethrow, useParams } from "next/navigation"
+import { PaymentElement } from "@stripe/react-stripe-js"
 import PaymentTest from "../payment-test"
 import { StripeContext } from "../payment-wrapper/stripe-wrapper"
 
@@ -23,6 +14,7 @@ type PaymentContainerProps = {
   paymentProviderId: string
   selectedPaymentOptionId: string | null
   disabled?: boolean
+  hideHeader?: boolean
   paymentInfoMap: Record<string, { title: string; icon: JSX.Element }>
   children?: React.ReactNode
 }
@@ -32,6 +24,7 @@ const PaymentContainer: React.FC<PaymentContainerProps> = ({
   selectedPaymentOptionId,
   paymentInfoMap,
   disabled = false,
+  hideHeader = false,
   children,
 }) => {
   const isDevelopment = process.env.NODE_ENV === "development"
@@ -51,20 +44,22 @@ const PaymentContainer: React.FC<PaymentContainerProps> = ({
         }
       )}
     >
-      <div className="flex items-center justify-between ">
-        <div className="flex items-center gap-x-4">
-          <Radio checked={selectedPaymentOptionId === paymentProviderId} />
-          <Text className="text-[15px]">
-            {paymentInfoMap[paymentProviderId]?.title || paymentProviderId}
-          </Text>
-          {isManual(paymentProviderId) && isDevelopment && (
-            <PaymentTest className="hidden small:block" />
-          )}
+      {!hideHeader && (
+        <div className="flex items-center justify-between ">
+          <div className="flex items-center gap-x-4">
+            <Radio checked={selectedPaymentOptionId === paymentProviderId} />
+            <Text className="text-[15px]">
+              {paymentInfoMap[paymentProviderId]?.title || paymentProviderId}
+            </Text>
+            {isManual(paymentProviderId) && isDevelopment && (
+              <PaymentTest className="hidden small:block" />
+            )}
+          </div>
+          <span className="justify-self-end text-aura-forest">
+            {paymentInfoMap[paymentProviderId]?.icon}
+          </span>
         </div>
-        <span className="justify-self-end text-aura-forest">
-          {paymentInfoMap[paymentProviderId]?.icon}
-        </span>
-      </div>
+      )}
       {isManual(paymentProviderId) && isDevelopment && (
         <PaymentTest className="small:hidden text-[10px]" />
       )}
@@ -75,20 +70,44 @@ const PaymentContainer: React.FC<PaymentContainerProps> = ({
 
 export default PaymentContainer
 
+const PAYMENT_OPTION_PLACEHOLDERS = [
+  "Card",
+  "PayPal",
+  "Google Pay",
+  "Bank",
+]
+
+const PaymentOptionsSkeleton = () => (
+  <div className="flex flex-col gap-2">
+    {PAYMENT_OPTION_PLACEHOLDERS.map((label) => (
+      <div
+        key={label}
+        className="flex h-14 items-center justify-between rounded-xl border border-aura-forest/10 bg-white px-4"
+      >
+        <div className="flex items-center gap-3">
+          <span className="h-4 w-4 rounded-full border border-aura-forest/25" />
+          <span className="text-[14px] text-aura-forest/80">{label}</span>
+        </div>
+        <span className="h-3 w-12 animate-pulse rounded bg-aura-forest/10" />
+      </div>
+    ))}
+  </div>
+)
+
 export const StripePaymentContainer = ({
   paymentProviderId,
   selectedPaymentOptionId,
   paymentInfoMap,
   disabled = false,
-  cart,
   setError,
   setPaymentComplete,
-}: Omit<PaymentContainerProps, "children"> & {
-  cart: HttpTypes.StoreCart
+}: Omit<PaymentContainerProps, "children" | "hideHeader"> & {
+  cart?: HttpTypes.StoreCart
   setError: (error: string | null) => void
   setPaymentComplete: (complete: boolean) => void
 }) => {
   const stripeReady = useContext(StripeContext)
+  const selected = selectedPaymentOptionId === paymentProviderId
 
   return (
     <PaymentContainer
@@ -96,162 +115,66 @@ export const StripePaymentContainer = ({
       selectedPaymentOptionId={selectedPaymentOptionId}
       paymentInfoMap={paymentInfoMap}
       disabled={disabled}
+      hideHeader={selected}
     >
-      {selectedPaymentOptionId === paymentProviderId &&
+      {selected &&
         (stripeReady ? (
-          <StripeWalletFields
-            cart={cart}
-            disabled={disabled}
+          <StripePaymentMethods
             setError={setError}
             setPaymentComplete={setPaymentComplete}
           />
         ) : (
-          <SkeletonCardDetails />
+          <div className="my-1">
+            <PaymentOptionsSkeleton />
+          </div>
         ))}
     </PaymentContainer>
   )
 }
 
-const StripeWalletFields = ({
-  cart,
-  disabled = false,
+const StripePaymentMethods = ({
   setError,
   setPaymentComplete,
 }: {
-  cart: HttpTypes.StoreCart
-  disabled?: boolean
   setError: (error: string | null) => void
   setPaymentComplete: (complete: boolean) => void
 }) => {
-  const stripe = useStripe()
-  const elements = useElements()
-  const { countryCode } = useParams()
-  const [expressVisible, setExpressVisible] = useState(false)
-  const [expressBusy, setExpressBusy] = useState(false)
-
-  const walletsReady = Boolean(
-    cart.email &&
-      cart.billing_address &&
-      cart.shipping_address &&
-      (cart.shipping_methods?.length ?? 0) > 0 &&
-      !disabled
-  )
+  const [methodsReady, setMethodsReady] = useState(false)
 
   return (
-    <div className="my-4 transition-all duration-150 ease-in-out">
-      {expressVisible && (
-        <Text className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-aura-forest/55">
-          Pay faster:
-        </Text>
+    <div className="relative my-1 min-h-[232px]">
+      {!methodsReady && (
+        <div className="absolute inset-0 z-10 bg-[#f5efe4]">
+          <PaymentOptionsSkeleton />
+        </div>
       )}
-      <div className={expressVisible ? "mb-1" : "h-0 overflow-hidden"}>
-        <ExpressCheckoutElement
-          options={{
-            emailRequired: true,
-            billingAddressRequired: false,
-            shippingAddressRequired: false,
-            buttonHeight: 44,
-            layout: { maxColumns: 2, maxRows: 2, overflow: "auto" },
-            paymentMethods: {
-              applePay: "always",
-              googlePay: "always",
-              paypal: "auto",
-              link: "auto",
-            },
-          }}
-          onReady={({ availablePaymentMethods }) => {
-            setExpressVisible(
-              Boolean(
-                availablePaymentMethods &&
-                  Object.values(availablePaymentMethods).some(Boolean)
-              )
-            )
-          }}
-          onClick={({ resolve, reject }) => {
-            if (!walletsReady || expressBusy) {
-              reject()
-              return
-            }
-            resolve()
-          }}
-          onCancel={() => setExpressBusy(false)}
-          onConfirm={async () => {
-            if (!stripe || !elements) {
-              setError("Payment is still loading. Try again in a moment.")
-              return
-            }
-
-            setExpressBusy(true)
-            setError(null)
-
-            const result = await confirmStripePayment({
-              stripe,
-              elements,
-              cart,
-              countryCode,
-            })
-
-            if (!result.authorized) {
-              setExpressBusy(false)
-              setError(result.message)
-              return
-            }
-
-            try {
-              await placeOrder()
-            } catch (err) {
-              unstable_rethrow(err)
-              setExpressBusy(false)
-              setError(err instanceof Error ? err.message : String(err))
-            }
-          }}
-          onLoadError={(e) => {
-            setExpressVisible(false)
-            setError(e.error?.message ?? "Could not load wallet payments.")
-          }}
-        />
-      </div>
-      {expressVisible && (
-        <>
-          <Text className="mt-2 text-[12px] leading-5 text-aura-forest/55">
-            Wallet checkout places your order and accepts the Terms and Privacy
-            Policy.
-          </Text>
-          <div className="my-4 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-aura-forest/40">
-            <span className="h-px flex-1 bg-aura-forest/15" />
-            Or enter details
-            <span className="h-px flex-1 bg-aura-forest/15" />
-          </div>
-        </>
-      )}
-      <Text className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-aura-forest/55">
-        Enter your payment details:
-      </Text>
       <PaymentElement
         options={{
-          layout: "accordion",
+          layout: {
+            type: "accordion",
+            radios: true,
+            spacedAccordionItems: true,
+          },
           wallets: {
             applePay: "auto",
             googlePay: "auto",
             link: "auto",
           },
           paymentMethodOrder: [
-            "apple_pay",
-            "google_pay",
-            "paypal",
             "card",
+            "paypal",
+            "google_pay",
+            "apple_pay",
             "link",
           ],
         }}
+        onReady={() => setMethodsReady(true)}
         onChange={(e) => {
           setError(null)
           setPaymentComplete(e.complete)
         }}
-        // Without a handler Stripe.js reports a failed mount as an
-        // unhandled "payment Element loaderror" and the option renders
-        // blank with no explanation. Surface it in the checkout's own
-        // error slot instead.
         onLoadError={(e) => {
+          setMethodsReady(true)
           setPaymentComplete(false)
           setError(e.error?.message ?? "Could not load the payment methods.")
         }}

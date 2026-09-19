@@ -1,19 +1,15 @@
 "use client"
 
-import { isManual, isStripeLike } from "@lib/constants"
+import { isManual, isPaypal, isStripeLike } from "@lib/constants"
 import { placeOrder } from "@lib/data/cart"
 import { confirmStripePayment } from "@lib/util/confirm-stripe-payment"
 import { HttpTypes } from "@medusajs/types"
 import { Button } from "@modules/common/components/ui"
-import {
-  ExpressCheckoutElement,
-  PaymentElement,
-  useElements,
-  useStripe,
-} from "@stripe/react-stripe-js"
+import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
 import { useParams } from "next/navigation"
 import React, { useState } from "react"
 import ErrorMessage from "../error-message"
+import PayPalPaymentButton from "./paypal-payment-button"
 
 type PaymentButtonProps = {
   cart: HttpTypes.StoreCart
@@ -37,6 +33,14 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
     case isStripeLike(paymentSession?.provider_id):
       return (
         <StripePaymentButton
+          notReady={notReady}
+          cart={cart}
+          data-testid={dataTestId}
+        />
+      )
+    case isPaypal(paymentSession?.provider_id):
+      return (
+        <PayPalPaymentButton
           notReady={notReady}
           cart={cart}
           data-testid={dataTestId}
@@ -87,10 +91,7 @@ const StripePaymentButton = ({
     // `useElements()` can remain available after a route change even when its
     // Payment Element has been unmounted. Guarding this prevents Stripe's
     // opaque IntegrationError and gives the shopper a recoverable message.
-    if (
-      !elements.getElement(PaymentElement) &&
-      !elements.getElement(ExpressCheckoutElement)
-    ) {
+    if (!elements.getElement(PaymentElement)) {
       setErrorMessage(
         "Your payment form is no longer available. Return to Payment and try again."
       )

@@ -10,6 +10,23 @@ const localPackageDir = (pkg: string) =>
     })
   )
 
+const paypalProvider =
+  process.env.PAYPAL_CLIENT_ID && process.env.PAYPAL_CLIENT_SECRET
+    ? [
+        {
+          resolve: "./src/modules/paypal",
+          id: "paypal",
+          options: {
+            client_id: process.env.PAYPAL_CLIENT_ID,
+            client_secret: process.env.PAYPAL_CLIENT_SECRET,
+            environment: process.env.PAYPAL_ENVIRONMENT || "production",
+            autoCapture: process.env.PAYPAL_AUTO_CAPTURE !== "false",
+            webhook_id: process.env.PAYPAL_WEBHOOK_ID,
+          },
+        },
+      ]
+    : []
+
 const stripeProvider =
   process.env.STRIPE_API_KEY && process.env.STRIPE_WEBHOOK_SECRET
     ? [
@@ -112,7 +129,7 @@ module.exports = defineConfig({
     {
       resolve: "@medusajs/medusa/payment",
       options: {
-        providers: stripeProvider,
+        providers: [...stripeProvider, ...paypalProvider],
       },
     },
     {

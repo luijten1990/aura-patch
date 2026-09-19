@@ -10,11 +10,11 @@ export const paymentInfoMap: Record<
   { title: string; icon: React.JSX.Element }
 > = {
   pp_stripe_stripe: {
-    title: "Card, PayPal & wallets",
+    title: "Card & wallets",
     icon: <CreditCard />,
   },
   "pp_medusa-payments_default": {
-    title: "Card, PayPal & wallets",
+    title: "Card & wallets",
     icon: <CreditCard />,
   },
   "pp_stripe-ideal_stripe": {
