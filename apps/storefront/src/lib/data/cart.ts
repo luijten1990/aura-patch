@@ -196,6 +196,32 @@ async function syncCartPurchaseType(purchaseType: PurchaseType) {
     // already stores purchase_type, so checkout can still subscribe.
   }
 
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+  for (const item of cart.items || []) {
+    if (!item.id) {
+      continue
+    }
+    try {
+      await sdk.store.cart.updateLineItem(
+        cart.id,
+        item.id,
+        {
+          quantity: item.quantity,
+          metadata: {
+            ...(item.metadata || {}),
+            purchase_type: purchaseType,
+          },
+        },
+        {},
+        headers
+      )
+    } catch {
+      // Keep the existing quantity if Medusa rejects a metadata-only update.
+    }
+  }
+
   try {
     await applyPromotions(
       subscribe
@@ -205,6 +231,13 @@ async function syncCartPurchaseType(purchaseType: PurchaseType) {
   } catch {
     // SUBSCRIBE20 is created by a backend job after deploy. Keep the
     // subscription cart even if the code is not live yet.
+  }
+
+  try {
+    await revalidateByTag("carts")
+    await revalidateByTag("fulfillment")
+  } catch {
+    // Purchase type is already saved on the cart.
   }
 }
 
@@ -233,13 +266,22 @@ export async function updateLineItem({
     ...(await getAuthHeaders()),
   }
 
-  await sdk.store.cart
-    .updateLineItem(cartId, lineId, { quantity }, {}, headers)
-    .then(async () => {
-      await revalidateByTag("carts")
-      await revalidateByTag("fulfillment")
-    })
-    .catch(medusaError)
+  try {
+    await sdk.store.cart.updateLineItem(cartId, lineId, { quantity }, {}, headers)
+  } catch (error) {
+    const message =
+      error instanceof Error && error.message
+        ? error.message
+        : "Could not update the quantity. Please try again."
+    throw new Error(message)
+  }
+
+  try {
+    await revalidateByTag("carts")
+    await revalidateByTag("fulfillment")
+  } catch {
+    // Quantity is already saved.
+  }
 }
 
 export async function deleteLineItem(lineId: string) {
@@ -257,13 +299,22 @@ export async function deleteLineItem(lineId: string) {
     ...(await getAuthHeaders()),
   }
 
-  await sdk.store.cart
-    .deleteLineItem(cartId, lineId, {}, headers)
-    .then(async () => {
-      await revalidateByTag("carts")
-      await revalidateByTag("fulfillment")
-    })
-    .catch(medusaError)
+  try {
+    await sdk.store.cart.deleteLineItem(cartId, lineId, {}, headers)
+  } catch (error) {
+    const message =
+      error instanceof Error && error.message
+        ? error.message
+        : "Could not remove that item. Please try again."
+    throw new Error(message)
+  }
+
+  try {
+    await revalidateByTag("carts")
+    await revalidateByTag("fulfillment")
+  } catch {
+    // Item is already removed.
+  }
 }
 
 export async function setShippingMethod({

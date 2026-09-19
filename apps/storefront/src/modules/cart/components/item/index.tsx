@@ -1,7 +1,7 @@
 "use client"
 
 import { Table, Text, clx } from "@modules/common/components/ui"
-import { setCartPurchaseType, updateLineItem } from "@lib/data/cart"
+import { setCartPurchaseTypeRequest, updateLineItemRequest } from "@lib/util/cart-client"
 import { HttpTypes } from "@medusajs/types"
 import { useRouter } from "next/navigation"
 import CartItemSelect from "@modules/cart/components/cart-item-select"
@@ -29,13 +29,17 @@ const Item = ({ item, type = "full", currencyCode, isSubscription }: ItemProps) 
   const [switching, setSwitching] = useState(false)
 
   const changeQuantity = async (quantity: number) => {
+    if (!Number.isFinite(quantity) || quantity < 1 || quantity === item.quantity) {
+      return
+    }
     setError(null)
     setUpdating(true)
 
-    await updateLineItem({
+    await updateLineItemRequest({
       lineId: item.id,
       quantity,
     })
+      .then(() => router.refresh())
       .catch((err) => {
         setError(err.message)
       })
@@ -94,7 +98,7 @@ const Item = ({ item, type = "full", currencyCode, isSubscription }: ItemProps) 
               onClick={async () => {
                 setSwitching(true)
                 try {
-                  await setCartPurchaseType(isSubscription ? "one_time" : "subscription")
+                  await setCartPurchaseTypeRequest(isSubscription ? "one_time" : "subscription")
                   router.refresh()
                 } catch (err) {
                   setError(err instanceof Error ? err.message : "Unable to update purchase type.")
@@ -123,8 +127,11 @@ const Item = ({ item, type = "full", currencyCode, isSubscription }: ItemProps) 
           <div className="flex w-28 items-center gap-2">
             <DeleteButton id={item.id} data-testid="product-delete-button" />
             <CartItemSelect
-              value={item.quantity}
-              onChange={(value) => changeQuantity(parseInt(value.target.value))}
+              value={String(item.quantity)}
+              onChange={(event) => {
+                const nextQuantity = parseInt(event.target.value, 10)
+                void changeQuantity(nextQuantity)
+              }}
               className="h-10 w-16 rounded-full border-aura-forest/20 bg-transparent px-3 text-aura-forest"
               data-testid="product-select-button"
             >
