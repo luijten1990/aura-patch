@@ -128,7 +128,17 @@ const getFinancesOverviewStep = createStep(
       shippingCollectedCents += asNumber(order.shipping_total)
       refundsCents += asNumber(order.refunded_total)
       for (const fulfillment of order.fulfillments || []) {
-        const cost = asNumber(fulfillment.data?.easyship_label_cost_cents)
+        const easypostCents = asNumber(fulfillment.data?.easypost_label_cost_cents)
+        const easyshipCents = asNumber(fulfillment.data?.easyship_label_cost_cents)
+        const uspsPostage = asNumber(fulfillment.data?.usps_postage)
+        const cost =
+          easypostCents > 0
+            ? easypostCents
+            : easyshipCents > 0
+              ? easyshipCents
+              : uspsPostage > 0
+                ? Math.round(uspsPostage * 100)
+                : 0
         if (cost > 0) {
           labelCostCents += cost
           labeledShipmentCount += 1

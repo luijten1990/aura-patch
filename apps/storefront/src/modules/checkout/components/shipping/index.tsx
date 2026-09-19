@@ -92,7 +92,7 @@ const Shipping: React.FC<ShippingProps> = ({
   useEffect(() => {
     if (_shippingMethods?.length) {
       const promises = _shippingMethods
-        .filter((sm) => sm.price_type === "calculated" && sm.amount == null)
+        .filter((sm) => sm.price_type === "calculated")
         .map((sm) => calculatePriceForShippingOption(sm.id, cart.id))
 
       if (promises.length) {

@@ -30,13 +30,17 @@ function load(relativePath, overrides = {}) {
   })
   const exports = {}
   vm.runInNewContext(code, {
-    exports, Buffer, Response, console,
+    exports, Buffer, Response, console, AbortController, setTimeout, clearTimeout,
     process: { env: { ...env, ...overrides.env } },
     fetch: overrides.fetch || (() => { throw new Error("Network disabled") }),
     require: (name) => {
       if (name === "@medusajs/framework/utils") return {
         ContainerRegistrationKeys: { LOGGER: "logger", QUERY: "query" },
         AbstractFulfillmentProviderService: class {},
+        MedusaError: class MedusaError extends Error {
+          static Types = { INVALID_DATA: "invalid_data", UNEXPECTED_STATE: "unexpected_state" }
+          constructor(_type, message) { super(message) }
+        },
       }
       if (name === "@medusajs/medusa/core-flows") return {
         createOrderFulfillmentWorkflow: () => ({ run: overrides.run }),
@@ -99,15 +103,15 @@ async function main() {
       assert.equal(sent[1].to[0].email, "orders@getaurapatch.com")
     }
   })
-  const fulfilled = { ...order, items: [{ id: "item_test", quantity: 1 }], fulfillments: [], shipping_address: { country_code: "us" }, shipping_methods: [{ shipping_option: { provider_id: "fp_usps_usps" } }] }
+  const fulfilled = { ...order, items: [{ id: "item_test", quantity: 1 }], fulfillments: [], shipping_methods: [{ shipping_option: { provider_id: "fp_easypost_easypost" } }] }
   await test("Automatic carrier fulfillment is disabled unless opted in", async () => {
     let calls = 0
-    await load("apps/backend/src/subscribers/auto-fulfill-usps-order.ts", { run: async () => calls++ }).default(args(fulfilled))
+    await load("apps/backend/src/subscribers/auto-fulfill-easypost-order.ts", { run: async () => calls++ }).default(args(fulfilled))
     assert.equal(calls, 0)
   })
-  await test("Opted-in USPS orders fulfill once and existing fulfillments are skipped", async () => {
+  await test("Opted-in EasyPost orders fulfill once and existing fulfillments are skipped", async () => {
     const calls = []
-    const handler = load("apps/backend/src/subscribers/auto-fulfill-usps-order.ts", {
+    const handler = load("apps/backend/src/subscribers/auto-fulfill-easypost-order.ts", {
       env: { AUTO_FULFILL_ON_ORDER_PAID: "true" }, run: async (input) => calls.push(input),
     }).default
     await handler(args(fulfilled))
@@ -116,79 +120,49 @@ async function main() {
     assert.equal(calls.length, 1)
     assert.equal(calls[0].input.order_id, order.id)
   })
-  await test("Opted-in international Easyship orders fulfill and never route US addresses to Easyship", async () => {
+  await test("EasyPost emails a generated label to the orders mailbox", async () => {
+    const pdf = Buffer.from("%PDF-1.4\nTEST FIXTURE ONLY\n%%EOF")
     const calls = []
-    const handler = load("apps/backend/src/subscribers/auto-fulfill-usps-order.ts", {
-      env: { AUTO_FULFILL_ON_ORDER_PAID: "true" }, run: async (input) => calls.push(input),
-    }).default
-    const international = {
-      ...fulfilled,
-      shipping_address: { country_code: "gb" },
-      shipping_methods: [{ shipping_option: { provider_id: "fp_easyship_easyship" } }],
-    }
-    await handler(args(international))
-    await handler(args({ ...international, shipping_address: { country_code: "us" } }))
-    assert.equal(calls.length, 1)
-  })
-  await test("Easyship emails a generated international sandbox label to the orders mailbox", async () => {
-    const calls = []
-    const Service = load("apps/backend/src/modules/easyship/service.ts", { fetch: async (url, request) => {
-      calls.push({ url, body: JSON.parse(request.body) })
-      if (url.endsWith("/shipments")) return Response.json({ shipment: {
-        easyship_shipment_id: "ESGB10000001", tracking_page_url: "https://track.example.test/EASYSHIP-TEST",
-        trackings: [{ tracking_number: "EASYSHIP-TEST" }],
-        shipping_documents: [{ category: "label", base64_encoded_strings: [Buffer.from("%PDF-1.4\\nTEST FIXTURE ONLY\\n%%EOF").toString("base64")] }],
-      } }, { status: 201 })
+    const Service = load("apps/backend/src/modules/easypost/service.ts", { fetch: async (url, request) => {
+      calls.push({ url, body: request?.body ? JSON.parse(request.body) : undefined })
+      if (String(url).includes("/buy")) {
+        return Response.json({
+          id: "shp_test",
+          tracking_code: "EASYPOST-TEST",
+          tracker: { public_url: "https://track.easypost.com/EASYPOST-TEST" },
+          postage_label: { label_pdf_url: "https://easypost.test/label.pdf" },
+          selected_rate: { id: "rate_1", rate: "8.20", currency: "USD", carrier: "USPS", service: "Priority" },
+        })
+      }
+      if (String(url).endsWith("/shipments")) {
+        return Response.json({
+          id: "shp_test",
+          rates: [{ id: "rate_1", shipment_id: "shp_test", rate: "8.20", currency: "USD", carrier: "USPS", service: "Priority" }],
+        }, { status: 201 })
+      }
+      if (String(url) === "https://easypost.test/label.pdf") {
+        return new Response(pdf)
+      }
       assert.equal(url, "https://api.brevo.com/v3/smtp/email")
       return Response.json({ messageId: "test" })
-    } }).EasyshipFulfillmentService
+    } }).EasyPostFulfillmentService
     const service = new Service({}, {
-      baseUrl: "https://public-api-sandbox.easyship.com", apiToken: "sand_test", itemDescription: "Vitamin patch", itemValueUsd: 49.99,
-      itemHsCode: "3005109000", weightOz: 3, lengthIn: 8.3, widthIn: 5.8, heightIn: 0.25,
+      baseUrl: "https://api.easypost.com/v2", apiKey: "EZTEST_test", itemDescription: "Vitamin patch", itemValueUsd: 49.99,
+      itemHsCode: "3005109000", customsSigner: "Aura Patch", weightOz: 3, lengthIn: 8.3, widthIn: 5.8, heightIn: 0.25,
       brevoApiKey: "test", labelEmailFrom: "info@getaurapatch.com", labelEmailTo: "orders@getaurapatch.com",
     })
     const destination = { country_code: "gb", first_name: "Sandbox", last_name: "Test", address_1: "1 Test Street", city: "London", postal_code: "SW1A 1AA" }
-    const origin = { country_code: "us", first_name: "Aura", last_name: "Patch", address_1: "1 Origin Street", city: "Los Angeles", province: "CA", postal_code: "90001" }
-    const result = await service.createFulfillment({ easyship_origin: origin }, [], { id: "order_test", shipping_address: destination }, {})
-    assert.equal(result.labels[0].tracking_number, "EASYSHIP-TEST")
+    const origin = { country_code: "us", first_name: "Aura", last_name: "Patch", address_1: "1 Origin Street", city: "Los Angeles", province: "CA", postal_code: "90001", phone: "3105550100" }
+    const result = await service.createFulfillment({ easypost_origin: origin }, [], { id: "order_test", shipping_address: destination }, {})
+    assert.equal(result.labels[0].tracking_number, "EASYPOST-TEST")
     assert.ok(result.labels[0].label_url.startsWith("data:application/pdf;base64,"))
-    assert.equal(calls[0].url, "https://public-api-sandbox.easyship.com/2024-09/shipments")
-    assert.equal(calls[0].body.shipping_settings.buy_label, true)
-    assert.equal(calls[0].body.shipping_settings.printing_options.format, "pdf")
-    assert.equal(calls[0].body.origin_address.line_1, "1 Origin Street")
-    assert.equal(calls[0].body.order_data.platform, undefined)
+    assert.equal(calls[0].url, "https://api.easypost.com/v2/shipments")
+    assert.equal(calls[0].body.shipment.customs_info.contents_type, "merchandise")
+    assert.ok(calls.some(({ url }) => String(url).includes("/buy")))
     const email = calls.at(-1).body
     assert.equal(email.to[0].email, "orders@getaurapatch.com")
-    assert.equal(email.attachment[0].name, "easyship-label-EASYSHIP-TEST.pdf")
-  })
-  await test("USPS response PDF is preserved and attached to the orders mailbox email", async () => {
-    const pdf = Buffer.from("%PDF-1.4\nTEST FIXTURE ONLY\n%%EOF")
-    const calls = []
-    const Service = load("apps/backend/src/modules/usps/service.ts", { fetch: async (url, request) => {
-      calls.push({ url, body: JSON.parse(request.body) })
-      if (url.endsWith("/token")) return Response.json({ access_token: "test" })
-      if (url.endsWith("/payment-authorization")) return Response.json({ paymentAuthorizationToken: "test" })
-      if (url.endsWith("/label")) return new Response(Buffer.concat([
-        Buffer.from('--test\r\nContent-Disposition: form-data; name="labelMetadata"\r\n\r\n{"trackingNumber":"TEST-TRACKING"}\r\n--test\r\nContent-Disposition: form-data; name="labelImage"\r\nContent-Type: application/pdf\r\n\r\n'),
-        pdf, Buffer.from("\r\n--test--\r\n"),
-      ]), { headers: { "content-type": "multipart/form-data; boundary=test" } })
-      assert.equal(url, "https://api.brevo.com/v3/smtp/email")
-      return Response.json({ messageId: "test" })
-    } }).UspsFulfillmentService
-    const service = new Service({}, {
-      baseUrl: "https://apis-tem.usps.com", clientId: "test", clientSecret: "test",
-      crid: "test", mid: "test", paymentAccountNumber: "test", paymentAccountType: "EPS",
-      weightOz: 3, lengthIn: 6, widthIn: 4, heightIn: 1, mailClass: "PRIORITY_MAIL", rateIndicator: "SP",
-      brevoApiKey: "test", labelEmailFrom: "info@getaurapatch.com", labelEmailTo: "orders@getaurapatch.com",
-    })
-    const address = { country_code: "us", first_name: "Sandbox", last_name: "Test", address_1: "1 Test Street", city: "Test", province: "CA", postal_code: "90001" }
-    const result = await service.createFulfillment({ usps_origin: address }, [], { shipping_address: address }, {})
-    assert.equal(result.labels[0].tracking_number, "TEST-TRACKING")
-    const email = calls.at(-1).body
-    assert.equal(email.to[0].email, "orders@getaurapatch.com")
+    assert.equal(email.attachment[0].name, "easypost-label-EASYPOST-TEST.pdf")
     assert.equal(email.attachment[0].content, pdf.toString("base64"))
-    assert.equal(email.attachment[0].name, "usps-label-TEST-TRACKING.pdf")
-    assert.ok(calls.slice(0, 3).every(({ url }) => url.startsWith("https://apis-tem.usps.com/")))
   })
   fs.writeFileSync(path.join(output, "results.json"), JSON.stringify({
     mode: "Local isolated tests with simulated order and provider responses. No email sent, no carrier label generated, no inbox delivery verified.",

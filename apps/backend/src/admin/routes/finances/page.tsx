@@ -68,7 +68,7 @@ const FinancesPage = () => {
         <div className="px-6 py-4">
           <Heading>Finances</Heading>
           <Text className="text-ui-fg-subtle" size="small">
-            Revenue from paid orders, Easyship label costs, Stripe fees, and
+            Revenue from paid orders, carrier label costs, Stripe fees, and
             payouts to your bank.
           </Text>
         </div>
@@ -173,7 +173,7 @@ const FinancesPage = () => {
             </div>
             <div className="px-6 py-4">
               <Text size="small" className="text-ui-fg-subtle">
-                Profit here is paid order totals, minus refunds, Easyship label
+                Profit here is paid order totals, minus refunds, carrier label
                 costs stored on fulfillments, and Stripe card fees. It does not
                 subtract product cost, Hostinger, ads, or unpaid shipping
                 options. Label costs appear after a label is purchased. Customers
