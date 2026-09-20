@@ -1,12 +1,16 @@
+"use client"
+
 import { withCartMoney } from "@lib/util/cart-money"
 import { Heading } from "@modules/common/components/ui"
 
 import ItemsPreviewTemplate from "@modules/cart/templates/preview"
 import DiscountCode from "@modules/checkout/components/discount-code"
+import { useCheckoutCart } from "@modules/checkout/components/checkout-cart-provider"
 import CartTotals from "@modules/common/components/cart-totals"
-import { HttpTypes } from "@medusajs/types"
 
-const CheckoutSummary = ({ cart }: { cart: HttpTypes.StoreCart }) => {
+const CheckoutSummary = () => {
+  const { cart } = useCheckoutCart()
+
   return (
     <div className="sticky top-[78px] flex flex-col-reverse gap-y-8 py-8 small:flex-col small:py-0">
       <div className="flex w-full flex-col rounded-[1.75rem] border border-aura-forest/15 bg-[#f5efe4] p-6 small:p-8">

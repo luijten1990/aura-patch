@@ -106,4 +106,18 @@ describe("EasyPostFulfillmentService", () => {
       global.fetch = originalFetch
     }
   })
+
+  it("does not fail cart updates when the destination address is incomplete", async () => {
+    const service = new EasyPostFulfillmentService({}, options)
+    await expect(
+      service.calculatePrice(
+        { id: "easypost-usps-ground" },
+        {},
+        { shipping_address: { country_code: "nl" } } as never
+      )
+    ).resolves.toEqual({
+      calculated_amount: 0,
+      is_calculated_price_tax_inclusive: false,
+    })
+  })
 })

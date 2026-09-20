@@ -52,7 +52,7 @@ const Addresses = ({
         body: new FormData(event.currentTarget),
       })
       const result = (await response.json().catch(() => null)) as
-        | { ok: true }
+        | { ok: true; countryCode?: string }
         | { ok: false; error?: string }
         | null
 
@@ -65,7 +65,11 @@ const Addresses = ({
         return
       }
 
-      router.push(`${pathname}?step=delivery`)
+      const nextCountry =
+        "countryCode" in result && result.countryCode
+          ? result.countryCode
+          : checkoutCountry
+      router.push(`/${nextCountry}/checkout?step=delivery`)
       router.refresh()
     } catch (error) {
       setMessage(

@@ -10,6 +10,7 @@ import MedusaRadio from "@modules/common/components/radio"
 import { Button, clx, Heading, Text } from "@modules/common/components/ui"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
+import { useCheckoutCart } from "../checkout-cart-provider"
 
 const PICKUP_OPTION_ON = "__PICKUP_ON"
 const PICKUP_OPTION_OFF = "__PICKUP_OFF"
@@ -140,9 +141,10 @@ function hasValidCalculatedAmount(
 }
 
 const Shipping: React.FC<ShippingProps> = ({
-  cart,
+  cart: initialCart,
   availableShippingMethods,
 }) => {
+  const { cart, setCart } = useCheckoutCart()
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingPrices, setIsLoadingPrices] = useState(false)
 
@@ -281,12 +283,12 @@ const Shipping: React.FC<ShippingProps> = ({
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          cartId: cart.id,
+          cartId: cart.id || initialCart.id,
           shippingMethodId: id,
         }),
       })
       const result = (await response.json().catch(() => null)) as
-        | { ok: true }
+        | { ok: true; cart?: HttpTypes.StoreCart }
         | { ok: false; error?: string }
         | null
 
@@ -300,6 +302,19 @@ const Shipping: React.FC<ShippingProps> = ({
         return
       }
 
+      if (result.cart) {
+        setCart(result.cart)
+        const shippingAmount =
+          Number(result.cart.shipping_subtotal) ||
+          Number(result.cart.shipping_methods?.at(-1)?.total) ||
+          Number(result.cart.shipping_methods?.at(-1)?.amount) ||
+          0
+        if (shippingAmount <= 0) {
+          setError(
+            "That delivery option saved without a rate. Please choose it again."
+          )
+        }
+      }
       router.refresh()
     } catch (err) {
       setShippingMethodId(currentId)

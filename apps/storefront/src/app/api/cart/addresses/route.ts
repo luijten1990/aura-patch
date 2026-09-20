@@ -12,8 +12,8 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await saveCheckoutAddresses(formData)
-    return NextResponse.json({ ok: true })
+    const countryCode = await saveCheckoutAddresses(formData)
+    return NextResponse.json({ ok: true, countryCode })
   } catch (error) {
     return NextResponse.json(
       {

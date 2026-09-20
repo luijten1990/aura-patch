@@ -6,9 +6,10 @@ import StripeWrapper from "./stripe-wrapper"
 import PayPalWrapper from "./paypal-wrapper"
 import { HttpTypes } from "@medusajs/types"
 import { isPaypal, isStripeLike } from "@lib/constants"
+import { useCheckoutCart } from "../checkout-cart-provider"
 
 type PaymentWrapperProps = {
-  cart: HttpTypes.StoreCart
+  cart?: HttpTypes.StoreCart
   children: React.ReactNode
 }
 
@@ -24,8 +25,16 @@ const stripePromise = stripeKey
     )
   : null
 
-const PaymentWrapper: React.FC<PaymentWrapperProps> = ({ cart, children }) => {
-  const paymentSession = cart.payment_collection?.payment_sessions?.find(
+const PaymentWrapper: React.FC<PaymentWrapperProps> = ({
+  cart: initialCart,
+  children,
+}) => {
+  const { cart } = useCheckoutCart()
+  const paymentCart = cart || initialCart
+  if (!paymentCart) {
+    return <div>{children}</div>
+  }
+  const paymentSession = paymentCart.payment_collection?.payment_sessions?.find(
     (s) => s.status === "pending"
   )
 

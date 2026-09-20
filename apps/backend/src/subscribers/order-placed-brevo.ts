@@ -1,5 +1,10 @@
 import type { SubscriberArgs, SubscriberConfig } from "@medusajs/framework"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import {
+  defaultOrderNotificationRecipients,
+  formatOrderAmount,
+  sendBrevoEmail,
+} from "../lib/brevo-email"
 
 type OrderItem = {
   product_title?: string
@@ -15,13 +20,11 @@ type Order = {
   currency_code?: string
   total?: number
   items?: OrderItem[]
-}
-
-type BrevoEmail = {
-  sender: { email: string; name?: string }
-  to: { email: string }[]
-  subject: string
-  htmlContent: string
+  fulfillments?: {
+    tracking_numbers?: string[] | null
+    data?: Record<string, unknown> | null
+    labels?: { tracking_number?: string; tracking_url?: string }[] | null
+  }[]
 }
 
 const escapeHtml = (value: string) =>
@@ -36,27 +39,6 @@ const escapeHtml = (value: string) =>
 
     return entities[character]
   })
-
-const formatAmount = (amount: number | undefined, currency = "usd") =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency.toUpperCase(),
-  }).format((amount ?? 0) / 100)
-
-const sendBrevoEmail = async (apiKey: string, email: BrevoEmail) => {
-  const response = await fetch("https://api.brevo.com/v3/smtp/email", {
-    method: "POST",
-    headers: {
-      "api-key": apiKey,
-      "content-type": "application/json",
-    },
-    body: JSON.stringify(email),
-  })
-
-  if (!response.ok) {
-    throw new Error(`Brevo rejected the email (${response.status}).`)
-  }
-}
 
 export default async function orderPlacedBrevoHandler({
   event: { data },
@@ -89,6 +71,9 @@ export default async function orderPlacedBrevoHandler({
       "items.variant_title",
       "items.quantity",
       "items.unit_price",
+      "fulfillments.tracking_numbers",
+      "fulfillments.labels",
+      "fulfillments.data",
     ],
     filters: { id: data.id },
   })
@@ -102,7 +87,7 @@ export default async function orderPlacedBrevoHandler({
   // requests the fields represented by the local email payload type.
   const typedOrder = order as unknown as Order
   const orderNumber = typedOrder.display_id ?? typedOrder.id
-  const total = formatAmount(typedOrder.total, typedOrder.currency_code)
+  const total = formatOrderAmount(typedOrder.total, typedOrder.currency_code)
   const items = (typedOrder.items ?? [])
     .map(
       (item) =>
@@ -113,6 +98,10 @@ export default async function orderPlacedBrevoHandler({
     .join("")
 
   const sender = { email: senderEmail, name: senderName }
+  const tracking = trackingDetails(typedOrder)
+  const trackingHtml = tracking
+    ? `<p style="margin:0 0 18px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:26px;color:#405044;">Tracking: <a href="${escapeHtml(tracking.url)}" style="color:#173f36;font-weight:700;">${escapeHtml(tracking.code)}</a></p>`
+    : `<p style="margin:0 0 18px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:26px;color:#405044;">We’ll email your tracking code as soon as the shipping label is created.</p>`
   const customerHtml = `<!doctype html>
 <html lang="en">
   <body style="margin:0;padding:0;background:#f5f3ed;color:#1d2821;">
@@ -133,6 +122,7 @@ export default async function orderPlacedBrevoHandler({
               <td valign="top" style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:26px;color:#405044;"><p style="margin:0 0 14px;">Hi there,</p><p style="margin:0;">Thank you for choosing Aura Patch. Your order <strong style="color:#1d2821;">#${escapeHtml(String(orderNumber))}</strong> has been received, and we’re preparing it with care.</p></td>
             </tr></table>
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:28px 0;border-top:1px solid #d9ddd3;border-bottom:1px solid #d9ddd3;"><tr><td style="padding:20px 0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:25px;color:#405044;"><strong style="font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:#77866d;">Your order</strong><ul style="margin:13px 0 12px;padding-left:20px;">${items}</ul><p style="margin:0;"><strong style="color:#1d2821;">Total: ${total}</strong></p></td></tr></table>
+            ${trackingHtml}
             <p style="margin:0 0 30px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:27px;color:#405044;">We’re glad to be part of your daily wellness routine.</p>
             <table role="presentation" cellspacing="0" cellpadding="0" border="0"><tr><td bgcolor="#173f36"><a href="https://www.getaurapatch.com/us/products/aura-patch" style="display:inline-block;padding:15px 24px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:#ffffff;text-decoration:none;">Explore Aura Patch</a></td></tr></table>
           </td></tr>
@@ -147,24 +137,45 @@ export default async function orderPlacedBrevoHandler({
     await sendBrevoEmail(apiKey, {
       sender,
       to: [{ email: typedOrder.email }],
-      subject: `Aura Patch order #${orderNumber} confirmed`,
+      subject: `Thank you for your purchase — Aura Patch order #${orderNumber}`,
       htmlContent: customerHtml,
+      tags: ["order-confirmation"],
     })
   }
 
-  const recipients = (process.env.BREVO_NEW_ORDER_RECIPIENTS ?? "")
-    .split(",")
-    .map((email) => email.trim())
-    .filter(Boolean)
+  const recipients = defaultOrderNotificationRecipients()
 
   if (recipients.length) {
     await sendBrevoEmail(apiKey, {
       sender,
       to: recipients.map((email) => ({ email })),
       subject: `New Aura Patch order #${orderNumber}`,
-      htmlContent: `<h1>New order received</h1><p>Order #${orderNumber} from ${escapeHtml(typedOrder.email ?? "unknown customer")}.</p><ul>${items}</ul><p><strong>Total: ${total}</strong></p>`,
+      htmlContent: `<h1>New order received</h1><p>Order #${orderNumber} from ${escapeHtml(typedOrder.email ?? "unknown customer")}.</p><ul>${items}</ul><p><strong>Total: ${total}</strong></p>${tracking ? `<p>Tracking: ${escapeHtml(tracking.code)}</p>` : ""}`,
+      tags: ["new-order-ops"],
     })
   }
+}
+
+function trackingDetails(order: Order) {
+  for (const fulfillment of order.fulfillments || []) {
+    const data = fulfillment.data || {}
+    const code =
+      fulfillment.labels?.[0]?.tracking_number ||
+      fulfillment.tracking_numbers?.[0] ||
+      (typeof data.easypost_tracking_number === "string"
+        ? data.easypost_tracking_number
+        : undefined) ||
+      (typeof data.tracking_number === "string" ? data.tracking_number : undefined)
+    if (!code) {
+      continue
+    }
+    const url =
+      fulfillment.labels?.[0]?.tracking_url ||
+      (typeof data.tracking_url === "string" ? data.tracking_url : undefined) ||
+      `https://track.easypost.com/${encodeURIComponent(code)}`
+    return { code, url }
+  }
+  return null
 }
 
 export const config: SubscriberConfig = {

@@ -1,3 +1,4 @@
+import { retrieveCart } from "@lib/data/cart"
 import { sdk } from "@lib/config"
 import { getAuthHeaders, getCacheTag } from "@lib/data/cookies"
 import { revalidateTag } from "next/cache"
@@ -38,7 +39,8 @@ export async function POST(req: NextRequest) {
     revalidateTag(cartCacheTag)
   }
 
-  return NextResponse.json({ ok: true })
+  const cart = await retrieveCart(cartId)
+  return NextResponse.json({ ok: true, cart })
 }
 
 function shippingMethodError(error: unknown): string {

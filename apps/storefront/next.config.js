@@ -15,6 +15,11 @@ const nextConfig = {
   output: "standalone",
   outputFileTracingRoot: require("path").join(__dirname, "../.."),
   reactStrictMode: true,
+  compress: true,
+  poweredByHeader: false,
+  experimental: {
+    optimizePackageImports: ["@medusajs/icons", "@headlessui/react"],
+  },
   logging: {
     fetches: {
       fullUrl: true,

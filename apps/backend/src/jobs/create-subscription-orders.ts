@@ -15,7 +15,8 @@ export default async function createSubscriptionOrdersJob(
   let page = 0
   const limit = 20
   let pagesCount = 0
-  const now = new Date()
+  const lookaheadHours = Number(process.env.SUBSCRIPTION_RENEWAL_LOOKAHEAD_HOURS || 0)
+  const now = new Date(Date.now() + Math.max(0, lookaheadHours) * 60 * 60 * 1000)
 
   do {
     const [subscriptions, count] = await subscriptionModuleService

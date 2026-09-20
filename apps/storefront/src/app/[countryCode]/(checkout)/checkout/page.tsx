@@ -1,5 +1,6 @@
 import { retrieveCart } from "@lib/data/cart"
 import { retrieveCustomer } from "@lib/data/customer"
+import { CheckoutCartProvider } from "@modules/checkout/components/checkout-cart-provider"
 import PaymentWrapper from "@modules/checkout/components/payment-wrapper"
 import CheckoutForm from "@modules/checkout/templates/checkout-form"
 import CheckoutSummary from "@modules/checkout/templates/checkout-summary"
@@ -26,12 +27,14 @@ export default async function Checkout() {
       <h1 className="aura-display mt-4 text-[44px] font-normal leading-none small:text-[58px]">
         Checkout
       </h1>
-      <div className="mt-10 grid grid-cols-1 gap-10 small:grid-cols-[minmax(0,1fr)_380px] small:gap-12">
-        <PaymentWrapper cart={cart}>
-          <CheckoutForm cart={cart} customer={customer} />
-        </PaymentWrapper>
-        <CheckoutSummary cart={cart} />
-      </div>
+      <CheckoutCartProvider cart={cart}>
+        <div className="mt-10 grid grid-cols-1 gap-10 small:grid-cols-[minmax(0,1fr)_380px] small:gap-12">
+          <PaymentWrapper cart={cart}>
+            <CheckoutForm cart={cart} customer={customer} />
+          </PaymentWrapper>
+          <CheckoutSummary />
+        </div>
+      </CheckoutCartProvider>
     </div>
   )
 }

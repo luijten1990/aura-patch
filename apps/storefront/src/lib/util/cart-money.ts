@@ -19,12 +19,17 @@ type MoneyCart = {
   subtotal?: number | null
   item_subtotal?: number | null
   shipping_subtotal?: number | null
+  shipping_total?: number | null
   discount_subtotal?: number | null
   tax_total?: number | null
   metadata?: Record<string, unknown> | null
   promotions?: { code?: string | null }[] | null
   region?: { currency_code?: string | null } | null
   items?: MoneyItem[] | null
+  shipping_methods?: {
+    amount?: number | null
+    total?: number | null
+  }[] | null
 }
 
 export const cartCurrencyCode = (cart?: MoneyCart | null) =>
@@ -87,13 +92,21 @@ export const withCartMoney = <T extends MoneyCart>(cart: T) => {
     Number(cart.discount_subtotal) || 0,
     originalItems - item_subtotal
   )
-  const shipping = Number(cart.shipping_subtotal) || 0
+  const shippingFromMethods = (cart.shipping_methods || []).reduce(
+    (sum, method) =>
+      sum + (Number(method.total) || Number(method.amount) || 0),
+    0
+  )
+  const shipping =
+    Number(cart.shipping_subtotal) ||
+    Number(cart.shipping_total) ||
+    shippingFromMethods
   const tax = Number(cart.tax_total) || 0
   const total =
     subscribe || hasSubscribePromo
       ? item_subtotal + shipping + tax
       : cart.total && cart.total > 0
-      ? cart.total
+      ? Math.max(cart.total, item_subtotal + shipping + tax)
       : item_subtotal + shipping + tax
 
   return {
@@ -101,6 +114,7 @@ export const withCartMoney = <T extends MoneyCart>(cart: T) => {
     currency_code: cartCurrencyCode(cart),
     item_subtotal,
     subtotal: item_subtotal,
+    shipping_subtotal: shipping,
     discount_subtotal,
     total,
   } as T & HttpTypes.StoreCart

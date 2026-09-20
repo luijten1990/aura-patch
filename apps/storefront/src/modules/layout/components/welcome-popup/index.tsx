@@ -15,15 +15,12 @@ export default function WelcomePopup() {
   useEffect(() => {
     if (window.localStorage.getItem(DISMISSED_KEY)) return
 
-    const timer = window.setTimeout(() => setOpen(true), 1400)
+    const timer = window.setTimeout(() => setOpen(true), 8000)
     return () => window.clearTimeout(timer)
   }, [])
 
   useEffect(() => {
     if (!open) return
-
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = "hidden"
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") dismiss()
@@ -31,7 +28,6 @@ export default function WelcomePopup() {
 
     window.addEventListener("keydown", onKeyDown)
     return () => {
-      document.body.style.overflow = previousOverflow
       window.removeEventListener("keydown", onKeyDown)
     }
   }, [open])

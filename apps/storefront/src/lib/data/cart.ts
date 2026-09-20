@@ -29,7 +29,7 @@ import {
  * @returns The cart object if found, or null if not found.
  */
 const CART_FIELDS =
-  "metadata, email, currency_code, *items, *region, *items.product, *items.variant, *items.thumbnail, *items.metadata, +items.total, +items.subtotal, +items.original_total, *promotions, *shipping_address, *billing_address, *shipping_methods, +shipping_methods.name, *payment_collection, *payment_collection.payment_sessions, +total, +subtotal, +item_subtotal, +shipping_subtotal, +discount_subtotal, +tax_total"
+  "metadata, email, currency_code, *items, *region, *items.product, *items.variant, *items.thumbnail, *items.metadata, +items.total, +items.subtotal, +items.original_total, *promotions, *shipping_address, *billing_address, *shipping_methods, +shipping_methods.name, +shipping_methods.amount, +shipping_methods.total, *payment_collection, *payment_collection.payment_sessions, +total, +subtotal, +item_subtotal, +shipping_subtotal, +shipping_total, +discount_subtotal, +tax_total"
 
 const revalidateByTag = async (tag: string) => {
   const cacheTag = await getCacheTag(tag)
@@ -192,9 +192,7 @@ export async function addToCart({
     throw new Error(message)
   }
 
-  void revalidateByTag("carts")
-  void revalidateByTag("fulfillment")
-  void syncCartPurchaseType(purchaseType).catch(() => undefined)
+  await revalidateByTag("carts")
 }
 
 async function syncCartPurchaseType(purchaseType: PurchaseType) {
@@ -497,6 +495,11 @@ export async function submitPromotionForm(
   }
 }
 
+const formString = (formData: FormData, key: string) => {
+  const value = formData.get(key)
+  return typeof value === "string" ? value : ""
+}
+
 export async function saveCheckoutAddresses(formData: FormData) {
   if (!formData) {
     throw new Error("No form data found when setting addresses")
@@ -506,9 +509,7 @@ export async function saveCheckoutAddresses(formData: FormData) {
     throw new Error("No existing cart found when setting addresses")
   }
 
-  const countryCode = String(
-    formData.get("shipping_address.country_code") || ""
-  ).toLowerCase()
+  const countryCode = formString(formData, "shipping_address.country_code").toLowerCase()
   const region = await getRegion(countryCode)
 
   if (!region) {
@@ -517,38 +518,40 @@ export async function saveCheckoutAddresses(formData: FormData) {
     )
   }
 
-  const data = {
-    region_id: region.id,
-    shipping_address: {
-      first_name: formData.get("shipping_address.first_name"),
-      last_name: formData.get("shipping_address.last_name"),
-      address_1: formData.get("shipping_address.address_1"),
-      address_2: "",
-      company: formData.get("shipping_address.company"),
-      postal_code: formData.get("shipping_address.postal_code"),
-      city: formData.get("shipping_address.city"),
-      country_code: countryCode,
-      province: formData.get("shipping_address.province"),
-      phone: formData.get("shipping_address.phone"),
-    },
-    email: formData.get("email"),
-  } as HttpTypes.StoreUpdateCart & { email?: FormDataEntryValue | null }
+  const shippingAddress = {
+    first_name: formString(formData, "shipping_address.first_name"),
+    last_name: formString(formData, "shipping_address.last_name"),
+    address_1: formString(formData, "shipping_address.address_1"),
+    address_2: "",
+    company: formString(formData, "shipping_address.company"),
+    postal_code: formString(formData, "shipping_address.postal_code"),
+    city: formString(formData, "shipping_address.city"),
+    country_code: countryCode,
+    province: formString(formData, "shipping_address.province"),
+    phone: formString(formData, "shipping_address.phone"),
+  }
 
-  const sameAsBilling = formData.get("same_as_billing")
+  const data: HttpTypes.StoreUpdateCart & { email?: string } = {
+    region_id: region.id,
+    shipping_address: shippingAddress,
+    email: formString(formData, "email"),
+  }
+
+  const sameAsBilling = formString(formData, "same_as_billing")
   if (sameAsBilling === "on") {
-    data.billing_address = data.shipping_address
+    data.billing_address = shippingAddress
   } else {
     data.billing_address = {
-      first_name: formData.get("billing_address.first_name"),
-      last_name: formData.get("billing_address.last_name"),
-      address_1: formData.get("billing_address.address_1"),
+      first_name: formString(formData, "billing_address.first_name"),
+      last_name: formString(formData, "billing_address.last_name"),
+      address_1: formString(formData, "billing_address.address_1"),
       address_2: "",
-      company: formData.get("billing_address.company"),
-      postal_code: formData.get("billing_address.postal_code"),
-      city: formData.get("billing_address.city"),
-      country_code: formData.get("billing_address.country_code"),
-      province: formData.get("billing_address.province"),
-      phone: formData.get("billing_address.phone"),
+      company: formString(formData, "billing_address.company"),
+      postal_code: formString(formData, "billing_address.postal_code"),
+      city: formString(formData, "billing_address.city"),
+      country_code: formString(formData, "billing_address.country_code").toLowerCase(),
+      province: formString(formData, "billing_address.province"),
+      phone: formString(formData, "billing_address.phone"),
     }
   }
 

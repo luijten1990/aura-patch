@@ -7,8 +7,10 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import { useSearchParams } from "next/navigation"
 import { HttpTypes } from "@medusajs/types"
 import { isSubscriptionCart } from "@lib/util/subscription"
+import { useCheckoutCart } from "../checkout-cart-provider"
 
-const Review = ({ cart }: { cart: HttpTypes.StoreCart }) => {
+const Review = ({ cart: _cart }: { cart: HttpTypes.StoreCart }) => {
+  const { cart } = useCheckoutCart()
   const searchParams = useSearchParams()
 
   const isOpen = searchParams.get("step") === "review"

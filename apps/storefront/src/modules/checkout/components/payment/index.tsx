@@ -18,14 +18,16 @@ import {
 import { HttpTypes } from "@medusajs/types"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
+import { useCheckoutCart } from "../checkout-cart-provider"
 
 const Payment = ({
-  cart,
+  cart: _cart,
   availablePaymentMethods,
 }: {
   cart: HttpTypes.StoreCart
   availablePaymentMethods: { id: string }[]
 }) => {
+  const { cart } = useCheckoutCart()
   const activeSession = cart.payment_collection?.payment_sessions?.find(
     (paymentSession) => paymentSession.status === "pending"
   )

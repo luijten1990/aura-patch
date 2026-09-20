@@ -135,15 +135,19 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
       context as LocationContext
     )
     if (!this.hasAddress(origin) || !this.hasAddress(destination)) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        "Warehouse or shipping address is missing fields needed for a shipping quote"
-      )
+      // Cart address saves must succeed even before a complete quote exists.
+      return {
+        calculated_amount: 0,
+        is_calculated_price_tax_inclusive: false,
+      }
     }
     const rate = await this.quoteRate(
       origin as Address,
       destination as Address,
-      this.optionId(_optionData as Record<string, unknown>, data as Record<string, unknown>)
+      this.optionId(
+        _optionData as Record<string, unknown>,
+        data as Record<string, unknown>
+      )
     )
     return {
       calculated_amount: this.customerCharge(rate),
