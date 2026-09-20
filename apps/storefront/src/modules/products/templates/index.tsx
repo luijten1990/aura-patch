@@ -52,7 +52,9 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
         </div>
         <div className="relative z-20 flex flex-col small:sticky small:top-28 w-full gap-y-8 rounded-[1.5rem] border border-aura-forest/10 bg-white/35 p-6">
           <ProductOnboardingCta />
-          <ProductActions product={product} region={region} />
+          <Suspense fallback={null}>
+            <ProductActions product={product} region={region} />
+          </Suspense>
         </div>
       </div>
       {product.handle === "aura-patch" && <AuraIngredientsGallery />}
