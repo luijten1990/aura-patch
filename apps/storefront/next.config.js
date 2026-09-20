@@ -1,6 +1,11 @@
+const fs = require("fs")
+const path = require("path")
 const checkEnvVariables = require("./check-env-variables")
 
 checkEnvVariables()
+
+const monorepoRoot = path.join(__dirname, "../..")
+const isMonorepo = fs.existsSync(path.join(monorepoRoot, "turbo.json"))
 
 /**
  * Medusa Cloud-related environment variables
@@ -13,7 +18,7 @@ const S3_PATHNAME = process.env.MEDUSA_CLOUD_S3_PATHNAME
  */
 const nextConfig = {
   output: "standalone",
-  outputFileTracingRoot: require("path").join(__dirname, "../.."),
+  outputFileTracingRoot: isMonorepo ? monorepoRoot : __dirname,
   reactStrictMode: true,
   compress: true,
   poweredByHeader: false,
