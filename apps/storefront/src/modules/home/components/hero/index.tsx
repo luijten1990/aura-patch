@@ -8,7 +8,7 @@ import Image from "next/image"
 
 type HeroProps = {
   product?: HttpTypes.StoreProduct
-  region: HttpTypes.StoreRegion
+  region?: HttpTypes.StoreRegion
 }
 
 const benefits = [
@@ -27,7 +27,9 @@ const faqs = [
 ]
 
 const Hero = ({ product }: HeroProps) => {
-  const productHref = product?.handle ? `/products/${product.handle}` : "/store"
+  const productHref = product?.handle
+    ? `/products/${product.handle}`
+    : "/products/aura-patch"
   const price = product ? getProductPrice({ product }).cheapestPrice : null
 
   return (

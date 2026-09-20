@@ -1,8 +1,6 @@
 import { Metadata } from "next"
 
 import Hero from "@modules/home/components/hero"
-import { listProducts } from "@lib/data/products"
-import { getRegion } from "@lib/data/regions"
 import { ProductJsonLd, FAQJsonLd, OrganizationJsonLd, WebsiteJsonLd } from "@modules/seo/json-ld"
 
 export const revalidate = 300
@@ -28,33 +26,14 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function Home(props: {
-  params: Promise<{ countryCode: string }>
-}) {
-  const params = await props.params
-
-  const { countryCode } = params
-
-  const region = await getRegion(countryCode)
-
-  if (!region) {
-    return null
-  }
-
-  const {
-    response: { products },
-  } = await listProducts({
-    regionId: region.id,
-    queryParams: { limit: 1 },
-  })
-
+export default async function Home() {
   return (
     <>
       <ProductJsonLd />
       <FAQJsonLd />
       <OrganizationJsonLd />
       <WebsiteJsonLd />
-      <Hero product={products[0]} region={region} />
+      <Hero />
     </>
   )
 }

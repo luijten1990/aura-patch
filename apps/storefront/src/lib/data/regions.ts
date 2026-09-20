@@ -1,5 +1,6 @@
 "use server"
 
+import { cache } from "react"
 import { sdk } from "@lib/config"
 import { HttpTypes } from "@medusajs/types"
 
@@ -21,7 +22,7 @@ export const retrieveRegion = async (id: string) => {
     .then(({ region }) => region)
 }
 
-export const getRegion = async (countryCode: string) => {
+export const getRegion = cache(async (countryCode: string) => {
   countryCode = countryCode.toLowerCase()
 
   const regions = await listRegions()
@@ -42,4 +43,4 @@ export const getRegion = async (countryCode: string) => {
     : regionMap.get("us")
 
   return region
-}
+})

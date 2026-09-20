@@ -110,15 +110,11 @@ export async function middleware(request: NextRequest) {
 
   const cacheIdCookie = request.cookies.get("_medusa_cache_id")
   const cacheId = cacheIdCookie?.value || crypto.randomUUID()
-
-  const regionMap = await getRegionMap(cacheId)
-  const countryCode = await getCountryCode(request, regionMap)
-
-  // if the country code is available, use it, otherwise use the default region
-  const country = countryCode || DEFAULT_REGION
   const firstPathSegment = request.nextUrl.pathname.split("/")[1]?.toLowerCase()
   const hasCountryPrefix = /^[a-z]{2}$/.test(firstPathSegment || "")
 
+  // /us and /nl pages already know their region. Hitting Medusa here added
+  // 1-3s to every cold HTML response, including the product page.
   if (hasCountryPrefix) {
     if (!cacheIdCookie) {
       const response = NextResponse.next()
@@ -129,6 +125,10 @@ export async function middleware(request: NextRequest) {
     }
     return NextResponse.next()
   }
+
+  const regionMap = await getRegionMap(cacheId)
+  const countryCode = await getCountryCode(request, regionMap)
+  const country = countryCode || DEFAULT_REGION
 
   // if the url doesn't have the country, redirect to it
   const redirectPath =

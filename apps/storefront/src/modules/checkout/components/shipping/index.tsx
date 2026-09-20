@@ -177,6 +177,13 @@ const Shipping: React.FC<ShippingProps> = ({
         return false
       }
       const name = (sm.name || "").toLowerCase()
+      const isInternationalOption = /international/.test(name)
+      if (isUsShipping && isInternationalOption) {
+        return false
+      }
+      if (!isUsShipping && !isInternationalOption) {
+        return false
+      }
       const isFreeStandard =
         /free standard|standard shipping \(5/.test(name) ||
         (sm.price_type !== "calculated" && sm.amount === 0)
@@ -195,31 +202,35 @@ const Shipping: React.FC<ShippingProps> = ({
   const hasPickupOptions = !!_pickupMethods?.length
 
   useEffect(() => {
-    if (_shippingMethods?.length) {
-      const promises = _shippingMethods
-        .filter((sm) => sm.price_type === "calculated")
-        .map((sm) => calculatePriceForShippingOption(sm.id, cart.id))
-
-      if (promises.length) {
-        setIsLoadingPrices(true)
-        Promise.allSettled(promises).then((res) => {
-          const pricesMap: Record<string, number> = {}
-          res
-            .filter((r) => r.status === "fulfilled")
-            .forEach((p) => {
-              if (p.value?.id && typeof p.value.amount === "number" && p.value.amount > 0) {
-                pricesMap[p.value.id] = p.value.amount
-              }
-            })
-
-          setCalculatedPricesMap(pricesMap)
-          setIsLoadingPrices(false)
-        })
-      } else {
-        setIsLoadingPrices(false)
+    const knownPrices: Record<string, number> = {}
+    for (const option of _shippingMethods || []) {
+      if (typeof option.amount === "number" && option.amount > 0) {
+        knownPrices[option.id] = option.amount
       }
-    } else {
+    }
+
+    const promises = (_shippingMethods || [])
+      .filter((sm) => sm.price_type === "calculated" && !knownPrices[sm.id])
+      .map((sm) => calculatePriceForShippingOption(sm.id, cart.id))
+
+    if (!promises.length) {
+      setCalculatedPricesMap(knownPrices)
       setIsLoadingPrices(false)
+    } else {
+      setIsLoadingPrices(true)
+      Promise.allSettled(promises).then((res) => {
+        const pricesMap: Record<string, number> = { ...knownPrices }
+        res
+          .filter((r) => r.status === "fulfilled")
+          .forEach((p) => {
+            if (p.value?.id && typeof p.value.amount === "number" && p.value.amount > 0) {
+              pricesMap[p.value.id] = p.value.amount
+            }
+          })
+
+        setCalculatedPricesMap(pricesMap)
+        setIsLoadingPrices(false)
+      })
     }
 
     if (_pickupMethods?.find((m) => m.id === shippingMethodId)) {
@@ -231,25 +242,29 @@ const Shipping: React.FC<ShippingProps> = ({
   const selectedRateReady = selectedMethod
     ? hasValidCalculatedAmount(selectedMethod, calculatedPricesMap)
     : false
-  const calculatedOptions =
-    _shippingMethods?.filter((option) => option.price_type === "calculated") || []
-  const onlyCalculatedRates = Boolean(
-    _shippingMethods?.length &&
-      calculatedOptions.length === _shippingMethods.length
+  const hasSelectableRate = Boolean(
+    _shippingMethods?.some((option) =>
+      hasValidCalculatedAmount(option, calculatedPricesMap)
+    )
   )
   const ratesUnavailable = Boolean(
-    !isLoadingPrices &&
-      ((selectedMethod?.price_type === "calculated" && !selectedRateReady) ||
-        (onlyCalculatedRates &&
-          calculatedOptions.every(
-            (option) => !hasValidCalculatedAmount(option, calculatedPricesMap)
-          )))
+    !isLoadingPrices && _shippingMethods?.length && !hasSelectableRate
   )
   const deliveryError =
     error ||
     (ratesUnavailable
       ? "Shipping rates temporarily unavailable"
       : null)
+
+  useEffect(() => {
+    if (isLoadingPrices || !shippingMethodId) {
+      return
+    }
+    const selected = _shippingMethods?.find((option) => option.id === shippingMethodId)
+    if (selected && !hasValidCalculatedAmount(selected, calculatedPricesMap)) {
+      setShippingMethodId(null)
+    }
+  }, [isLoadingPrices, calculatedPricesMap, shippingMethodId, _shippingMethods])
 
   const handleEdit = () => {
     router.push(pathname + "?step=delivery", { scroll: false })
@@ -304,18 +319,7 @@ const Shipping: React.FC<ShippingProps> = ({
 
       if (result.cart) {
         setCart(result.cart)
-        const shippingAmount =
-          Number(result.cart.shipping_subtotal) ||
-          Number(result.cart.shipping_methods?.at(-1)?.total) ||
-          Number(result.cart.shipping_methods?.at(-1)?.amount) ||
-          0
-        if (shippingAmount <= 0) {
-          setError(
-            "That delivery option saved without a rate. Please choose it again."
-          )
-        }
       }
-      router.refresh()
     } catch (err) {
       setShippingMethodId(currentId)
       setError(err instanceof Error ? err.message : "Unable to save that shipping option.")

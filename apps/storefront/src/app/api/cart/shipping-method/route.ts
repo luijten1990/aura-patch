@@ -1,4 +1,3 @@
-import { retrieveCart } from "@lib/data/cart"
 import { sdk } from "@lib/config"
 import { getAuthHeaders, getCacheTag } from "@lib/data/cookies"
 import { revalidateTag } from "next/cache"
@@ -39,14 +38,10 @@ export async function POST(req: NextRequest) {
     revalidateTag(cartCacheTag)
   }
 
-  try {
-    const cart = await retrieveCart(cartId)
-    return NextResponse.json({ ok: true, cart })
-  } catch {
-    // The shipping method is already on the cart. Don't fail checkout if the
-    // follow-up cart read times out against Medusa.
-    return NextResponse.json({ ok: true })
-  }
+  // Do not reload the cart here. GET /store/carts recalculates every
+  // EasyPost option and was hanging checkout long enough that Hostinger
+  // returned a 500 and the storefront showed "An unknown error occurred."
+  return NextResponse.json({ ok: true })
 }
 
 function shippingMethodError(error: unknown): string {

@@ -107,6 +107,27 @@ describe("EasyPostFulfillmentService", () => {
     }
   })
 
+  it("does not 500 when EasyPost has no matching carrier for an option", async () => {
+    const originalFetch = global.fetch
+    global.fetch = (async () => Response.json({ id: "shp_test", rates })) as typeof fetch
+
+    const service = new EasyPostFulfillmentService({}, options)
+    try {
+      await expect(
+        service.calculatePrice(
+          { id: "easypost-ups-ground" },
+          {},
+          { shipping_address: destination } as never
+        )
+      ).resolves.toEqual({
+        calculated_amount: 0,
+        is_calculated_price_tax_inclusive: false,
+      })
+    } finally {
+      global.fetch = originalFetch
+    }
+  })
+
   it("does not fail cart updates when the destination address is incomplete", async () => {
     const service = new EasyPostFulfillmentService({}, options)
     await expect(

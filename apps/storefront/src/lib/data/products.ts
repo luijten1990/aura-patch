@@ -1,11 +1,12 @@
 "use server"
 
+import { cache } from "react"
 import { sdk } from "@lib/config"
 import { OptionValueIds } from "@lib/util/product-option-filters"
 import { sortProducts } from "@lib/util/sort-products"
 import { HttpTypes } from "@medusajs/types"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
-import { getAuthHeaders, getCacheOptions } from "./cookies"
+import { getCacheOptions } from "./cookies"
 import { getRegion, retrieveRegion } from "./regions"
 
 type ProductListQueryParams = (HttpTypes.FindParams &
@@ -52,10 +53,6 @@ export const listProducts = async ({
     }
   }
 
-  const headers = {
-    ...(await getAuthHeaders()),
-  }
-
   const next = {
     ...(await getCacheOptions("products")),
   }
@@ -73,7 +70,6 @@ export const listProducts = async ({
             "*variants.calculated_price,+variants.inventory_quantity,*variants.images,*variants.options,+metadata,+tags,",
           ...queryParams,
         },
-        headers,
         next,
         cache: "force-cache",
       }
@@ -149,3 +145,13 @@ export const listProductsWithSort = async ({
     queryParams,
   }
 }
+
+export const getProductByHandle = cache(
+  async (countryCode: string, handle: string) => {
+    const { response } = await listProducts({
+      countryCode,
+      queryParams: { handle, limit: 1 },
+    })
+    return response.products[0]
+  }
+)

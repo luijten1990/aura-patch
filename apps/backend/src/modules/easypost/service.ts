@@ -120,7 +120,14 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
     this.assertAddress(origin, "warehouse")
     this.assertAddress(destination, "shipping")
     const optionId = this.optionId(optionData, data)
-    await this.quoteRate(origin, destination as Address, optionId)
+    try {
+      await this.quoteRate(origin, destination as Address, optionId)
+    } catch {
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        "That delivery option is not available for this address. Please choose another."
+      )
+    }
     return { ...data, easypost_origin: origin, easypost_option_id: optionId }
   }
 
@@ -141,17 +148,27 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
         is_calculated_price_tax_inclusive: false,
       }
     }
-    const rate = await this.quoteRate(
-      origin as Address,
-      destination as Address,
-      this.optionId(
-        _optionData as Record<string, unknown>,
-        data as Record<string, unknown>
+    try {
+      const rate = await this.quoteRate(
+        origin as Address,
+        destination as Address,
+        this.optionId(
+          _optionData as Record<string, unknown>,
+          data as Record<string, unknown>
+        )
       )
-    )
-    return {
-      calculated_amount: this.customerCharge(rate),
-      is_calculated_price_tax_inclusive: false,
+      return {
+        calculated_amount: this.customerCharge(rate),
+        is_calculated_price_tax_inclusive: false,
+      }
+    } catch {
+      // EasyPost often has USPS but not UPS (or the reverse) for a lane.
+      // Returning 0 lets checkout hide that option instead of 500ing the
+      // calculate endpoint and blocking every other rate.
+      return {
+        calculated_amount: 0,
+        is_calculated_price_tax_inclusive: false,
+      }
     }
   }
 
