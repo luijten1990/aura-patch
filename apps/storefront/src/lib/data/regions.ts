@@ -10,7 +10,8 @@ export const listRegions = async () => {
       method: "GET",
       next: { revalidate: 3600, tags: ["regions"] },
     })
-    .then(({ regions }) => regions)
+    .then(({ regions }) => regions ?? [])
+    .catch(() => [] as HttpTypes.StoreRegion[])
 }
 
 export const retrieveRegion = async (id: string) => {
@@ -20,27 +21,32 @@ export const retrieveRegion = async (id: string) => {
       next: { revalidate: 3600, tags: ["regions"] },
     })
     .then(({ region }) => region)
+    .catch(() => null)
 }
 
 export const getRegion = cache(async (countryCode: string) => {
-  countryCode = countryCode.toLowerCase()
+  try {
+    countryCode = countryCode.toLowerCase()
 
-  const regions = await listRegions()
+    const regions = await listRegions()
 
-  if (!regions) {
+    if (!regions?.length) {
+      return null
+    }
+
+    const regionMap = new Map<string, HttpTypes.StoreRegion>()
+    regions.forEach((region) => {
+      region.countries?.forEach((c) => {
+        regionMap.set(c?.iso_2 ?? "", region)
+      })
+    })
+
+    const region = countryCode
+      ? regionMap.get(countryCode)
+      : regionMap.get("us")
+
+    return region ?? null
+  } catch {
     return null
   }
-
-  const regionMap = new Map<string, HttpTypes.StoreRegion>()
-  regions.forEach((region) => {
-    region.countries?.forEach((c) => {
-      regionMap.set(c?.iso_2 ?? "", region)
-    })
-  })
-
-  const region = countryCode
-    ? regionMap.get(countryCode)
-    : regionMap.get("us")
-
-  return region
 })

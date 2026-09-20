@@ -28,7 +28,9 @@ export default async function PageLayout(props: { children: React.ReactNode; par
 
   return (
     <>
-      <Nav />
+      <Suspense fallback={<div className="h-[66px] bg-[#17382f]" />}>
+        <Nav />
+      </Suspense>
       <Suspense fallback={null}>
         <LoggedInBanners />
       </Suspense>

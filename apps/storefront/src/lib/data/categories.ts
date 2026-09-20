@@ -47,4 +47,5 @@ export const getCategoryByHandle = async (categoryHandle: string[]) => {
       }
     )
     .then(({ product_categories }) => product_categories[0])
+    .catch(() => undefined)
 }

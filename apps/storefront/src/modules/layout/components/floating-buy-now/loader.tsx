@@ -12,7 +12,9 @@ export default async function FloatingBuyNowLoader({
   const featuredResponse = await listProducts({
     countryCode,
     queryParams: { handle: "aura-patch", limit: 1 },
-  }).then(({ response }) => response)
+  })
+    .then(({ response }) => response)
+    .catch(() => ({ products: [] }))
   const auraProduct = featuredResponse.products[0]
   const auraVariant = auraProduct?.variants?.[0]
   const auraCheapest = auraProduct

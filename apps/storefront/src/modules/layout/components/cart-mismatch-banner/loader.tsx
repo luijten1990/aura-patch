@@ -7,7 +7,7 @@ export default async function CartMismatchBannerLoader({
 }: {
   customer: HttpTypes.StoreCustomer
 }) {
-  const cart = await retrieveCart(undefined, "id,customer_id")
+  const cart = await retrieveCart(undefined, "id,customer_id").catch(() => null)
 
   if (!cart) {
     return null

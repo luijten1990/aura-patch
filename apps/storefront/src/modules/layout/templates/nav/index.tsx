@@ -10,7 +10,7 @@ import NavCountrySelect from "@modules/layout/components/nav-country-select"
 import SideMenu from "@modules/layout/components/side-menu"
 
 export default async function Nav() {
-  const regions = await listRegions().then((regions: StoreRegion[]) => regions)
+  const regions = await listRegions().catch(() => [] as StoreRegion[])
 
   return (
     <div className="sticky top-0 inset-x-0 z-50">
