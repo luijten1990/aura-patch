@@ -250,12 +250,14 @@ const Hero = ({ product }: HeroProps) => {
               description: "A considered reset for replenishment and restoration.",
               image: "/images/aura-restore-coming-soon.webp",
               background: "bg-[#e4e8d8]",
+              imageClass: "object-contain p-8 mix-blend-multiply",
             },
             {
               name: "Aura Energy",
               description: "A brighter ritual created for momentum and focus.",
               image: "/images/aura-energy-coming-soon.webp",
-              background: "bg-[#f3dfaa]",
+              background: "bg-[#f4eee3]",
+              imageClass: "object-contain p-8 mix-blend-multiply",
             },
           ].map((item) => (
             <article key={item.name} className={`${item.background} overflow-hidden rounded-[2rem]`}>
@@ -267,7 +269,7 @@ const Hero = ({ product }: HeroProps) => {
                   src={item.image}
                   alt={`${item.name} pouch, coming soon`}
                   fill
-                  className="object-cover object-center transition-transform duration-700 hover:scale-[1.02]"
+                  className={`${item.imageClass} transition-transform duration-700 hover:scale-[1.02]`}
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
               </div>

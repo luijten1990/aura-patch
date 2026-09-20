@@ -46,11 +46,11 @@ const IngredientsShowcase = () => (
       </div>
 
       <div className="mt-14 space-y-6">
-        {products.map((product, productIndex) => (
+        {products.map((product) => (
           <article key={product.name} className="overflow-hidden rounded-[1.75rem] border border-aura-cream/15 bg-[#1a4d42]">
             <div className="grid small:grid-cols-[0.72fr_1.28fr]">
               <div className="relative min-h-[390px] overflow-hidden bg-[#f5f0e5] small:min-h-[540px]">
-                <Image src={product.image} alt={`${product.name} pouch`} fill className={productIndex === 0 ? "object-contain mix-blend-multiply" : "object-cover"} sizes="(max-width: 1023px) 100vw, 38vw" />
+                <Image src={product.image} alt={`${product.name} 30-day pouch`} fill className="object-contain mix-blend-multiply p-8" sizes="(max-width: 1023px) 100vw, 38vw" />
                 <span className="absolute left-5 top-5 rounded-full bg-aura-forest/90 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-aura-cream backdrop-blur">{product.status}</span>
               </div>
               <div className="p-6 small:p-9 medium:p-11">
