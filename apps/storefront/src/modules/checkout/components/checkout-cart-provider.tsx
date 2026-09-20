@@ -16,6 +16,14 @@ type CheckoutCartContextValue = {
 
 const CheckoutCartContext = createContext<CheckoutCartContextValue | null>(null)
 
+let publishedCart: HttpTypes.StoreCart | null = null
+const listeners = new Set<(cart: HttpTypes.StoreCart) => void>()
+
+function publishCheckoutCart(cart: HttpTypes.StoreCart) {
+  publishedCart = cart
+  listeners.forEach((listener) => listener(cart))
+}
+
 export function CheckoutCartProvider({
   cart,
   children,
@@ -23,11 +31,17 @@ export function CheckoutCartProvider({
   cart: HttpTypes.StoreCart
   children: React.ReactNode
 }) {
-  const [liveCart, setCart] = useState(cart)
+  const [liveCart, setLiveCart] = useState(cart)
 
   useEffect(() => {
-    setCart(cart)
+    setLiveCart(cart)
+    publishCheckoutCart(cart)
   }, [cart])
+
+  const setCart = (next: HttpTypes.StoreCart) => {
+    setLiveCart(next)
+    publishCheckoutCart(next)
+  }
 
   const value = useMemo(
     () => ({ cart: liveCart, setCart }),
@@ -41,10 +55,34 @@ export function CheckoutCartProvider({
   )
 }
 
-export function useCheckoutCart() {
-  const value = useContext(CheckoutCartContext)
-  if (!value) {
-    throw new Error("Checkout cart is not available")
+export function useCheckoutCart(fallback?: HttpTypes.StoreCart) {
+  const context = useContext(CheckoutCartContext)
+  const [cart, setLocalCart] = useState(
+    context?.cart || publishedCart || fallback || null
+  )
+
+  useEffect(() => {
+    const listener = (next: HttpTypes.StoreCart) => setLocalCart(next)
+    listeners.add(listener)
+    if (publishedCart) {
+      setLocalCart(publishedCart)
+    }
+    return () => {
+      listeners.delete(listener)
+    }
+  }, [])
+
+  const setCart = (next: HttpTypes.StoreCart) => {
+    if (context) {
+      context.setCart(next)
+      return
+    }
+    publishCheckoutCart(next)
+    setLocalCart(next)
   }
-  return value
+
+  return {
+    cart: context?.cart || cart || fallback,
+    setCart,
+  }
 }

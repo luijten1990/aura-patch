@@ -10,7 +10,7 @@ import { isSubscriptionCart } from "@lib/util/subscription"
 import { useCheckoutCart } from "../checkout-cart-provider"
 
 const Review = ({ cart: _cart }: { cart: HttpTypes.StoreCart }) => {
-  const { cart } = useCheckoutCart()
+  const { cart } = useCheckoutCart(_cart)
   const searchParams = useSearchParams()
 
   const isOpen = searchParams.get("step") === "review"

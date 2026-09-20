@@ -10,6 +10,9 @@ import CartTotals from "@modules/common/components/cart-totals"
 
 const CheckoutSummary = () => {
   const { cart } = useCheckoutCart()
+  if (!cart) {
+    return null
+  }
 
   return (
     <div className="sticky top-[78px] flex flex-col-reverse gap-y-8 py-8 small:flex-col small:py-0">

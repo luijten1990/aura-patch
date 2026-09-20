@@ -27,7 +27,7 @@ const Payment = ({
   cart: HttpTypes.StoreCart
   availablePaymentMethods: { id: string }[]
 }) => {
-  const { cart } = useCheckoutCart()
+  const { cart } = useCheckoutCart(_cart)
   const activeSession = cart.payment_collection?.payment_sessions?.find(
     (paymentSession) => paymentSession.status === "pending"
   )

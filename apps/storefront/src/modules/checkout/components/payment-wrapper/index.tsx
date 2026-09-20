@@ -29,7 +29,7 @@ const PaymentWrapper: React.FC<PaymentWrapperProps> = ({
   cart: initialCart,
   children,
 }) => {
-  const { cart } = useCheckoutCart()
+  const { cart } = useCheckoutCart(initialCart)
   const paymentCart = cart || initialCart
   if (!paymentCart) {
     return <div>{children}</div>

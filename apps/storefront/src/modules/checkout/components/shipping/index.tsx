@@ -144,7 +144,7 @@ const Shipping: React.FC<ShippingProps> = ({
   cart: initialCart,
   availableShippingMethods,
 }) => {
-  const { cart, setCart } = useCheckoutCart()
+  const { cart, setCart } = useCheckoutCart(initialCart)
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingPrices, setIsLoadingPrices] = useState(false)
 
