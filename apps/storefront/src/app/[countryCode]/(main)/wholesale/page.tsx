@@ -43,8 +43,8 @@ export default function WholesalePage() {
         </div>
         <div className="relative mx-auto aspect-[4/5] w-full max-w-[500px] overflow-hidden rounded-[2rem] bg-aura-cream">
           <Image
-            src="/images/aura-patch-front-original.webp"
-            alt="Aura Patch 30-day wellness pouch"
+            src="/images/aura-core-front.webp"
+            alt="Aura Core 30-day wellness pouch"
             fill
             priority
             className="object-contain p-6 small:p-9"

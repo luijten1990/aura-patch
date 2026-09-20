@@ -2,6 +2,7 @@ import { HttpTypes } from "@medusajs/types"
 import { getProductPrice } from "@lib/util/get-product-price"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import IngredientsShowcase from "@modules/home/components/ingredients-showcase"
+import CollectionChooser from "@modules/home/components/collection-chooser"
 import ContactForm from "@modules/home/components/contact-form"
 import NewsletterSignup from "@modules/home/components/newsletter-signup"
 import Image from "next/image"
@@ -36,24 +37,24 @@ const Hero = ({ product }: HeroProps) => {
     <div className="bg-aura-cream text-aura-forest">
       <section className="aura-shell grid items-center gap-10 py-14 small:grid-cols-[1fr_0.8fr] small:py-16">
         <div className="max-w-[600px]">
-          <p className="aura-eyebrow">The next generation of wellness</p>
+          <p className="aura-eyebrow">The Aura Collection</p>
           <h1 className="aura-display mt-6 text-[50px] leading-[1.04] small:text-[68px]">
-            19 Ingredients.<br />One Daily Patch.
+            Three formulas.<br />One Aura.
           </h1>
           <p className="mt-7 max-w-[540px] text-[16px] leading-7 text-aura-forest/80">
-            A smarter, simpler way to support your daily wellness routine. Thoughtfully formulated and delivered in one beautifully easy daily ritual.
+            Core, Restore, and Energy — three daily rituals in one considered patch format. Peel, apply, go. Up to 12 hours. A 30-day pouch.
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <LocalizedClientLink href={productHref} className="aura-button">Shop Aura Patch</LocalizedClientLink>
-            <a href="#how-it-works" className="aura-button-outline">See how it works</a>
+            <LocalizedClientLink href={productHref} className="aura-button">Shop Aura Core</LocalizedClientLink>
+            <a href="#collection" className="aura-button-outline">Compare formulas</a>
           </div>
         </div>
         <div className="relative mx-auto w-full max-w-[460px]">
             <LocalizedClientLink href={productHref} className="group relative block">
               <div className="relative aspect-[4/5] overflow-hidden">
                 <Image
-                  src="/images/aura-patch-front-original.webp"
-                  alt="Aura Patch 30-day pouch"
+                  src="/images/aura-core-front.webp"
+                  alt="Aura Core 30-day pouch"
                   fill
                   priority
                   className="object-contain transition-transform duration-700 group-hover:scale-[1.015]"
@@ -61,7 +62,7 @@ const Hero = ({ product }: HeroProps) => {
                 />
               </div>
               <div className="mt-2 flex items-baseline justify-between gap-5 border-t border-aura-forest/20 pt-4 text-[14px]">
-                <span>{product?.title || "Aura Patch — 30-day supply"}</span>
+                <span>{product?.title || "Aura Core — 30-day supply"}</span>
                 {price && <span className="font-semibold">{price.calculated_price}</span>}
               </div>
             </LocalizedClientLink>
@@ -226,62 +227,9 @@ const Hero = ({ product }: HeroProps) => {
         </div>
       </section>
 
+      <CollectionChooser corePrice={price?.calculated_price} />
+
       <IngredientsShowcase />
-
-      <section className="aura-shell py-16 small:py-24">
-        <div className="flex flex-col gap-8 small:flex-row small:items-end small:justify-between">
-          <div>
-            <p className="aura-eyebrow text-aura-gold">The Aura collection</p>
-            <h2 className="aura-display mt-6 max-w-[760px] text-[50px] leading-none small:text-[64px]">
-              More ways to meet your day.
-            </h2>
-          </div>
-          <p className="max-w-[430px] text-[17px] leading-7 text-aura-forest/70">
-            Two new daily rituals are taking shape. Thoughtfully formulated,
-            beautifully simple, and coming soon.
-          </p>
-        </div>
-
-        <div className="mt-14 grid gap-6 small:grid-cols-2">
-          {[
-            {
-              name: "Aura Recover",
-              description: "A considered reset for replenishment and restoration.",
-              image: "/images/aura-restore-coming-soon.webp",
-              background: "bg-aura-cream",
-              imageClass: "object-contain p-8",
-            },
-            {
-              name: "Aura Energy",
-              description: "A brighter ritual created for momentum and focus.",
-              image: "/images/aura-energy-coming-soon.webp",
-              background: "bg-aura-cream",
-              imageClass: "object-contain p-8",
-            },
-          ].map((item) => (
-            <article key={item.name} className={`${item.background} overflow-hidden rounded-[2rem] border border-aura-forest/10`}>
-              <div className="relative aspect-[4/3] small:aspect-[5/4]">
-                <span className="absolute left-6 top-6 z-10 rounded-full bg-aura-cream/90 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.18em] text-aura-forest backdrop-blur small:left-8 small:top-8">
-                  Coming soon
-                </span>
-                <Image
-                  src={item.image}
-                  alt={`${item.name} pouch, coming soon`}
-                  fill
-                  className={`${item.imageClass} transition-transform duration-700 hover:scale-[1.02]`}
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
-              </div>
-              <div className="flex flex-col gap-3 px-7 py-7 small:flex-row small:items-end small:justify-between small:px-9 small:py-9">
-                <h3 className="aura-display text-[38px] leading-none">{item.name}</h3>
-                <p className="max-w-[280px] text-[14px] leading-6 text-aura-forest/70 small:text-right">
-                  {item.description}
-                </p>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
 
       <section id="faq" className="aura-shell py-16 small:py-24">
         <div className="grid gap-16 small:grid-cols-[0.7fr_1.3fr]">
@@ -306,7 +254,7 @@ const Hero = ({ product }: HeroProps) => {
             <p className="aura-eyebrow">Contact Aura</p>
             <h2 className="aura-display mt-6 text-[46px] leading-none small:text-[62px]">We’d love to hear from you.</h2>
             <p className="mt-6 max-w-[430px] text-[15px] leading-7 text-aura-forest/70">Questions about Aura, your order, wholesale, partnerships, or investing? Send us a note and we’ll point it to the right place.</p>
-            <LocalizedClientLink href={productHref} className="mt-8 inline-flex text-[11px] font-bold uppercase tracking-[0.16em] text-aura-forest underline decoration-aura-gold decoration-2 underline-offset-8">Explore Aura Patch</LocalizedClientLink>
+            <LocalizedClientLink href={productHref} className="mt-8 inline-flex text-[11px] font-bold uppercase tracking-[0.16em] text-aura-forest underline decoration-aura-gold decoration-2 underline-offset-8">Explore Aura Core</LocalizedClientLink>
           </div>
           <div className="flex flex-col gap-6">
             <ContactForm />

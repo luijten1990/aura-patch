@@ -1,5 +1,7 @@
 import { listProducts } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
+import { getProductPrice } from "@lib/util/get-product-price"
+import CollectionChooser from "@modules/home/components/collection-chooser"
 import IngredientsShowcase from "@modules/home/components/ingredients-showcase"
 import BuyNowButton from "@modules/store/components/buy-now-button"
 
@@ -27,23 +29,27 @@ const StoreTemplate = async ({
     (featuredVariant.inventory_quantity ?? 0) > 0
   )
 
+  const corePrice = featured
+    ? getProductPrice({ product: featured }).cheapestPrice
+    : null
+
   return (
     <main className="bg-aura-cream text-aura-forest" data-testid="category-container">
       <section className="aura-shell py-14 small:py-20">
         <div className="grid gap-6 border-b border-aura-forest/15 pb-10 small:grid-cols-[1fr_0.7fr] small:items-end">
           <div>
-            <p className="aura-eyebrow text-aura-gold">The Aura collection</p>
+            <p className="aura-eyebrow text-aura-gold">The Aura Collection</p>
             <h1
               className="aura-display mt-5 text-[52px] leading-none small:text-[72px]"
               data-testid="store-page-title"
             >
-              Shop wellness.
+              Three formulas. One Aura.
             </h1>
           </div>
           <div className="max-w-[480px] small:justify-self-end">
             <p className="text-[17px] leading-7 text-aura-forest/70">
-              Thoughtfully formulated patches designed to make your daily wellness
-              ritual beautifully simple.
+              Core for everyday, Restore for replenishing days, Energy for a
+              brighter ritual. Start with Core — Restore and Energy are next.
             </p>
             <BuyNowButton variantId={featuredVariant?.id} disabled={!inStock} />
           </div>
@@ -60,6 +66,7 @@ const StoreTemplate = async ({
           ) : null}
         </div>
       </section>
+      <CollectionChooser corePrice={corePrice?.calculated_price} />
       <IngredientsShowcase />
     </main>
   )

@@ -1,3 +1,4 @@
+import { auraCore } from "@lib/data/aura-collection"
 import { getProductPrice } from "@lib/util/get-product-price"
 import { HttpTypes } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
@@ -42,8 +43,8 @@ export default async function ProductPreview({
         {product.handle === "aura-patch" ? (
           <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-aura-cream">
             <Image
-              src="/images/aura-patch-front-original.webp"
-              alt="Aura Patch 30-day pouch"
+              src="/images/aura-core-front.webp"
+              alt="Aura Core 30-day pouch"
               fill
               className="object-contain p-5 transition-transform duration-700 group-hover:scale-[1.025] small:p-7"
               sizes="(max-width: 768px) 90vw, 430px"
@@ -61,10 +62,12 @@ export default async function ProductPreview({
       </LocalizedClientLink>
         <div className="mt-5 flex items-end justify-between gap-5 border-t border-aura-forest/15 pt-5">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.18em] text-aura-gold">Daily wellness</p>
+            <p className="text-[11px] uppercase tracking-[0.18em] text-aura-gold">
+              {product.handle === "aura-patch" ? auraCore.use : "Daily wellness"}
+            </p>
             <LocalizedClientLink href={`/products/${product.handle}`}>
               <h2 className="aura-display mt-2 text-[34px] leading-none transition-colors hover:text-aura-gold" data-testid="product-title">
-                {product.title}
+                {product.handle === "aura-patch" ? auraCore.name : product.title}
               </h2>
             </LocalizedClientLink>
           </div>

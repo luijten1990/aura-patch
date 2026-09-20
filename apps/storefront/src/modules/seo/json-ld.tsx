@@ -7,12 +7,12 @@ export function ProductJsonLd() {
   const schema = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: "Aura Patch — Daily Wellness & Immune Support Patch",
+    name: "Aura Core — Daily Wellness Patch",
     description:
-      "A 30-day transdermal wellness patch with 19 ingredients including stabilized allicin, ashwagandha, vitamins, adaptogens, and probiotics. Peel, apply, go.",
+      "A 30-day transdermal wellness patch with 19 ingredients. Peel, apply, go.",
     brand: { "@type": "Brand", name: "Aura Patch" },
     category: "Health & Wellness > Dietary Supplements > Transdermal Patches",
-    image: "https://www.getaurapatch.com/images/aura-patch-front-original.jpeg",
+    image: "https://www.getaurapatch.com/images/aura-core-front.jpeg",
     url: "https://www.getaurapatch.com/us/products/aura-patch",
     sku: "AURA-PATCH-30",
     offers: {

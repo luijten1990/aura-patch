@@ -5,8 +5,8 @@ import StoreTemplate from "@modules/store/templates"
 export const revalidate = 300
 
 export const metadata: Metadata = {
-  title: "Store",
-  description: "Explore all of our products.",
+  title: "Shop the Aura Collection",
+  description: "Aura Core, Restore, and Energy — three daily rituals. Start with Core.",
 }
 
 type Params = {

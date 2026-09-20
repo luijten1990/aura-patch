@@ -6,20 +6,20 @@ import { ProductJsonLd, FAQJsonLd, OrganizationJsonLd, WebsiteJsonLd } from "@mo
 export const revalidate = 300
 
 export const metadata: Metadata = {
-  title: "Aura Patch — 19 Ingredients, One Daily Wellness Patch",
+  title: "Aura Core — Daily Wellness Patch",
   description:
-    "Aura Patch is a pill-free daily wellness patch with 19 ingredients delivered transdermally. Support immune health, energy & recovery — peel, apply, go. 30-day supply.",
+    "Aura Core is the everyday Aura ritual: 19 ingredients in one daily patch. Peel, apply, go. 30-day pouch.",
   openGraph: {
-    title: "Aura Patch — Daily Wellness, Simplified",
-    description: "19 ingredients in one daily transdermal patch. No pills, no powders — just peel, apply, and go.",
-    images: ["/images/aura-patch-front-original.jpeg"],
+    title: "The Aura Collection — Core, Restore, Energy",
+    description: "Three formulas. One Aura. Start with Core, the daily wellness patch.",
+    images: ["/images/aura-core-front.jpeg"],
     type: "website",
     siteName: "Aura Patch",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Aura Patch — Daily Wellness, Simplified",
-    description: "19 ingredients in one daily transdermal patch. No pills, no powders — just peel, apply, and go.",
+    title: "The Aura Collection — Core, Restore, Energy",
+    description: "Three formulas. One Aura. Start with Core, the daily wellness patch.",
   },
   alternates: {
     canonical: "https://www.getaurapatch.com/us",

@@ -78,6 +78,10 @@ export default function Nav() {
               Shop
             </LocalizedClientLink>
 
+            <LocalizedClientLink href="/#collection" className="hover:opacity-70 transition-opacity">
+              Collection
+            </LocalizedClientLink>
+
             <LocalizedClientLink href="/#formulations" className="hover:opacity-70 transition-opacity">
               Ingredients
             </LocalizedClientLink>
