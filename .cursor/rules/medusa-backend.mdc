@@ -1,0 +1,15 @@
+---
+description: Medusa backend conventions for Aura Patch modules and subscribe checkout
+globs: apps/backend/src/**/*.ts
+alwaysApply: false
+---
+
+# Medusa backend
+
+Business logic belongs in workflows and module services, not route handlers. Routes resolve input, then run a workflow.
+
+Subscribe checkout eligibility lives in `resolveCartSubscription`. `POST /store/carts/:id/subscribe` must keep defaulting a subscribe line item to monthly/period 1 when cart metadata is missing. After changing that path, run:
+
+`cd apps/backend && npm run test:unit -- src/lib/__tests__/resolve-cart-subscription.unit.spec.ts`
+
+Do not rewrite existing module migrations. Do not use raw SQL or a direct DB client. Do not disable `@medusajs/*` ESLint rules; fix the pattern instead.

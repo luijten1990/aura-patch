@@ -9,24 +9,40 @@ import CartButton from "@modules/layout/components/cart-button"
 import NavCountrySelect from "@modules/layout/components/nav-country-select"
 import SideMenu from "@modules/layout/components/side-menu"
 
-export default async function Nav() {
+async function SideMenuLoader() {
   const regions = await listRegions().catch(() => [] as StoreRegion[])
 
+  return (
+    <SideMenu
+      regions={regions}
+      locales={null}
+      currentLocale={null}
+    />
+  )
+}
+
+async function NavCountrySelectLoader() {
+  const regions = await listRegions().catch(() => [] as StoreRegion[])
+
+  return <NavCountrySelect regions={regions} />
+}
+
+const emptySideMenu = (
+  <SideMenu regions={null} locales={null} currentLocale={null} />
+)
+
+export default function Nav() {
   return (
     <div className="sticky top-0 inset-x-0 z-50">
       <header className="bg-[#17382f] text-[#f6f0e5]">
         <nav className="content-container relative z-[60] flex h-[66px] items-center justify-between overflow-visible">
 
-          {/* Mobile menu */}
           <div className="small:hidden flex items-center">
-            <SideMenu
-              regions={regions}
-              locales={null}
-              currentLocale={null}
-            />
+            <Suspense fallback={emptySideMenu}>
+              <SideMenuLoader />
+            </Suspense>
           </div>
 
-          {/* Logo */}
           <LocalizedClientLink
             href="/"
             className="flex shrink-0 items-center gap-2.5"
@@ -47,7 +63,6 @@ export default async function Nav() {
             </span>
           </LocalizedClientLink>
 
-          {/* Desktop navigation */}
           <div className="hidden small:flex items-center justify-center gap-7 flex-1 text-[12px] tracking-[0.08em] uppercase">
             <LocalizedClientLink
               href="/"
@@ -89,9 +104,10 @@ export default async function Nav() {
             </LocalizedClientLink>
           </div>
 
-          {/* Right side */}
           <div className="flex items-center gap-4 justify-end">
-            <NavCountrySelect regions={regions} />
+            <Suspense fallback={null}>
+              <NavCountrySelectLoader />
+            </Suspense>
 
             <LocalizedClientLink
               href="/account"

@@ -1,0 +1,13 @@
+---
+description: Storefront checkout, Subscribe & Save, and browser verification
+globs: apps/storefront/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Storefront
+
+`isSubscriptionCart` in `apps/storefront/src/lib/util/subscription.ts` is the UI source of truth for Subscribe & Save. A line item with `metadata.purchase_type === "subscription"` is enough, even if cart metadata is incomplete.
+
+Keep one-time and subscription carts distinct in price, promo (`SUBSCRIBE20`), and checkout complete path. If you change purchase-type, cart, or checkout, run `cd apps/storefront && npm test` and walk both purchase types in the browser.
+
+Do not add a shopper chatbot. Answer product questions by tightening FAQ/product copy, not a free-form LLM on the site.

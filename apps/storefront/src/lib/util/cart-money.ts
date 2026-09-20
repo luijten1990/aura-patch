@@ -3,7 +3,7 @@ import {
   isSubscriptionCart,
   SUBSCRIBE_CODE,
   subscriptionAmount,
-} from "@lib/util/subscription"
+} from "./subscription.ts"
 
 type MoneyItem = {
   total?: number | null

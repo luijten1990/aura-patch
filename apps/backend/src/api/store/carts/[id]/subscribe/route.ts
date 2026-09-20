@@ -3,7 +3,7 @@ import {
   ContainerRegistrationKeys,
   MedusaError,
 } from "@medusajs/framework/utils"
-import { SubscriptionInterval } from "../../../../../modules/subscription/types"
+import { resolveCartSubscription } from "../../../../../lib/resolve-cart-subscription"
 import createSubscriptionWorkflow from "../../../../../workflows/create-subscription"
 
 export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
@@ -17,37 +17,9 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
     },
   })
 
-  const metadata = (cart?.metadata || {}) as Record<string, unknown>
-  let interval = metadata.subscription_interval
-  let period = Number(metadata.subscription_period)
+  const subscription = resolveCartSubscription(cart)
 
-  const hasSubscribeItem = Boolean(
-    (cart?.items || []).some((item) => {
-      const itemMetadata = (item?.metadata || {}) as Record<string, unknown>
-      return itemMetadata.purchase_type === "subscription"
-    })
-  )
-
-  if (
-    interval !== SubscriptionInterval.MONTHLY &&
-    interval !== SubscriptionInterval.YEARLY &&
-    hasSubscribeItem
-  ) {
-    interval = SubscriptionInterval.MONTHLY
-    period = 1
-  }
-
-  if (
-    interval !== SubscriptionInterval.MONTHLY &&
-    interval !== SubscriptionInterval.YEARLY
-  ) {
-    throw new MedusaError(
-      MedusaError.Types.INVALID_DATA,
-      "This cart is not set up for a subscription."
-    )
-  }
-
-  if (!Number.isFinite(period) || period < 1) {
+  if (!subscription.ok) {
     throw new MedusaError(
       MedusaError.Types.INVALID_DATA,
       "This cart is not set up for a subscription."
@@ -58,8 +30,8 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
     input: {
       cart_id: req.params.id,
       subscription_data: {
-        interval,
-        period,
+        interval: subscription.interval,
+        period: subscription.period,
       },
     },
   })

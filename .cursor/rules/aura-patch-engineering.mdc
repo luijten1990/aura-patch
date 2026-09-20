@@ -1,0 +1,20 @@
+---
+description: One engineering agent, product claims, and the done-loop for Aura Patch
+alwaysApply: true
+---
+
+# Aura Patch engineering harness
+
+Use **one** engineering agent in this repo. Do not split work into frontend, backend, or ecommerce subagents.
+
+Aura Patch is a DTC wellness patch at getaurapatch.com (Medusa + Next.js). Stay inside existing on-site claims (daily ritual, 19 ingredients, peel/apply, up to 12 hours, 30-day pouch). Do not invent disease treatment, clinical results, or new ingredient promises.
+
+A storefront or subscribe/checkout task is not done until:
+
+1. Lint the app you changed (`cd apps/storefront && npm run lint` and/or `cd apps/backend && npm run lint`).
+2. Run the subscribe-cart tests:
+   - `cd apps/backend && npm run test:unit -- src/lib/__tests__/resolve-cart-subscription.unit.spec.ts`
+   - `cd apps/storefront && npm test`
+3. If cart, checkout, or purchase-type UI changed, click through **one-time** and **Subscribe & Save** in the browser (cart → checkout). Do not ship on a screenshot alone.
+
+Keep secrets, `.env`, lockfile hand-edits, and `test-results/` out of commits.
