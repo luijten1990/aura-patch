@@ -1,6 +1,7 @@
 import { listProductsWithSort } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
 import { OptionValueIds } from "@lib/util/product-option-filters"
+import { HttpTypes } from "@medusajs/types"
 import ProductPreview from "@modules/products/components/product-preview"
 import { Pagination } from "@modules/store/components/pagination"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
@@ -23,6 +24,9 @@ export default async function PaginatedProducts({
   productsIds,
   countryCode,
   optionValueIds,
+  region: regionProp,
+  products: productsProp,
+  count: countProp,
 }: {
   sortBy?: SortOptions
   page: number
@@ -31,7 +35,35 @@ export default async function PaginatedProducts({
   productsIds?: string[]
   countryCode: string
   optionValueIds?: OptionValueIds
+  region?: HttpTypes.StoreRegion | null
+  products?: HttpTypes.StoreProduct[]
+  count?: number
 }) {
+  if (regionProp && productsProp) {
+    const totalPages = Math.ceil((countProp || productsProp.length) / PRODUCT_LIMIT)
+    return (
+      <>
+        <ul
+          className="grid w-full gap-8 xsmall:grid-cols-2 medium:grid-cols-3"
+          data-testid="products-list"
+        >
+          {productsProp.map((p) => (
+            <li key={p.id}>
+              <ProductPreview product={p} region={regionProp} />
+            </li>
+          ))}
+        </ul>
+        {totalPages > 1 && (
+          <Pagination
+            data-testid="product-pagination"
+            page={page}
+            totalPages={totalPages}
+          />
+        )}
+      </>
+    )
+  }
+
   const queryParams: PaginatedProductsParams = {
     limit: 12,
   }

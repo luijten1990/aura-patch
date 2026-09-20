@@ -1,6 +1,5 @@
 import { Suspense } from "react"
 
-import { listLocales } from "@lib/data/locales"
 import { listRegions } from "@lib/data/regions"
 import { StoreRegion } from "@medusajs/types"
 import Image from "next/image"
@@ -11,10 +10,7 @@ import NavCountrySelect from "@modules/layout/components/nav-country-select"
 import SideMenu from "@modules/layout/components/side-menu"
 
 export default async function Nav() {
-  const [regions, locales] = await Promise.all([
-    listRegions().then((regions: StoreRegion[]) => regions),
-    listLocales(),
-  ])
+  const regions = await listRegions().then((regions: StoreRegion[]) => regions)
 
   return (
     <div className="sticky top-0 inset-x-0 z-50">
@@ -25,7 +21,7 @@ export default async function Nav() {
           <div className="small:hidden flex items-center">
             <SideMenu
               regions={regions}
-              locales={locales}
+              locales={null}
               currentLocale={null}
             />
           </div>

@@ -1,32 +1,26 @@
-import { Suspense } from "react"
-
-import { OptionValueIds } from "@lib/util/product-option-filters"
 import { listProducts } from "@lib/data/products"
+import { getRegion } from "@lib/data/regions"
 import IngredientsShowcase from "@modules/home/components/ingredients-showcase"
 import BuyNowButton from "@modules/store/components/buy-now-button"
-import SkeletonProductGrid from "@modules/skeletons/templates/skeleton-product-grid"
-import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 
 import PaginatedProducts from "./paginated-products"
 
 const StoreTemplate = async ({
-  sortBy,
-  page,
   countryCode,
-  optionValueIds,
 }: {
-  sortBy?: SortOptions
-  page?: string
   countryCode: string
-  optionValueIds?: OptionValueIds
 }) => {
-  const pageNumber = page ? parseInt(page) : 1
-  const sort = sortBy || "created_at"
-  const { response: featuredResponse } = await listProducts({
-    countryCode,
-    queryParams: { handle: "aura-patch", limit: 1 },
-  })
-  const featuredVariant = featuredResponse.products[0]?.variants?.[0]
+  const [region, { response }] = await Promise.all([
+    getRegion(countryCode),
+    listProducts({
+      countryCode,
+      queryParams: { limit: 12 },
+    }),
+  ])
+  const featured =
+    response.products.find((product) => product.handle === "aura-patch") ||
+    response.products[0]
+  const featuredVariant = featured?.variants?.[0]
   const inStock = !!featuredVariant && (
     !featuredVariant.manage_inventory ||
     !!featuredVariant.allow_backorder ||
@@ -55,14 +49,15 @@ const StoreTemplate = async ({
           </div>
         </div>
         <div className="pt-12">
-        <Suspense fallback={<SkeletonProductGrid />}>
-          <PaginatedProducts
-            sortBy={sort}
-            page={pageNumber}
-            countryCode={countryCode}
-            optionValueIds={optionValueIds}
-          />
-        </Suspense>
+          {region ? (
+            <PaginatedProducts
+              page={1}
+              countryCode={countryCode}
+              region={region}
+              products={response.products}
+              count={response.count}
+            />
+          ) : null}
         </div>
       </section>
       <IngredientsShowcase />
