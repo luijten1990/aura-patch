@@ -39,8 +39,14 @@ export async function POST(req: NextRequest) {
     revalidateTag(cartCacheTag)
   }
 
-  const cart = await retrieveCart(cartId)
-  return NextResponse.json({ ok: true, cart })
+  try {
+    const cart = await retrieveCart(cartId)
+    return NextResponse.json({ ok: true, cart })
+  } catch {
+    // The shipping method is already on the cart. Don't fail checkout if the
+    // follow-up cart read times out against Medusa.
+    return NextResponse.json({ ok: true })
+  }
 }
 
 function shippingMethodError(error: unknown): string {

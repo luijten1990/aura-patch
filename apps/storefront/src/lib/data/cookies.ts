@@ -33,20 +33,35 @@ export const getCacheTag = async (tag: string): Promise<string> => {
   }
 }
 
+const PRIVATE_CACHE_TAGS = new Set([
+  "carts",
+  "customers",
+  "orders",
+  "subscriptions",
+])
+
 export const getCacheOptions = async (
   tag: string
-): Promise<{ tags: string[] } | Record<string, never>> => {
+): Promise<{ tags: string[]; revalidate?: number }> => {
   if (typeof window !== "undefined") {
-    return {}
+    return { tags: [tag] }
   }
 
-  const cacheTag = await getCacheTag(tag)
+  if (PRIVATE_CACHE_TAGS.has(tag)) {
+    const cacheTag = await getCacheTag(tag)
 
-  if (!cacheTag) {
-    return {}
+    if (!cacheTag) {
+      return { tags: [tag], revalidate: 0 }
+    }
+
+    return { tags: [cacheTag] }
   }
 
-  return { tags: [`${cacheTag}`] }
+  // Catalog data is the same for every visitor. Tagging it with
+  // `_medusa_cache_id` made the first product/home request unique per
+  // session, so Hostinger never reused the Next data cache and TTFB sat
+  // at 4-8s while Medusa was fetched on every cold hit.
+  return { tags: [tag], revalidate: 300 }
 }
 
 // `sameSite: "lax"` rather than `"strict"`: the customer returns from a

@@ -10,7 +10,7 @@ const regionMapCache = {
   regionMapUpdated: Date.now(),
 }
 
-async function getRegionMap(cacheId: string) {
+async function getRegionMap(_cacheId: string) {
   const { regionMap, regionMapUpdated } = regionMapCache
 
   if (!BACKEND_URL) {
@@ -31,7 +31,7 @@ async function getRegionMap(cacheId: string) {
       },
       next: {
         revalidate: 3600,
-        tags: [`regions-${cacheId}`],
+        tags: ["regions"],
       },
       cache: "force-cache",
     })
