@@ -11,7 +11,10 @@ import type {
 import {
   EASYPOST_RATE_OPTIONS,
   LEGACY_EASYPOST_OPTION_ID,
-  matchesEasyPostOption,
+  isPremiumExpressRate,
+  isUspsRate,
+  isUpsRate,
+  optionBucket,
 } from "./rate-options"
 
 type Address = {
@@ -96,10 +99,11 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
   }
 
   async getFulfillmentOptions(): Promise<FulfillmentOption[]> {
-    return EASYPOST_RATE_OPTIONS.map((option) => ({
-      id: option.id,
-      name: option.name,
-    }))
+    const unique = new Map<string, { id: string; name: string }>()
+    for (const option of EASYPOST_RATE_OPTIONS) {
+      unique.set(option.id, { id: option.id, name: option.name })
+    }
+    return [...unique.values()]
   }
 
   async validateOption() {
@@ -289,7 +293,26 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
   ) {
     try {
       const shipment = await this.createShipment(origin, destination, 8000)
-      const rates = shipment.rates || []
+      let rates = shipment.rates || []
+      if (
+        this.isInternational(destination) &&
+        shipment.id &&
+        !rates.some((rate) => isUspsRate(rate.carrier, rate.service))
+      ) {
+        try {
+          const refreshed = await this.request<EasyPostShipment>(
+            "GET",
+            `/shipments/${shipment.id}`,
+            undefined,
+            8000
+          )
+          if (refreshed.rates?.length) {
+            rates = refreshed.rates
+          }
+        } catch {
+          // Keep the original quote if the refresh does not come back.
+        }
+      }
       this.rateCache.set(key, { rates, at: Date.now() })
       this.failedQuotes.delete(key)
       return rates
@@ -341,24 +364,67 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
         "No USD EasyPost rate is available for this destination"
       )
     }
-    const matched = usd.filter((rate) =>
-      matchesEasyPostOption(optionId, rate.carrier, rate.service)
-    )
-    if (!matched.length) {
+    const picked = this.pickCheckoutRate(usd, optionId)
+    if (!picked) {
       throw new MedusaError(
         MedusaError.Types.UNEXPECTED_STATE,
         `No EasyPost rate is available for ${optionId}`
       )
     }
     if (optionId === LEGACY_EASYPOST_OPTION_ID && !this.isInternational(destination)) {
-      const preferred = matched.filter((rate) =>
-        matchesEasyPostOption("easypost-usps-ground", rate.carrier, rate.service) ||
-        matchesEasyPostOption("easypost-usps-priority", rate.carrier, rate.service) ||
-        matchesEasyPostOption("easypost-ups-ground", rate.carrier, rate.service)
+      const preferred = usd.filter(
+        (rate) => isUspsRate(rate.carrier, rate.service) || isUpsRate(rate.carrier, rate.service)
       )
-      return this.cheapest(preferred.length ? preferred : matched)
+      return this.cheapest(preferred.length ? preferred : usd)
     }
-    return this.cheapest(matched)
+    return picked
+  }
+
+  private pickCheckoutRate(rates: EasyPostRate[], optionId: string) {
+    const cheapestOf = (pool: EasyPostRate[]) =>
+      pool.length ? this.cheapest(pool) : undefined
+    const sameRate = (left?: EasyPostRate, right?: EasyPostRate) =>
+      Boolean(
+        left &&
+          right &&
+          left.carrier === right.carrier &&
+          left.service === right.service &&
+          this.charge(left) === this.charge(right)
+      )
+
+    const usps = cheapestOf(rates.filter((rate) => isUspsRate(rate.carrier, rate.service)))
+    const ups = cheapestOf(rates.filter((rate) => isUpsRate(rate.carrier, rate.service)))
+    const others = rates.filter(
+      (rate) => !isUspsRate(rate.carrier, rate.service) && !isUpsRate(rate.carrier, rate.service)
+    )
+    const alt =
+      cheapestOf(
+        others.filter((rate) => !isPremiumExpressRate(rate.carrier, rate.service))
+      ) || cheapestOf(others)
+    const expressPool = rates.filter((rate) =>
+      isPremiumExpressRate(rate.carrier, rate.service)
+    )
+    const express =
+      cheapestOf(
+        expressPool.filter(
+          (rate) => !sameRate(rate, usps) && !sameRate(rate, ups) && !sameRate(rate, alt)
+        )
+      ) || cheapestOf(expressPool)
+
+    const bucket = optionBucket(optionId)
+    if (bucket === "usps") {
+      return usps
+    }
+    if (bucket === "ups") {
+      return ups
+    }
+    if (bucket === "alt") {
+      return sameRate(alt, express) ? undefined : alt
+    }
+    if (bucket === "express") {
+      return express
+    }
+    return cheapestOf(rates)
   }
 
   private async buyRate(

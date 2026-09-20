@@ -22,7 +22,7 @@ export default async function ensureEasyPostShippingJob(
 }
 
 export const config = {
-  name: "ensure-easypost-shipping-option-labels",
+  name: "ensure-easypost-shipping-carrier-buckets",
   schedule: "* * * * *",
   numberOfExecutions: 12,
 }

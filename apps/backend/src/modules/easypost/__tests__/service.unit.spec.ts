@@ -141,4 +141,90 @@ describe("EasyPostFulfillmentService", () => {
       is_calculated_price_tax_inclusive: false,
     })
   })
+
+  it("offers USPS, UPS, a lowest-cost alternative, and express for international addresses", async () => {
+    const originalFetch = global.fetch
+    const nlRates = [
+      {
+        id: "rate_usps",
+        shipment_id: "shp_nl",
+        rate: "13.04",
+        currency: "USD",
+        carrier: "USPS",
+        service: "FirstClassPackageInternationalService",
+      },
+      {
+        id: "rate_ups",
+        shipment_id: "shp_nl",
+        rate: "24.47",
+        currency: "USD",
+        carrier: "UPS",
+        service: "UPSStandard",
+      },
+      {
+        id: "rate_alt",
+        shipment_id: "shp_nl",
+        rate: "15.10",
+        currency: "USD",
+        carrier: "DhlEcs",
+        service: "PacketInternational",
+      },
+      {
+        id: "rate_express",
+        shipment_id: "shp_nl",
+        rate: "39.51",
+        currency: "USD",
+        carrier: "DHLExpress",
+        service: "ExpressWorldwide",
+      },
+    ]
+    global.fetch = (async () =>
+      Response.json({ id: "shp_nl", rates: nlRates })) as typeof fetch
+
+    const service = new EasyPostFulfillmentService({}, options)
+    const netherlands = {
+      country_code: "nl",
+      first_name: "Mirjam",
+      last_name: "Luijten",
+      address_1: "Bezuidenhoutseweg 261",
+      city: "Den Haag",
+      postal_code: "2594AN",
+    }
+    try {
+      await expect(
+        service.calculatePrice({ id: "easypost-usps" }, {}, {
+          shipping_address: netherlands,
+        } as never)
+      ).resolves.toEqual({
+        calculated_amount: 13.04,
+        is_calculated_price_tax_inclusive: false,
+      })
+      await expect(
+        service.calculatePrice({ id: "easypost-ups" }, {}, {
+          shipping_address: netherlands,
+        } as never)
+      ).resolves.toEqual({
+        calculated_amount: 24.47,
+        is_calculated_price_tax_inclusive: false,
+      })
+      await expect(
+        service.calculatePrice({ id: "easypost-alt" }, {}, {
+          shipping_address: netherlands,
+        } as never)
+      ).resolves.toEqual({
+        calculated_amount: 15.1,
+        is_calculated_price_tax_inclusive: false,
+      })
+      await expect(
+        service.calculatePrice({ id: "easypost-express" }, {}, {
+          shipping_address: netherlands,
+        } as never)
+      ).resolves.toEqual({
+        calculated_amount: 39.51,
+        is_calculated_price_tax_inclusive: false,
+      })
+    } finally {
+      global.fetch = originalFetch
+    }
+  })
 })

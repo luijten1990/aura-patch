@@ -47,86 +47,103 @@ function formatAddress(address: HttpTypes.StoreCartAddress) {
 }
 
 function shippingMethodRank(option: HttpTypes.StoreCartShippingOption) {
+  const optionId = String(
+    (option.data as { id?: string } | null | undefined)?.id || ""
+  )
   const name = (option.name || "").toLowerCase()
-  if (/free standard/.test(name)) {
+  if (/free standard/.test(name) || optionId === "free-standard-us") {
     return 0
   }
-  if (/ground advantage/.test(name)) {
+  if (optionId === "easypost-alt" || /best value/.test(name)) {
     return 1
   }
-  if (/priority/.test(name)) {
+  if (optionId === "easypost-usps" || optionId.includes("usps")) {
     return 2
   }
-  if (/ups/.test(name)) {
+  if (optionId === "easypost-ups" || optionId.includes("ups")) {
     return 3
   }
-  if (/express/.test(name)) {
+  if (optionId.includes("express") || /express/.test(name)) {
     return 4
   }
-  if (/standard/.test(name)) {
-    return 5
-  }
-  return 6
+  return 5
 }
-function shippingOptionCopy(option: HttpTypes.StoreCartShippingOption) {
+
+function shippingOptionCopy(
+  option: HttpTypes.StoreCartShippingOption,
+  isUsShipping: boolean
+) {
   const optionId = String(
     (option.data as { id?: string } | null | undefined)?.id || ""
   )
   const catalog: Record<string, { title: string; detail: string }> = {
+    "easypost-usps": {
+      title: "USPS",
+      detail: isUsShipping
+        ? "Tracked · typically 2–5 business days"
+        : "Tracked · typically 6–12 business days",
+    },
     "easypost-usps-ground": {
-      title: "USPS Ground Advantage",
-      detail: "USPS · tracked · typically 2–5 business days",
+      title: "USPS",
+      detail: isUsShipping
+        ? "Tracked · typically 2–5 business days"
+        : "Tracked · typically 6–12 business days",
     },
     "easypost-usps-priority": {
-      title: "USPS Priority Mail",
-      detail: "USPS · tracked · typically 1–3 business days",
+      title: "USPS",
+      detail: isUsShipping
+        ? "Tracked · typically 1–3 business days"
+        : "Tracked · typically 6–10 business days",
+    },
+    "easypost-ups": {
+      title: "UPS",
+      detail: isUsShipping
+        ? "Tracked · typically 1–5 business days"
+        : "Tracked · typically 3–7 business days",
     },
     "easypost-ups-ground": {
-      title: "UPS Ground",
-      detail: "UPS · tracked · typically 1–5 business days",
+      title: "UPS",
+      detail: isUsShipping
+        ? "Tracked · typically 1–5 business days"
+        : "Tracked · typically 3–7 business days",
+    },
+    "easypost-alt": {
+      title: "Best value",
+      detail: isUsShipping
+        ? "Tracked · lowest-cost carrier besides USPS and UPS · typically 2–7 business days"
+        : "Tracked · lowest-cost carrier besides USPS and UPS · typically 6–12 business days",
+    },
+    "easypost-intl-standard": {
+      title: "Best value",
+      detail: "Tracked · typically 6–12 business days",
     },
     "easypost-express": {
       title: "Express",
-      detail: "USPS Priority Express, UPS Next Day, or similar · typically 1–2 business days",
-    },
-    "easypost-intl-standard": {
-      title: "International Standard",
-      detail: "DHL eCommerce, USPS, or similar · tracked · typically 6–12 business days",
+      detail: isUsShipping
+        ? "Tracked · typically 1–2 business days"
+        : "Tracked · typically 1–4 business days",
     },
     "easypost-intl-express": {
-      title: "International Express",
-      detail: "DHL Express or UPS Worldwide · tracked · typically 1–4 business days",
+      title: "Express",
+      detail: "Tracked · typically 1–4 business days",
     },
   }
   if (catalog[optionId]) {
     return catalog[optionId]
   }
   const name = option.name || "Shipping"
-  if (/international express/i.test(name)) {
-    return catalog["easypost-intl-express"]
-  }
-  if (/international standard/i.test(name)) {
-    return catalog["easypost-intl-standard"]
-  }
-  if (/ground advantage/i.test(name)) {
-    return catalog["easypost-usps-ground"]
-  }
-  if (/priority mail/i.test(name)) {
-    return catalog["easypost-usps-priority"]
-  }
-  if (/ups ground/i.test(name)) {
-    return catalog["easypost-ups-ground"]
-  }
-  if (/^express$/i.test(name.trim())) {
-    return catalog["easypost-express"]
-  }
   if (/free standard/i.test(name)) {
     return {
       title: name,
-      detail: "Aura Patch · United States · typically 5–7 business days",
+      detail: "Tracked · United States · typically 5–7 business days",
     }
   }
-  return { title: name, detail: "" }
+  return {
+    title: name,
+    detail: isUsShipping
+      ? "Tracked · delivery time depends on the carrier"
+      : "Tracked · international delivery time depends on the carrier",
+  }
 }
 
 function hasValidCalculatedAmount(
@@ -177,13 +194,6 @@ const Shipping: React.FC<ShippingProps> = ({
         return false
       }
       const name = (sm.name || "").toLowerCase()
-      const isInternationalOption = /international/.test(name)
-      if (isUsShipping && isInternationalOption) {
-        return false
-      }
-      if (!isUsShipping && !isInternationalOption) {
-        return false
-      }
       const isFreeStandard =
         /free standard|standard shipping \(5/.test(name) ||
         (sm.price_type !== "calculated" && sm.amount === 0)
@@ -444,7 +454,7 @@ const Shipping: React.FC<ShippingProps> = ({
                       return hasValidCalculatedAmount(option, calculatedPricesMap)
                     })
                     .map((option) => {
-                    const copy = shippingOptionCopy(option)
+                    const copy = shippingOptionCopy(option, isUsShipping)
                     return (
                       <Radio
                         key={option.id}
