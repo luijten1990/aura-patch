@@ -58,7 +58,7 @@ describe("EasyPostFulfillmentService", () => {
       await expect(
         service.calculatePrice(
           { id: "easypost-usps-ground" },
-          {},
+          { easypost_live: true },
           { shipping_address: destination } as never
         )
       ).resolves.toEqual({
@@ -68,7 +68,7 @@ describe("EasyPostFulfillmentService", () => {
       await expect(
         service.calculatePrice(
           { id: "easypost-express" },
-          {},
+          { easypost_live: true },
           { shipping_address: destination } as never
         )
       ).resolves.toEqual({
@@ -92,10 +92,10 @@ describe("EasyPostFulfillmentService", () => {
     const service = new EasyPostFulfillmentService({}, options)
     try {
       const [ground, express] = await Promise.all([
-        service.calculatePrice({ id: "easypost-usps-ground" }, {}, {
+        service.calculatePrice({ id: "easypost-usps-ground" }, { easypost_live: true }, {
           shipping_address: destination,
         } as never),
-        service.calculatePrice({ id: "easypost-express" }, {}, {
+        service.calculatePrice({ id: "easypost-express" }, { easypost_live: true }, {
           shipping_address: destination,
         } as never),
       ])
@@ -116,6 +116,31 @@ describe("EasyPostFulfillmentService", () => {
       await expect(
         service.calculatePrice(
           { id: "easypost-ups-ground" },
+          { easypost_live: true },
+          { shipping_address: destination } as never
+        )
+      ).resolves.toEqual({
+        calculated_amount: 0,
+        is_calculated_price_tax_inclusive: false,
+      })
+    } finally {
+      global.fetch = originalFetch
+    }
+  })
+
+  it("does not call EasyPost while adding to an existing cart", async () => {
+    let calls = 0
+    const originalFetch = global.fetch
+    global.fetch = (async () => {
+      calls += 1
+      return Response.json({ id: "shp_test", rates })
+    }) as typeof fetch
+
+    const service = new EasyPostFulfillmentService({}, options)
+    try {
+      await expect(
+        service.calculatePrice(
+          { id: "easypost-usps-ground" },
           {},
           { shipping_address: destination } as never
         )
@@ -123,6 +148,7 @@ describe("EasyPostFulfillmentService", () => {
         calculated_amount: 0,
         is_calculated_price_tax_inclusive: false,
       })
+      expect(calls).toBe(0)
     } finally {
       global.fetch = originalFetch
     }
@@ -192,7 +218,7 @@ describe("EasyPostFulfillmentService", () => {
     }
     try {
       await expect(
-        service.calculatePrice({ id: "easypost-usps" }, {}, {
+        service.calculatePrice({ id: "easypost-usps" }, { easypost_live: true }, {
           shipping_address: netherlands,
         } as never)
       ).resolves.toEqual({
@@ -200,7 +226,7 @@ describe("EasyPostFulfillmentService", () => {
         is_calculated_price_tax_inclusive: false,
       })
       await expect(
-        service.calculatePrice({ id: "easypost-ups" }, {}, {
+        service.calculatePrice({ id: "easypost-ups" }, { easypost_live: true }, {
           shipping_address: netherlands,
         } as never)
       ).resolves.toEqual({
@@ -208,7 +234,7 @@ describe("EasyPostFulfillmentService", () => {
         is_calculated_price_tax_inclusive: false,
       })
       await expect(
-        service.calculatePrice({ id: "easypost-alt" }, {}, {
+        service.calculatePrice({ id: "easypost-alt" }, { easypost_live: true }, {
           shipping_address: netherlands,
         } as never)
       ).resolves.toEqual({
@@ -216,7 +242,7 @@ describe("EasyPostFulfillmentService", () => {
         is_calculated_price_tax_inclusive: false,
       })
       await expect(
-        service.calculatePrice({ id: "easypost-express" }, {}, {
+        service.calculatePrice({ id: "easypost-express" }, { easypost_live: true }, {
           shipping_address: netherlands,
         } as never)
       ).resolves.toEqual({

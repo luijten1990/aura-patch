@@ -221,7 +221,7 @@ const Shipping: React.FC<ShippingProps> = ({
 
     const promises = (_shippingMethods || [])
       .filter((sm) => sm.price_type === "calculated" && !knownPrices[sm.id])
-      .map((sm) => calculatePriceForShippingOption(sm.id, cart.id))
+      .map((sm) => calculatePriceForShippingOption(sm.id, cart.id, { easypost_live: true }))
 
     if (!promises.length) {
       setCalculatedPricesMap(knownPrices)

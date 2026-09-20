@@ -144,15 +144,38 @@ export async function addToCart({
     throw new Error("Missing variant ID when adding to cart")
   }
 
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+  const cartId = await getCartId()
+
+  if (cartId) {
+    try {
+      await sdk.store.cart.createLineItem(
+        cartId,
+        {
+          variant_id: variantId,
+          quantity,
+          metadata: {
+            purchase_type: purchaseType,
+          },
+        },
+        {},
+        headers
+      )
+      await revalidateByTag("carts")
+      return
+    } catch {
+      // Cart may be missing, or this variant is already in the cart.
+    }
+  }
+
   const cart = await getOrSetCart(countryCode)
 
   if (!cart) {
     throw new Error("Error retrieving or creating cart")
   }
 
-  const headers = {
-    ...(await getAuthHeaders()),
-  }
   const existing = (cart.items || []).find(
     (item) => item.variant_id === variantId || item.variant?.id === variantId
   )

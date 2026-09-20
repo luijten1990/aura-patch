@@ -153,14 +153,22 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
       }
     }
     try {
-      const rate = await this.quoteRate(
-        origin as Address,
-        destination as Address,
-        this.optionId(
-          _optionData as Record<string, unknown>,
-          data as Record<string, unknown>
-        )
+      const optionId = this.optionId(
+        _optionData as Record<string, unknown>,
+        data as Record<string, unknown>
       )
+      const live = Boolean(
+        (data as Record<string, unknown> | undefined)?.easypost_live
+      )
+      const rate = live
+        ? await this.quoteRate(origin as Address, destination as Address, optionId)
+        : this.rateFromCache(origin as Address, destination as Address, optionId)
+      if (!rate) {
+        return {
+          calculated_amount: 0,
+          is_calculated_price_tax_inclusive: false,
+        }
+      }
       return {
         calculated_amount: this.customerCharge(rate),
         is_calculated_price_tax_inclusive: false,
@@ -250,13 +258,24 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
     return String(value)
   }
 
-  private async quoteRate(origin: Address, destination: Address, optionId: string) {
-    const rates = await this.quoteRates(origin, destination)
-    return this.pickRate(rates, destination, optionId)
+  private rateFromCache(
+    origin: Address,
+    destination: Address,
+    optionId: string
+  ) {
+    const cached = this.rateCache.get(this.quoteKey(origin, destination))
+    if (!cached || Date.now() - cached.at >= 15 * 60 * 1000) {
+      return null
+    }
+    try {
+      return this.pickRate(cached.rates, destination, optionId)
+    } catch {
+      return null
+    }
   }
 
-  private async quoteRates(origin: Address, destination: Address) {
-    const key = [
+  private quoteKey(origin: Address, destination: Address) {
+    return [
       origin.country_code,
       origin.postal_code,
       destination.country_code,
@@ -264,6 +283,15 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
     ]
       .join("|")
       .toLowerCase()
+  }
+
+  private async quoteRate(origin: Address, destination: Address, optionId: string) {
+    const rates = await this.quoteRates(origin, destination)
+    return this.pickRate(rates, destination, optionId)
+  }
+
+  private async quoteRates(origin: Address, destination: Address) {
+    const key = this.quoteKey(origin, destination)
     const cached = this.rateCache.get(key)
     if (cached && Date.now() - cached.at < 15 * 60 * 1000) {
       return cached.rates
@@ -292,27 +320,8 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
     cached: { rates: EasyPostRate[]; at: number } | undefined
   ) {
     try {
-      const shipment = await this.createShipment(origin, destination, 8000)
-      let rates = shipment.rates || []
-      if (
-        this.isInternational(destination) &&
-        shipment.id &&
-        !rates.some((rate) => isUspsRate(rate.carrier, rate.service))
-      ) {
-        try {
-          const refreshed = await this.request<EasyPostShipment>(
-            "GET",
-            `/shipments/${shipment.id}`,
-            undefined,
-            8000
-          )
-          if (refreshed.rates?.length) {
-            rates = refreshed.rates
-          }
-        } catch {
-          // Keep the original quote if the refresh does not come back.
-        }
-      }
+      const shipment = await this.createShipment(origin, destination, 4000)
+      const rates = shipment.rates || []
       this.rateCache.set(key, { rates, at: Date.now() })
       this.failedQuotes.delete(key)
       return rates
