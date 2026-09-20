@@ -157,18 +157,11 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
         _optionData as Record<string, unknown>,
         data as Record<string, unknown>
       )
-      const live = Boolean(
-        (data as Record<string, unknown> | undefined)?.easypost_live
+      const rate = await this.quoteRate(
+        origin as Address,
+        destination as Address,
+        optionId
       )
-      const rate = live
-        ? await this.quoteRate(origin as Address, destination as Address, optionId)
-        : this.rateFromCache(origin as Address, destination as Address, optionId)
-      if (!rate) {
-        return {
-          calculated_amount: 0,
-          is_calculated_price_tax_inclusive: false,
-        }
-      }
       return {
         calculated_amount: this.customerCharge(rate),
         is_calculated_price_tax_inclusive: false,
@@ -256,22 +249,6 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
       data?.id ||
       LEGACY_EASYPOST_OPTION_ID
     return String(value)
-  }
-
-  private rateFromCache(
-    origin: Address,
-    destination: Address,
-    optionId: string
-  ) {
-    const cached = this.rateCache.get(this.quoteKey(origin, destination))
-    if (!cached || Date.now() - cached.at >= 15 * 60 * 1000) {
-      return null
-    }
-    try {
-      return this.pickRate(cached.rates, destination, optionId)
-    } catch {
-      return null
-    }
   }
 
   private quoteKey(origin: Address, destination: Address) {

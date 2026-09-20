@@ -128,32 +128,6 @@ describe("EasyPostFulfillmentService", () => {
     }
   })
 
-  it("does not call EasyPost while adding to an existing cart", async () => {
-    let calls = 0
-    const originalFetch = global.fetch
-    global.fetch = (async () => {
-      calls += 1
-      return Response.json({ id: "shp_test", rates })
-    }) as typeof fetch
-
-    const service = new EasyPostFulfillmentService({}, options)
-    try {
-      await expect(
-        service.calculatePrice(
-          { id: "easypost-usps-ground" },
-          {},
-          { shipping_address: destination } as never
-        )
-      ).resolves.toEqual({
-        calculated_amount: 0,
-        is_calculated_price_tax_inclusive: false,
-      })
-      expect(calls).toBe(0)
-    } finally {
-      global.fetch = originalFetch
-    }
-  })
-
   it("does not fail cart updates when the destination address is incomplete", async () => {
     const service = new EasyPostFulfillmentService({}, options)
     await expect(

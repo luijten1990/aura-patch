@@ -53,16 +53,9 @@ const isLeftoverShippingOption = (option: ShippingOptionRecord) =>
 const isFreeStandardOption = (option: ShippingOptionRecord) =>
   /free standard|standard shipping \(5/.test((option.name || "").toLowerCase())
 
-const CURRENT_OPTION_IDS = new Set(EASYPOST_RATE_OPTIONS.map((option) => option.id))
-
 const isLegacyEasyPostOption = (option: ShippingOptionRecord, providerId: string) =>
   option.provider_id === providerId &&
   (option.data?.id === LEGACY_EASYPOST_OPTION_ID || option.name === "EasyPost Shipping")
-
-const isObsoleteEasyPostOption = (option: ShippingOptionRecord, providerId: string) =>
-  option.provider_id === providerId &&
-  Boolean(option.data?.id) &&
-  !CURRENT_OPTION_IDS.has(String(option.data?.id))
 
 const isUsOnlyZone = (zone: ServiceZoneRecord) => {
   const countries = (zone.geo_zones || [])
@@ -321,6 +314,11 @@ const ensureEasyPostShippingStep = createStep(
     for (const spec of EASYPOST_RATE_OPTIONS.filter((option) => option.zone === "intl")) {
       await createCalculatedOption(existingInternational, spec)
       await createCalculatedOption(extraInternationalZone, spec)
+      for (const zone of zones) {
+        if (zone?.id && !isUsOnlyZone(zone)) {
+          await createCalculatedOption(zone, spec)
+        }
+      }
     }
     await createFreeUsOption(usZone)
 
@@ -329,7 +327,7 @@ const ensureEasyPostShippingStep = createStep(
         continue
       }
       for (const option of zone.shipping_options || []) {
-        if (!option.id || (!isLegacyEasyPostOption(option, easypostProviderId) && !isObsoleteEasyPostOption(option, easypostProviderId))) {
+        if (!option.id || !isLegacyEasyPostOption(option, easypostProviderId)) {
           continue
         }
         try {
