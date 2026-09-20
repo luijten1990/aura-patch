@@ -41,14 +41,13 @@ export default function WholesalePage() {
             Become a wholesale partner
           </a>
         </div>
-        <div className="relative mx-auto aspect-[4/5] w-full max-w-[500px] overflow-hidden rounded-[2rem] bg-aura-sage/55">
-          <div className="absolute inset-[12%] rounded-full bg-aura-sage blur-3xl" />
+        <div className="relative mx-auto aspect-[4/5] w-full max-w-[500px] overflow-hidden rounded-[2rem] bg-aura-cream">
           <Image
             src="/images/aura-patch-front-original.webp"
             alt="Aura Patch 30-day wellness pouch"
             fill
             priority
-            className="object-contain p-6 mix-blend-multiply small:p-9"
+            className="object-contain p-6 small:p-9"
             sizes="(max-width: 1024px) 90vw, 500px"
           />
         </div>

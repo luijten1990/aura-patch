@@ -40,13 +40,12 @@ export default async function ProductPreview({
     <article className="group block max-w-[430px]" data-testid="product-wrapper">
       <LocalizedClientLink href={`/products/${product.handle}`} className="block">
         {product.handle === "aura-patch" ? (
-          <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-aura-sage/45">
-            <div className="absolute inset-[12%] rounded-full bg-aura-sage/75 blur-3xl" />
+          <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-aura-cream">
             <Image
               src="/images/aura-patch-front-original.webp"
               alt="Aura Patch 30-day pouch"
               fill
-              className="object-contain p-5 mix-blend-multiply transition-transform duration-700 group-hover:scale-[1.025] small:p-7"
+              className="object-contain p-5 transition-transform duration-700 group-hover:scale-[1.025] small:p-7"
               sizes="(max-width: 768px) 90vw, 430px"
             />
           </div>

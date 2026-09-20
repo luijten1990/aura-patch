@@ -49,7 +49,6 @@ const Hero = ({ product }: HeroProps) => {
           </div>
         </div>
         <div className="relative mx-auto w-full max-w-[460px]">
-          <div className="absolute inset-[10%] rounded-[48%] bg-aura-sage/70 blur-3xl" />
             <LocalizedClientLink href={productHref} className="group relative block">
               <div className="relative aspect-[4/5] overflow-hidden">
                 <Image
@@ -57,7 +56,7 @@ const Hero = ({ product }: HeroProps) => {
                   alt="Aura Patch 30-day pouch"
                   fill
                   priority
-                  className="object-contain mix-blend-multiply transition-transform duration-700 group-hover:scale-[1.015]"
+                  className="object-contain transition-transform duration-700 group-hover:scale-[1.015]"
                   sizes="(max-width: 1024px) 90vw, 460px"
                 />
               </div>
@@ -249,18 +248,18 @@ const Hero = ({ product }: HeroProps) => {
               name: "Aura Recover",
               description: "A considered reset for replenishment and restoration.",
               image: "/images/aura-restore-coming-soon.webp",
-              background: "bg-[#e4e8d8]",
-              imageClass: "object-contain p-8 mix-blend-multiply",
+              background: "bg-aura-cream",
+              imageClass: "object-contain p-8",
             },
             {
               name: "Aura Energy",
               description: "A brighter ritual created for momentum and focus.",
               image: "/images/aura-energy-coming-soon.webp",
-              background: "bg-[#f4eee3]",
-              imageClass: "object-contain p-8 mix-blend-multiply",
+              background: "bg-aura-cream",
+              imageClass: "object-contain p-8",
             },
           ].map((item) => (
-            <article key={item.name} className={`${item.background} overflow-hidden rounded-[2rem]`}>
+            <article key={item.name} className={`${item.background} overflow-hidden rounded-[2rem] border border-aura-forest/10`}>
               <div className="relative aspect-[4/3] small:aspect-[5/4]">
                 <span className="absolute left-6 top-6 z-10 rounded-full bg-aura-cream/90 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.18em] text-aura-forest backdrop-blur small:left-8 small:top-8">
                   Coming soon
