@@ -1,4 +1,4 @@
-import { retrieveCart } from "@lib/data/cart"
+import { ensureCheckoutPurchaseType, retrieveCart } from "@lib/data/cart"
 import { retrieveCustomer } from "@lib/data/customer"
 import { CheckoutCartProvider } from "@modules/checkout/components/checkout-cart-provider"
 import PaymentWrapper from "@modules/checkout/components/payment-wrapper"
@@ -12,14 +12,16 @@ export const metadata: Metadata = {
 }
 
 export default async function Checkout() {
-  const [cart, customer] = await Promise.all([
+  const [initialCart, customer] = await Promise.all([
     retrieveCart(),
     retrieveCustomer(),
   ])
 
-  if (!cart) {
+  if (!initialCart) {
     return notFound()
   }
+
+  const cart = await ensureCheckoutPurchaseType(initialCart)
 
   return (
     <div className="content-container py-12 small:py-20">

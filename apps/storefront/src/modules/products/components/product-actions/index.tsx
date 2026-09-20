@@ -153,6 +153,11 @@ export default function ProductActions({
   const actionsRef = useRef<HTMLDivElement>(null)
 
   const inView = useIntersection(actionsRef, "0px")
+  const cartHref = `/${countryCode || "us"}/cart`
+
+  useEffect(() => {
+    router.prefetch(cartHref)
+  }, [cartHref, router])
 
   // add the selected variant to the cart
   const handleAddToCart = async (nextPurchaseType: PurchaseType = purchaseType) => {
@@ -173,7 +178,7 @@ export default function ProductActions({
         countryCode: countryCode || "us",
         purchaseType: nextPurchaseType,
       })
-      router.push(`/${countryCode || "us"}/cart`)
+      router.push(cartHref)
     } catch (error) {
       addingRef.current = false
       const message =

@@ -72,6 +72,9 @@ export async function retrieveCart(cartId?: string, fields?: string) {
   return loadCart()
 }
 
+const ADD_TO_CART_FIELDS =
+  "id,region_id,metadata,*items.id,*items.variant_id,*items.quantity,*items.metadata,*promotions"
+
 export async function getOrSetCart(countryCode: string) {
   const region = await getRegion(countryCode)
 
@@ -79,7 +82,7 @@ export async function getOrSetCart(countryCode: string) {
     throw new Error(`Region not found for country code: ${countryCode}`)
   }
 
-  let cart = await retrieveCart(undefined, "id,region_id")
+  let cart = await retrieveCart(undefined, ADD_TO_CART_FIELDS)
 
   const headers = {
     ...(await getAuthHeaders()),
@@ -150,8 +153,7 @@ export async function addToCart({
   const headers = {
     ...(await getAuthHeaders()),
   }
-  const detailed = await retrieveCart(cart.id)
-  const existing = (detailed?.items || []).find(
+  const existing = (cart.items || []).find(
     (item) => item.variant_id === variantId || item.variant?.id === variantId
   )
 
@@ -195,74 +197,107 @@ export async function addToCart({
   await revalidateByTag("carts")
 }
 
-async function syncCartPurchaseType(purchaseType: PurchaseType) {
-  const cart = await retrieveCart()
-  if (!cart) {
-    return
-  }
-
+function purchaseTypePayload(
+  cart: HttpTypes.StoreCart,
+  purchaseType: PurchaseType
+) {
   const subscribe = purchaseType === "subscription"
   const existingCodes = (cart.promotions || [])
     .map((promotion) => promotion.code)
     .filter((code): code is string => Boolean(code))
     .filter((code) => code !== SUBSCRIBE_CODE)
 
-  const metadata = {
-    ...(cart.metadata || {}),
-    subscription_interval: subscribe ? SUBSCRIPTION_INTERVAL : "",
-    subscription_period: subscribe ? SUBSCRIPTION_PERIOD : 0,
+  return {
+    subscribe,
+    metadata: {
+      ...(cart.metadata || {}),
+      subscription_interval: subscribe ? SUBSCRIPTION_INTERVAL : "",
+      subscription_period: subscribe ? SUBSCRIPTION_PERIOD : 0,
+    },
+    promo_codes: subscribe
+      ? [...existingCodes.filter((code) => code !== "ILOVEAURA"), SUBSCRIBE_CODE]
+      : existingCodes,
+    hasPromo: Boolean(
+      (cart.promotions || []).some((promotion) => promotion.code === SUBSCRIBE_CODE)
+    ),
+  }
+}
+
+async function syncCartPurchaseType(purchaseType: PurchaseType) {
+  const cart = await retrieveCart()
+  if (!cart) {
+    return
   }
 
-  try {
-    await updateCart({ metadata })
-  } catch {
-    // Cart updates can fail while shipping is recalculated. The line item
-    // already stores purchase_type, so checkout can still subscribe.
-  }
-
+  const { subscribe, metadata, promo_codes, hasPromo } = purchaseTypePayload(
+    cart,
+    purchaseType
+  )
+  const metaMatches =
+    Boolean(cart.metadata?.subscription_interval) === subscribe &&
+    (!subscribe || Number(cart.metadata?.subscription_period) > 0)
+  const promoMatches = subscribe ? hasPromo : !hasPromo
   const headers = {
     ...(await getAuthHeaders()),
   }
-  for (const item of cart.items || []) {
-    if (!item.id) {
-      continue
-    }
+
+  if (!metaMatches || !promoMatches) {
     try {
-      await sdk.store.cart.updateLineItem(
+      await sdk.store.cart.update(
         cart.id,
-        item.id,
-        {
-          quantity: item.quantity,
-          metadata: {
-            ...(item.metadata || {}),
-            purchase_type: purchaseType,
-          },
-        },
+        { metadata, promo_codes },
         {},
         headers
       )
     } catch {
-      // Keep the existing quantity if Medusa rejects a metadata-only update.
+      // Line-item purchase_type is enough for Subscribe & Save checkout.
     }
   }
 
-  try {
-    await applyPromotions(
-      subscribe
-        ? [...existingCodes.filter((code) => code !== "ILOVEAURA"), SUBSCRIBE_CODE]
-        : existingCodes
-    )
-  } catch {
-    // SUBSCRIBE20 is created by a backend job after deploy. Keep the
-    // subscription cart even if the code is not live yet.
+  await Promise.all(
+    (cart.items || [])
+      .filter(
+        (item) =>
+          item.id && item.metadata?.purchase_type !== purchaseType
+      )
+      .map((item) =>
+        sdk.store.cart
+          .updateLineItem(
+            cart.id,
+            item.id,
+            {
+              quantity: item.quantity,
+              metadata: {
+                ...(item.metadata || {}),
+                purchase_type: purchaseType,
+              },
+            },
+            {},
+            headers
+          )
+          .catch(() => undefined)
+      )
+  )
+
+  await revalidateByTag("carts")
+}
+
+export async function ensureCheckoutPurchaseType(cart: HttpTypes.StoreCart) {
+  const purchaseType: PurchaseType = isSubscriptionCart(cart)
+    ? "subscription"
+    : "one_time"
+  const { subscribe, hasPromo } = purchaseTypePayload(cart, purchaseType)
+  const metaReady =
+    !subscribe ||
+    (cart.metadata?.subscription_interval === SUBSCRIPTION_INTERVAL &&
+      Number(cart.metadata?.subscription_period) > 0)
+
+  if (metaReady && (subscribe ? hasPromo : !hasPromo)) {
+    return cart
   }
 
-  try {
-    await revalidateByTag("carts")
-    await revalidateByTag("fulfillment")
-  } catch {
-    // Purchase type is already saved on the cart.
-  }
+  await syncCartPurchaseType(purchaseType)
+  return (await retrieveCart(cart.id)) || cart
 }
 
 export async function setCartPurchaseType(purchaseType: PurchaseType) {

@@ -1,6 +1,5 @@
-import { addToCart, deleteLineItem, setCartPurchaseType, updateLineItem } from "@lib/data/cart"
+import { addToCart, deleteLineItem, updateLineItem } from "@lib/data/cart"
 import type { PurchaseType } from "@lib/util/subscription"
-import { after } from "next/server"
 import { NextRequest, NextResponse } from "next/server"
 
 function cartError(error: unknown, fallback: string) {
@@ -33,9 +32,6 @@ export async function POST(req: NextRequest) {
       quantity,
       countryCode,
       purchaseType,
-    })
-    after(() => {
-      void setCartPurchaseType(purchaseType).catch(() => undefined)
     })
     return NextResponse.json({ ok: true })
   } catch (error) {
