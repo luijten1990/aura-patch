@@ -16,7 +16,7 @@ const IngredientsShowcase = () => (
         <div>
           <p className="aura-eyebrow text-aura-gold">{AURA_COLLECTION_EYEBROW}</p>
           <span className="mt-5 aura-spark" />
-          <h2 className="aura-display mt-6 text-[48px] leading-[1.02] tracking-[0.005em] small:text-[62px]">Three formulas.<br />One daily ritual.</h2>
+          <h2 className="aura-display mt-6 text-[48px] leading-[1.02] tracking-[0.005em] small:text-[62px]">Three formulas.<br />One Aura.</h2>
         </div>
         <p className="max-w-[650px] text-[18px] leading-8 text-aura-cream/75 small:justify-self-end">{AURA_COLLECTION_SUPPORT}</p>
       </div>

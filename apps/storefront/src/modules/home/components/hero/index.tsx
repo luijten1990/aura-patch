@@ -35,31 +35,31 @@ const Hero = ({ product }: HeroProps) => {
 
   return (
     <div className="bg-aura-cream text-aura-forest">
-      <section className="aura-shell grid items-center gap-10 py-14 small:grid-cols-[1fr_0.8fr] small:py-16">
+      <section className="aura-shell grid items-center gap-10 py-14 small:grid-cols-2 small:py-16">
         <div className="max-w-[600px]">
           <p className="aura-eyebrow text-aura-gold">The Aura Collection</p>
           <span className="mt-5 aura-spark" />
           <h1 className="aura-display mt-6 text-[50px] leading-[1.04] small:text-[68px]">
-            Three formulas.<br />One daily ritual.
+            Three formulas.<br />One Aura.
           </h1>
           <p className="mt-7 max-w-[540px] text-[16px] leading-7 text-aura-forest/80">
             Core, Restore, and Energy — three daily rituals in one considered patch format. Peel, apply, go. Up to 12 hours. A 30-day pouch.
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <LocalizedClientLink href={productHref} className="aura-button">Shop Aura</LocalizedClientLink>
-            <a href="#how-it-works" className="aura-button-outline">Learn how it works</a>
+            <LocalizedClientLink href={productHref} className="aura-button">Shop Aura Core</LocalizedClientLink>
+            <a href="#collection" className="aura-button-outline">Compare formulas</a>
           </div>
         </div>
-        <div className="relative mx-auto w-full max-w-[460px]">
+        <div className="relative mx-auto w-full max-w-[540px]">
             <LocalizedClientLink href={productHref} className="group relative block">
-              <div className="relative aspect-[4/5] overflow-hidden">
+              <div className="relative aspect-[4/5] min-h-[420px] w-full overflow-hidden bg-aura-cream">
                 <Image
                   src="/images/aura-core-front.webp"
                   alt="Aura Core 30-day daily wellness pouch with gold mandala"
                   fill
                   priority
-                  className="object-contain transition-transform duration-700 group-hover:scale-[1.015]"
-                  sizes="(max-width: 1024px) 90vw, 460px"
+                  className="object-contain p-7 transition-transform duration-700 group-hover:scale-[1.015]"
+                  sizes="(max-width: 1024px) 90vw, 540px"
                 />
               </div>
               <div className="mt-2 flex items-baseline justify-between gap-5 border-t border-aura-forest/20 pt-4 text-[14px]">
@@ -131,7 +131,7 @@ const Hero = ({ product }: HeroProps) => {
             </p>
           </div>
 
-          <div className="mt-14 overflow-hidden rounded-[2rem] bg-[#f5efe4] text-aura-forest">
+          <div className="mt-14 overflow-hidden rounded-[2rem] bg-aura-cream text-aura-forest">
             <div className="relative">
               <div className="relative aspect-[4/3] min-h-[390px] small:aspect-[16/9] small:min-h-[620px]">
                 <Image

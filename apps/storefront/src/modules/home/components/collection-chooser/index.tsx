@@ -36,7 +36,7 @@ const CollectionChooser = ({ corePrice }: CollectionChooserProps) => (
             key={formula.key}
             className={`${formula.cardTone} overflow-hidden rounded-[2rem] border border-aura-forest/10`}
           >
-            <div className="relative aspect-[4/5]">
+            <div className="relative aspect-[4/5] bg-aura-cream">
               {!available && (
                 <span className="absolute left-5 top-5 z-10 rounded-full bg-aura-cream/90 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.18em] text-aura-forest backdrop-blur">
                   Coming soon

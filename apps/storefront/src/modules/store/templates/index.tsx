@@ -44,7 +44,7 @@ const StoreTemplate = async ({
               className="aura-display mt-5 text-[52px] leading-none small:text-[72px]"
               data-testid="store-page-title"
             >
-              Three formulas. One daily ritual.
+              Three formulas. One Aura.
             </h1>
           </div>
           <div className="max-w-[480px] small:justify-self-end">

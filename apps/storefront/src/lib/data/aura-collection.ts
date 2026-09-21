@@ -19,7 +19,7 @@ export type AuraFormula = {
 }
 
 export const AURA_COLLECTION_EYEBROW = "The Aura Collection"
-export const AURA_COLLECTION_LINE = "Three formulas. One daily ritual."
+export const AURA_COLLECTION_LINE = "Three formulas. One Aura."
 export const AURA_COLLECTION_SUPPORT =
   "Three targeted approaches to everyday wellness — same daily ritual, different moments in the day."
 
