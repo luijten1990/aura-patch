@@ -183,7 +183,7 @@ const CartDropdown = ({
                   </div>
                   <LocalizedClientLink
                     href="/cart"
-                    className="flex min-h-12 w-full items-center justify-center rounded-full bg-aura-gold px-6 text-[11px] font-bold uppercase tracking-[0.16em] text-aura-forest transition-colors hover:bg-aura-forest hover:text-aura-cream"
+                    className="flex min-h-12 w-full items-center justify-center rounded-full bg-aura-wine px-6 text-[11px] font-bold uppercase tracking-[0.16em] text-aura-cream transition-colors hover:bg-aura-forest hover:text-aura-cream"
                     data-testid="go-to-cart-button"
                   >
                     Go to cart

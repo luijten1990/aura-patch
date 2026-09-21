@@ -112,7 +112,7 @@ export default function WelcomePopup() {
               <button
                 type="submit"
                 disabled={submitting || sent}
-                className="m-1.5 rounded-[0.95rem] bg-aura-forest px-8 py-4 text-sm font-semibold uppercase tracking-[0.12em] text-aura-cream transition-colors hover:bg-aura-gold disabled:opacity-60"
+                className="m-1.5 rounded-[0.95rem] bg-aura-forest px-8 py-4 text-sm font-semibold uppercase tracking-[0.12em] text-aura-cream transition-colors hover:bg-aura-wine disabled:opacity-60"
               >
                 {submitting ? "Sending" : sent ? "Sent" : "Sign up"}
               </button>

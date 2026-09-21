@@ -56,7 +56,7 @@ const VerifyAccount = () => {
           <LocalizedClientLink href="/account" className="mt-6">
             <Button
               variant="primary"
-              className="min-h-12 rounded-full !bg-aura-gold px-6 text-[11px] font-bold uppercase tracking-[0.16em] !text-aura-forest hover:!bg-aura-forest hover:!text-aura-cream"
+              className="min-h-12 rounded-full !bg-aura-wine px-6 text-[11px] font-bold uppercase tracking-[0.16em] !text-aura-cream hover:!bg-aura-forest hover:!text-aura-cream"
             >
               Go to sign in
             </Button>

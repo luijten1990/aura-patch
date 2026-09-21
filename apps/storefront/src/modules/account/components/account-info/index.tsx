@@ -124,7 +124,7 @@ const AccountInfo = ({
             <div className="mt-2 flex items-center justify-end">
               <Button
                 isLoading={pending}
-                className="w-full rounded-full !bg-aura-gold px-6 text-[11px] font-bold uppercase tracking-[0.16em] !text-aura-forest hover:!bg-aura-forest hover:!text-aura-cream small:max-w-[180px]"
+                className="w-full rounded-full !bg-aura-wine px-6 text-[11px] font-bold uppercase tracking-[0.16em] !text-aura-cream hover:!bg-aura-forest hover:!text-aura-cream small:max-w-[180px]"
                 type="submit"
                 data-testid="save-button"
               >

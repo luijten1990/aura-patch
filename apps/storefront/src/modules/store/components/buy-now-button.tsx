@@ -41,7 +41,7 @@ export default function BuyNowButton({
       type="button"
       onClick={buyNow}
       disabled={disabled || !variantId || status === "adding"}
-      className="mt-6 inline-flex min-h-12 items-center justify-center rounded-full bg-aura-ember px-8 text-[11px] font-bold uppercase tracking-[0.16em] text-aura-cream transition-colors hover:bg-aura-forest hover:text-aura-cream disabled:cursor-not-allowed disabled:opacity-50"
+      className="mt-6 inline-flex min-h-12 items-center justify-center rounded-full bg-aura-wine px-8 text-[11px] font-bold uppercase tracking-[0.16em] text-aura-cream transition-colors hover:bg-aura-forest hover:text-aura-cream disabled:cursor-not-allowed disabled:opacity-50"
       aria-live="polite"
     >
       {disabled

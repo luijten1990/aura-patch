@@ -78,7 +78,7 @@ export default async function ProductPreview({
         </div>
         <div className="mt-6 flex items-center gap-3">
           {hasMultipleVariants ? (
-            <LocalizedClientLink href={`/products/${product.handle}`} className="flex min-h-12 flex-1 items-center justify-center rounded-full bg-aura-ember px-6 text-[11px] font-bold uppercase tracking-[0.15em] text-aura-cream transition-colors hover:bg-aura-forest hover:text-aura-cream">
+            <LocalizedClientLink href={`/products/${product.handle}`} className="flex min-h-12 flex-1 items-center justify-center rounded-full bg-aura-wine px-6 text-[11px] font-bold uppercase tracking-[0.15em] text-aura-cream transition-colors hover:bg-aura-forest hover:text-aura-cream">
               Choose options
             </LocalizedClientLink>
           ) : (

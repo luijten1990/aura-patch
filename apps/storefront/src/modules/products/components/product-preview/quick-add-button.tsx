@@ -42,7 +42,7 @@ export default function QuickAddButton({
       type="button"
       onClick={handleAdd}
       disabled={disabled || !variantId || status === "adding"}
-      className="flex min-h-12 flex-1 items-center justify-center rounded-full bg-aura-ember px-6 text-[11px] font-bold uppercase tracking-[0.15em] text-aura-cream transition-colors hover:bg-aura-forest hover:text-aura-cream disabled:cursor-not-allowed disabled:opacity-50"
+      className="flex min-h-12 flex-1 items-center justify-center rounded-full bg-aura-wine px-6 text-[11px] font-bold uppercase tracking-[0.15em] text-aura-cream transition-colors hover:bg-aura-forest hover:text-aura-cream disabled:cursor-not-allowed disabled:opacity-50"
       aria-live="polite"
     >
       {disabled

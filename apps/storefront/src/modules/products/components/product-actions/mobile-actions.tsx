@@ -120,7 +120,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
               {!isSimple && <Button
                 onClick={open}
                 variant="secondary"
-                className="w-full !bg-aura-gold !text-aura-forest hover:!bg-aura-forest hover:!text-aura-cream"
+                className="w-full !bg-aura-wine !text-aura-cream hover:!bg-aura-forest hover:!text-aura-cream"
                 data-testid="mobile-actions-button"
               >
                 <div className="flex items-center justify-between w-full">
@@ -135,7 +135,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
               <Button
                 onClick={handleAddToCart}
                 disabled={!inStock || !variant}
-                className="w-full !rounded-full !bg-aura-ember !text-aura-cream hover:!bg-aura-forest hover:!text-aura-cream"
+                className="w-full !rounded-full !bg-aura-wine !text-aura-cream hover:!bg-aura-forest hover:!text-aura-cream"
                 isLoading={isAdding}
                 data-testid="mobile-cart-button"
               >

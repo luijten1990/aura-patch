@@ -19,13 +19,15 @@ export default function FloatingBuyNow({
   const [status, setStatus] = useState<"idle" | "adding" | "error">("idle")
   const addingRef = useRef(false)
 
+  const path = pathname || ""
+
   if (
-    pathname.includes("/cart") ||
-    pathname.includes("/checkout") ||
-    pathname.includes("/order/") ||
-    pathname.includes("/account") ||
-    pathname.includes("/products/") ||
-    pathname.includes("/store")
+    path.includes("/cart") ||
+    path.includes("/checkout") ||
+    path.includes("/order/") ||
+    path.includes("/account") ||
+    path.includes("/products/") ||
+    path.includes("/store")
   ) {
     return null
   }
@@ -55,7 +57,7 @@ export default function FloatingBuyNow({
         type="button"
         onClick={buyNow}
         disabled={disabled || !variantId || status === "adding"}
-        className="flex min-h-14 w-full items-center justify-between gap-7 rounded-full border border-aura-cream/25 bg-aura-forest px-7 text-aura-cream shadow-[0_12px_40px_rgba(20,63,53,0.28)] transition-all hover:-translate-y-0.5 hover:bg-aura-gold hover:text-aura-forest disabled:cursor-not-allowed disabled:opacity-60 small:w-auto"
+        className="flex min-h-14 w-full items-center justify-between gap-7 rounded-full border border-aura-cream/25 bg-aura-forest px-7 text-aura-cream shadow-[0_12px_40px_rgba(20,63,53,0.28)] transition-all hover:-translate-y-0.5 hover:bg-aura-wine hover:text-aura-cream disabled:cursor-not-allowed disabled:opacity-60 small:w-auto"
         aria-live="polite"
       >
         <span className="text-[11px] font-bold uppercase tracking-[0.17em]">

@@ -587,7 +587,7 @@ const Shipping: React.FC<ShippingProps> = ({
             />
             <Button
               size="large"
-              className="mt-6 rounded-full !bg-aura-gold px-7 text-[12px] font-semibold uppercase tracking-[0.12em] !text-aura-forest hover:!bg-aura-forest hover:!text-aura-cream"
+              className="mt-6 rounded-full !bg-aura-wine px-7 text-[12px] font-semibold uppercase tracking-[0.12em] !text-aura-cream hover:!bg-aura-forest hover:!text-aura-cream"
               onClick={handleSubmit}
               isLoading={isLoading}
               disabled={

@@ -47,7 +47,7 @@ export default function GlobalError({
             <button
               type="button"
               onClick={reloadStorefront}
-              className="rounded-full bg-[#c4a574] px-7 py-4 text-[13px] font-medium uppercase tracking-[0.12em] text-[#17382f]"
+              className="rounded-full bg-[#72262f] px-7 py-4 text-[13px] font-medium uppercase tracking-[0.12em] text-[#f3e9df]"
             >
               Try again
             </button>

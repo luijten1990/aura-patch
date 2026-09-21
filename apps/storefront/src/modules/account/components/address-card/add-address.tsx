@@ -168,7 +168,7 @@ const AddAddress = ({
               </Button>
               <SubmitButton
                 data-testid="save-button"
-                className="h-10 rounded-full !bg-aura-gold px-5 text-[11px] font-bold uppercase tracking-[0.14em] !text-aura-forest hover:!bg-aura-forest hover:!text-aura-cream"
+                className="h-10 rounded-full !bg-aura-wine px-5 text-[11px] font-bold uppercase tracking-[0.14em] !text-aura-cream hover:!bg-aura-forest hover:!text-aura-cream"
               >
                 Save
               </SubmitButton>

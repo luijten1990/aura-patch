@@ -26,6 +26,7 @@ module.exports = {
           sage: "#e5e8e1",
           gold: "#bd9956",
           ember: "#f46729",
+          wine: "#72262f",
           plum: "#8c005d",
         },
         grey: {
