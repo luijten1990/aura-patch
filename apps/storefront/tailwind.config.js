@@ -24,6 +24,7 @@ module.exports = {
           forest: "#193f37",
           cream: "#f3e9df",
           sage: "#e5e8e1",
+          mint: "#e7f9f5",
           gold: "#bd9956",
           ember: "#f46729",
           wine: "#72262f",

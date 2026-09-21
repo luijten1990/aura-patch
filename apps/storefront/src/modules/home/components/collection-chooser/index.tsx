@@ -85,7 +85,7 @@ const CollectionChooser = ({ corePrice }: CollectionChooserProps) => (
       })}
     </div>
 
-    <div id="compare" className="mt-16 overflow-hidden rounded-[1.75rem] border border-aura-forest/10">
+    <div id="compare" className="mt-16 overflow-hidden rounded-[1.75rem] bg-aura-mint">
       <div className="border-b border-aura-forest/10 px-7 py-8 small:px-10">
         <p className="aura-eyebrow text-aura-gold">Not sure which Aura is right for you?</p>
         <h3 className="aura-display mt-4 text-[32px] leading-none small:text-[40px]">Compare all three.</h3>

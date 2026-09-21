@@ -95,9 +95,9 @@ const Hero = ({ product }: HeroProps) => {
           <p className="self-end text-[19px] leading-8 text-aura-forest/75">Wellness should fit your life—not take it over. Aura Patch turns a long supplement routine into one calm, considered daily moment.</p>
         </div>
         <div className="mt-16 grid gap-12 small:grid-cols-[1.05fr_0.95fr] small:items-stretch">
-          <ol className="divide-y divide-aura-forest/20 border-y border-aura-forest/20">
+          <ol className="grid gap-5">
             {[["01", "Peel", "Remove one patch from its protective backing."], ["02", "Apply", "Adhere to clean, dry skin as directed."], ["03", "Go", "Continue with your day and your routine."]].map(([number, title, copy]) => (
-              <li key={number} className="grid gap-5 py-8 xsmall:grid-cols-[42px_150px_1fr] xsmall:items-baseline small:py-10">
+              <li key={number} className="grid gap-5 rounded-[1.5rem] bg-aura-mint px-7 py-8 xsmall:grid-cols-[42px_150px_1fr] xsmall:items-baseline small:px-8 small:py-10">
                 <span className="text-sm text-aura-gold">{number}</span>
                 <h3 className="aura-display text-[42px] leading-none">{title}</h3>
                 <p className="max-w-[320px] text-[16px] leading-7 text-aura-forest/75">{copy}</p>
@@ -203,14 +203,14 @@ const Hero = ({ product }: HeroProps) => {
           </p>
         </div>
 
-        <div className="mt-14 grid gap-px overflow-hidden rounded-[2rem] bg-aura-forest/15 small:grid-cols-2 medium:grid-cols-4">
+        <div className="mt-14 grid gap-5 small:grid-cols-2 medium:grid-cols-4">
           {[
             ["01", "Prepare", "Choose healthy, relatively hair-free skin. Clean and dry the area completely, without lotion or oil."],
             ["02", "Place", "Peel away the backing and position the patch directly on the prepared area."],
             ["03", "Press", "Apply firm, even pressure across the patch to help the medical-grade adhesive make secure contact."],
             ["04", "Wear", "Continue with your day for up to 12 hours, following the package directions. Remove gently after use."],
           ].map(([number, title, copy]) => (
-            <article key={number} className="bg-aura-cream px-7 py-9 small:px-8 small:py-11">
+            <article key={number} className="rounded-[1.5rem] bg-aura-mint px-7 py-9 small:px-8 small:py-11">
               <span className="text-xs tracking-[0.2em] text-aura-gold">{number}</span>
               <h3 className="aura-display mt-12 text-[36px] leading-none">{title}</h3>
               <p className="mt-6 text-[15px] leading-7 text-aura-forest/70">{copy}</p>
@@ -250,7 +250,7 @@ const Hero = ({ product }: HeroProps) => {
       </section>
 
       <section id="contact" className="aura-shell pb-20 small:pb-32">
-        <div className="grid gap-10 rounded-[2rem] bg-aura-sage px-7 py-12 small:grid-cols-[0.78fr_1.22fr] small:items-center small:px-12 small:py-16">
+        <div className="grid gap-10 rounded-[2rem] bg-aura-mint px-7 py-12 small:grid-cols-[0.78fr_1.22fr] small:items-center small:px-12 small:py-16">
           <div>
             <p className="aura-eyebrow">Contact Aura</p>
             <h2 className="aura-display mt-6 text-[46px] leading-none small:text-[62px]">We’d love to hear from you.</h2>

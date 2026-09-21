@@ -91,7 +91,7 @@
   }
 
   .aura-feature-card {
-    @apply min-h-[390px] rounded-[1.5rem] bg-aura-sage p-7 small:p-8;
+    @apply min-h-[390px] rounded-[1.5rem] bg-aura-mint p-7 small:p-8;
   }
 
   .aura-product-card > a > div > div:first-child {
