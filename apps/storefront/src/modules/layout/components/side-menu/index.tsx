@@ -1,27 +1,27 @@
 "use client"
 
-import { Popover, PopoverPanel, Transition } from "@headlessui/react"
 import useToggleState from "@lib/hooks/use-toggle-state"
-import { ArrowRightMini, XMark } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import { Text, clx } from "@modules/common/components/ui"
-import { Fragment } from "react"
+import { useState } from "react"
 import CountrySelect from "../country-select"
 import LanguageSelect from "../language-select"
 import { Locale } from "@lib/data/locales"
 
+const SideMenuItems = [
+  { name: "Home", href: "/" },
+  { name: "Shop", href: "/store" },
+  { name: "Collection", href: "/#collection" },
+  { name: "Ingredients", href: "/#formulations" },
+  { name: "Science", href: "/#science" },
+  { name: "FAQ", href: "/#faq" },
+  { name: "Contact", href: "/#contact" },
+]
 
-const SideMenuItems = {
-  Home: "/",
-  Shop: "/store",
-  Collection: "/#collection",
-  Ingredients: "/#formulations",
-  Science: "/#science",
-  FAQ: "/#faq",
-  Account: "/account",
-  Cart: "/cart",
-}
+const SideMenuAccountItems = [
+  { name: "Account", href: "/account" },
+  { name: "Cart", href: "/cart" },
+]
 
 type SideMenuProps = {
   regions: HttpTypes.StoreRegion[] | null
@@ -30,118 +30,130 @@ type SideMenuProps = {
 }
 
 const SideMenu = ({ regions, locales, currentLocale }: SideMenuProps) => {
+  const [open, setOpen] = useState(false)
   const countryToggleState = useToggleState()
   const languageToggleState = useToggleState()
+  const close = () => setOpen(false)
 
   return (
     <div className="h-full">
-      <div className="flex items-center h-full">
-        <Popover className="h-full flex">
-          {({ open, close }) => (
-            <>
-              <div className="relative flex h-full">
-                <Popover.Button
-                  data-testid="nav-menu-button"
-                  className="relative h-full flex items-center transition-all ease-out duration-200 focus:outline-none hover:text-ui-fg-base"
-                >
-                  Menu
-                </Popover.Button>
-              </div>
+      <div className="flex h-full items-center">
+        <button
+          type="button"
+          data-testid="nav-menu-button"
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+          onClick={() => setOpen((value) => !value)}
+          className="relative z-[90] flex h-full items-center gap-2.5 text-[12px] uppercase tracking-[0.08em] text-[#f6f0e5] transition-opacity hover:opacity-70 focus:outline-none"
+        >
+          <span className="relative flex h-3.5 w-[18px] flex-col justify-between" aria-hidden>
+            <span
+              className={`h-px w-full bg-current transition-transform duration-200 ${
+                open ? "translate-y-[6.5px] rotate-45" : ""
+              }`}
+            />
+            <span
+              className={`h-px w-full bg-current transition-opacity duration-200 ${
+                open ? "opacity-0" : ""
+              }`}
+            />
+            <span
+              className={`h-px w-full bg-current transition-transform duration-200 ${
+                open ? "-translate-y-[6.5px] -rotate-45" : ""
+              }`}
+            />
+          </span>
+          Menu
+        </button>
 
-              {open && (
-                <div
-                  className="fixed inset-0 z-[50] bg-black/0 pointer-events-auto"
+        {open && (
+          <div className="fixed inset-0 z-[80]">
+            <button
+              type="button"
+              className="absolute inset-0 bg-aura-forest/70 backdrop-blur-sm"
+              onClick={close}
+              data-testid="side-menu-backdrop"
+              aria-label="Close menu"
+            />
+            <div
+              data-testid="nav-menu-popup"
+              className="relative mx-3 mt-[4.6rem] flex max-h-[calc(100dvh-5.4rem)] flex-col overflow-hidden rounded-[1.75rem] bg-aura-cream text-aura-forest shadow-[0_24px_80px_rgba(23,56,47,0.28)] small:mx-auto small:max-w-[420px]"
+            >
+              <div className="h-1.5 bg-aura-gold" />
+              <div className="flex items-center justify-between px-6 py-5">
+                <p className="aura-eyebrow text-aura-gold">Aura Patch</p>
+                <button
+                  type="button"
+                  data-testid="close-menu-button"
                   onClick={close}
-                  data-testid="side-menu-backdrop"
-                />
-              )}
-
-              <Transition
-                show={open}
-                as={Fragment}
-                enter="transition ease-out duration-150"
-                enterFrom="opacity-0"
-                enterTo="opacity-100 backdrop-blur-2xl"
-                leave="transition ease-in duration-150"
-                leaveFrom="opacity-100 backdrop-blur-2xl"
-                leaveTo="opacity-0"
-              >
-                <PopoverPanel className="flex flex-col absolute w-full pr-4 sm:pr-0 sm:w-1/3 2xl:w-1/4 sm:min-w-min h-[calc(100vh-1rem)] z-[51] inset-x-0 text-sm text-ui-fg-on-color m-2 backdrop-blur-2xl">
-                  <div
-                    data-testid="nav-menu-popup"
-                    className="flex flex-col h-full bg-[rgba(3,7,18,0.5)] rounded-rounded justify-between p-6"
-                  >
-                    <div className="flex justify-end" id="xmark">
-                      <button data-testid="close-menu-button" onClick={close}>
-                        <XMark />
-                      </button>
-                    </div>
-                    <ul className="flex flex-col gap-6 items-start justify-start">
-                      {Object.entries(SideMenuItems).map(([name, href]) => {
-                        return (
-                          <li key={name}>
-                            <LocalizedClientLink
-                              href={href}
-                              className="text-3xl leading-10 hover:text-ui-fg-disabled"
-                              onClick={close}
-                              data-testid={`${name.toLowerCase()}-link`}
-                            >
-                              {name}
-                            </LocalizedClientLink>
-                          </li>
-                        )
-                      })}
-                    </ul>
-                    <div className="flex flex-col gap-y-6">
-                      {!!locales?.length && (
-                        <div
-                          className="flex justify-between"
-                          onMouseEnter={languageToggleState.open}
-                          onMouseLeave={languageToggleState.close}
-                        >
-                          <LanguageSelect
-                            toggleState={languageToggleState}
-                            locales={locales}
-                            currentLocale={currentLocale}
-                          />
-                          <ArrowRightMini
-                            className={clx(
-                              "transition-transform duration-150",
-                              languageToggleState.state ? "-rotate-90" : ""
-                            )}
-                          />
-                        </div>
-                      )}
-                      <div
-                        className="flex justify-between"
-                        onMouseEnter={countryToggleState.open}
-                        onMouseLeave={countryToggleState.close}
+                  aria-label="Close menu"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-aura-forest/20 text-xl leading-none text-aura-forest transition-colors hover:bg-aura-forest hover:text-aura-cream"
+                >
+                  ×
+                </button>
+              </div>
+              <nav className="overflow-y-auto px-6 pb-7">
+                <ul className="flex flex-col">
+                  {SideMenuItems.map(({ name, href }) => (
+                    <li key={name} className="border-t border-aura-forest/10">
+                      <LocalizedClientLink
+                        href={href}
+                        className="flex min-h-12 items-center text-[13px] uppercase tracking-[0.14em] transition-colors hover:text-aura-gold"
+                        onClick={close}
+                        data-testid={`${name.toLowerCase()}-link`}
                       >
-                        {regions && (
-                          <CountrySelect
-                            toggleState={countryToggleState}
-                            regions={regions}
-                            dropdownPlacement="top"
-                          />
-                        )}
-                        <ArrowRightMini
-                          className={clx(
-                            "transition-transform duration-150",
-                            countryToggleState.state ? "-rotate-90" : ""
-                          )}
-                        />
-                      </div>
-                      <Text className="flex justify-between txt-compact-small">
-                        © {new Date().getFullYear()} Aura Patch. All rights
-                        reserved.
-                      </Text>
+                        {name}
+                      </LocalizedClientLink>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-5 grid grid-cols-2 gap-2">
+                  {SideMenuAccountItems.map(({ name, href }) => (
+                    <LocalizedClientLink
+                      key={name}
+                      href={href}
+                      onClick={close}
+                      data-testid={`${name.toLowerCase()}-link`}
+                      className="flex min-h-12 items-center justify-center rounded-full border border-aura-forest/20 text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors hover:border-aura-forest hover:bg-aura-forest hover:text-aura-cream"
+                    >
+                      {name}
+                    </LocalizedClientLink>
+                  ))}
+                </div>
+                <div className="mt-6 rounded-[1.15rem] border border-aura-forest/15 bg-white/50 px-4 py-3 text-[12px] text-aura-forest">
+                  {!!locales?.length && (
+                    <div
+                      className="mb-3 border-b border-aura-forest/10 pb-3"
+                      onMouseEnter={languageToggleState.open}
+                      onMouseLeave={languageToggleState.close}
+                    >
+                      <LanguageSelect
+                        toggleState={languageToggleState}
+                        locales={locales}
+                        currentLocale={currentLocale}
+                      />
                     </div>
-                  </div>
-                </PopoverPanel>
-              </Transition>
-            </>
-          )}
-        </Popover>
+                  )}
+                  {regions && (
+                    <div
+                      onMouseEnter={countryToggleState.open}
+                      onMouseLeave={countryToggleState.close}
+                    >
+                      <CountrySelect
+                        toggleState={countryToggleState}
+                        regions={regions}
+                        dropdownPlacement="top"
+                      />
+                    </div>
+                  )}
+                </div>
+                <p className="mt-5 text-[11px] tracking-[0.04em] text-aura-forest/50">
+                  © 2026 Aura Patch. All rights reserved.
+                </p>
+              </nav>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

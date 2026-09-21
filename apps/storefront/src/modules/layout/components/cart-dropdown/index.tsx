@@ -1,22 +1,15 @@
 "use client"
 
-import {
-  Popover,
-  PopoverButton,
-  PopoverPanel,
-  Transition,
-} from "@headlessui/react"
 import { convertToLocale } from "@lib/util/money"
 import { cartCurrencyCode, cartItemsAmount } from "@lib/util/cart-money"
 import { HttpTypes } from "@medusajs/types"
-import { Button } from "@modules/common/components/ui"
 import DeleteButton from "@modules/common/components/delete-button"
 import LineItemOptions from "@modules/common/components/line-item-options"
 import LineItemPrice from "@modules/common/components/line-item-price"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "@modules/products/components/thumbnail"
 import { usePathname } from "next/navigation"
-import { Fragment, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 const CartDropdown = ({
   cart: cartState,
@@ -75,30 +68,17 @@ const CartDropdown = ({
 
   return (
     <div
-      className="z-50 h-full"
+      className="relative z-50 h-full"
       onMouseEnter={openAndCancel}
       onMouseLeave={close}
     >
-      <Popover className="relative h-full">
-        <PopoverButton className="h-full">
-          <LocalizedClientLink
-            className="text-[12px] uppercase tracking-[0.08em] transition-opacity hover:opacity-70"
-            href="/cart"
-            data-testid="nav-cart-link"
-          >{`Cart (${totalItems})`}</LocalizedClientLink>
-        </PopoverButton>
-        <Transition
-          show={cartDropdownOpen}
-          as={Fragment}
-          enter="transition ease-out duration-200"
-          enterFrom="opacity-0 translate-y-1"
-          enterTo="opacity-100 translate-y-0"
-          leave="transition ease-in duration-150"
-          leaveFrom="opacity-100 translate-y-0"
-          leaveTo="opacity-0 translate-y-1"
-        >
-          <PopoverPanel
-            static
+      <LocalizedClientLink
+        className="flex h-full items-center text-[12px] uppercase tracking-[0.08em] transition-opacity hover:opacity-70"
+        href="/cart"
+        data-testid="nav-cart-link"
+      >{`Cart (${totalItems})`}</LocalizedClientLink>
+      {cartDropdownOpen && (
+          <div
             className="absolute right-0 top-[calc(100%+12px)] hidden w-[400px] overflow-hidden rounded-[1.5rem] border border-aura-forest/15 bg-[#f5efe4] text-aura-forest shadow-[0_18px_50px_rgba(25,63,55,0.12)] small:block"
             data-testid="nav-cart-dropdown"
           >
@@ -201,13 +181,12 @@ const CartDropdown = ({
                       })}
                     </span>
                   </div>
-                  <LocalizedClientLink href="/cart">
-                    <Button
-                      className="min-h-12 w-full rounded-full !bg-aura-gold px-6 text-[11px] font-bold uppercase tracking-[0.16em] !text-aura-forest hover:!bg-aura-forest hover:!text-aura-cream"
-                      data-testid="go-to-cart-button"
-                    >
-                      Go to cart
-                    </Button>
+                  <LocalizedClientLink
+                    href="/cart"
+                    className="flex min-h-12 w-full items-center justify-center rounded-full bg-aura-gold px-6 text-[11px] font-bold uppercase tracking-[0.16em] text-aura-forest transition-colors hover:bg-aura-forest hover:text-aura-cream"
+                    data-testid="go-to-cart-button"
+                  >
+                    Go to cart
                   </LocalizedClientLink>
                 </div>
               </>
@@ -228,9 +207,8 @@ const CartDropdown = ({
                 </LocalizedClientLink>
               </div>
             )}
-          </PopoverPanel>
-        </Transition>
-      </Popover>
+          </div>
+      )}
     </div>
   )
 }
