@@ -9,7 +9,7 @@ const ImageGallery = ({ images }: ImageGalleryProps) => {
   return (
     <div className="flex items-start relative">
       <div className="flex flex-col flex-1 gap-y-8">
-        {images.map((image, index) => {
+        {(images ?? []).map((image, index) => {
           return (
             <div
               key={image.id}

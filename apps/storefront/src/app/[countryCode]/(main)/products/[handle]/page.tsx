@@ -4,7 +4,7 @@ import { getProductByHandle } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
 import ProductTemplate from "@modules/products/templates"
 
-export const revalidate = 300
+export const dynamic = "force-dynamic"
 
 type Props = {
   params: Promise<{ countryCode: string; handle: string }>
@@ -16,30 +16,47 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
-  const params = await props.params
-  const product = await getProductByHandle(params.countryCode, params.handle)
+  try {
+    const params = await props.params
+    const product = await getProductByHandle(params.countryCode, params.handle)
 
-  if (!product) {
-    notFound()
-  }
+    if (!product) {
+      return {
+        title: "Aura Patch",
+        description: "Daily wellness patches from Aura.",
+      }
+    }
 
-  return {
-    title: `${product.title} | Aura Patch`,
-    description: `${product.title}`,
-    openGraph: {
+    return {
       title: `${product.title} | Aura Patch`,
       description: `${product.title}`,
-      images: product.thumbnail ? [product.thumbnail] : [],
-    },
+      openGraph: {
+        title: `${product.title} | Aura Patch`,
+        description: `${product.title}`,
+        images: ["/images/aura-core-front.jpeg"],
+      },
+    }
+  } catch {
+    return {
+      title: "Aura Patch",
+      description: "Daily wellness patches from Aura.",
+    }
   }
 }
 
 export default async function ProductPage(props: Props) {
   const params = await props.params
-  const [region, pricedProduct] = await Promise.all([
-    getRegion(params.countryCode),
-    getProductByHandle(params.countryCode, params.handle),
-  ])
+  let region
+  let pricedProduct
+
+  try {
+    ;[region, pricedProduct] = await Promise.all([
+      getRegion(params.countryCode),
+      getProductByHandle(params.countryCode, params.handle),
+    ])
+  } catch {
+    notFound()
+  }
 
   if (!region || !pricedProduct) {
     notFound()

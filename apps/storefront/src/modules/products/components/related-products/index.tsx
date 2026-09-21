@@ -33,14 +33,19 @@ export default async function RelatedProducts({
   }
   queryParams.is_giftcard = false
 
-  const products = await listProducts({
-    queryParams,
-    countryCode,
-  }).then(({ response }) => {
-    return response.products.filter(
-      (responseProduct) => responseProduct.id !== product.id
-    )
-  })
+  let products: HttpTypes.StoreProduct[] = []
+  try {
+    products = await listProducts({
+      queryParams,
+      countryCode,
+    }).then(({ response }) => {
+      return response.products.filter(
+        (responseProduct) => responseProduct.id !== product.id
+      )
+    })
+  } catch {
+    return null
+  }
 
   if (!products.length) {
     return null
