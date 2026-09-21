@@ -1,11 +1,39 @@
 "use client"
 
+import { useEffect } from "react"
+
+const RETRY_KEY = "aura-error-reload-at"
+
+function reloadStorefront() {
+  try {
+    sessionStorage.removeItem(RETRY_KEY)
+  } catch {
+    // ignore storage failures
+  }
+
+  window.location.reload()
+}
+
 export default function GlobalError({
-  reset,
+  error,
 }: {
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  useEffect(() => {
+    try {
+      const last = Number(sessionStorage.getItem(RETRY_KEY) || "0")
+      if (Date.now() - last < 20000) {
+        return
+      }
+
+      sessionStorage.setItem(RETRY_KEY, String(Date.now()))
+      window.location.reload()
+    } catch {
+      // ignore storage failures
+    }
+  }, [error])
+
   return (
     <html lang="en">
       <body className="m-0 bg-[#f6f0e5] text-[#17382f]">
@@ -18,17 +46,20 @@ export default function GlobalError({
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <button
               type="button"
-              onClick={() => reset()}
+              onClick={reloadStorefront}
               className="rounded-full bg-[#c4a574] px-7 py-4 text-[13px] font-medium uppercase tracking-[0.12em] text-[#17382f]"
             >
               Try again
             </button>
-            <a
-              href="/us"
+            <button
+              type="button"
+              onClick={() => {
+                window.location.assign("/us")
+              }}
               className="rounded-full border border-[#17382f]/40 px-7 py-4 text-[13px] font-medium uppercase tracking-[0.12em] text-[#17382f]"
             >
               Go home
-            </a>
+            </button>
           </div>
         </div>
       </body>

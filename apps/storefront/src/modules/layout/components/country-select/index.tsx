@@ -26,7 +26,16 @@ const CountrySelect = ({
   dropdownPlacement = "bottom",
 }: CountrySelectProps) => {
   const { countryCode } = useParams()
-  const currentPath = usePathname().split(`/${countryCode}`)[1]
+  const pathname = usePathname() || ""
+  const country =
+    typeof countryCode === "string"
+      ? countryCode
+      : Array.isArray(countryCode)
+        ? countryCode[0]
+        : ""
+  const currentPath = country
+    ? pathname.split(`/${country}`)[1] || ""
+    : pathname
   const { state, close } = toggleState
 
   const options = useMemo(() => {
