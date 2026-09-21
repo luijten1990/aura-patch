@@ -21,7 +21,7 @@ export type AuraFormula = {
 export const AURA_COLLECTION_EYEBROW = "The Aura Collection"
 export const AURA_COLLECTION_LINE = "Three formulas. One Aura."
 export const AURA_COLLECTION_SUPPORT =
-  "Three targeted approaches to everyday wellness — same daily ritual, different moments in the day."
+  "Core, Restore, and Energy — three next-generation daily patches. A slow, considered release of ingredients for all-day support, and a different formula for different moments in the day."
 
 export const auraCollection: AuraFormula[] = [
   {

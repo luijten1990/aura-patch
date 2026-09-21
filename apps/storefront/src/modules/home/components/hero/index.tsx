@@ -13,7 +13,7 @@ type HeroProps = {
 }
 
 const benefits = [
-  ["01", "Transdermal Delivery", "A convenient format designed to fit seamlessly into your daily wellness routine."],
+  ["01", "All-day support", "Designed for a slow, considered release of ingredients while you wear it — up to 12 hours of daily support."],
   ["02", "Easy to Use", "Peel, apply, and continue with your day. No pills, powders, or complicated routines."],
   ["03", "Portable Wellness", "Take your daily ritual wherever the day takes you, with one discreet patch."],
   ["04", "Simple Routine", "One elegant daily step, created for modern life and effortless consistency."],
@@ -40,10 +40,10 @@ const Hero = ({ product }: HeroProps) => {
           <p className="aura-eyebrow text-aura-gold">The Aura Collection</p>
           <span className="mt-5 aura-spark" />
           <h1 className="aura-display mt-6 text-[50px] leading-[1.04] small:text-[68px]">
-            Three formulas.<br />One Aura.
+            Next-generation<br />daily wellness.
           </h1>
           <p className="mt-7 max-w-[540px] text-[16px] leading-7 text-aura-forest/80">
-            Core, Restore, and Energy — three daily rituals in one considered patch format. Peel, apply, go. Up to 12 hours. A 30-day pouch.
+            Core, Restore, and Energy — three daily patches, designed for a slow, considered release of ingredients and all-day support. Peel, apply, go. Wear for up to 12 hours. A 30-day pouch.
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
             <LocalizedClientLink href={productHref} className="aura-button">Shop Aura Core</LocalizedClientLink>

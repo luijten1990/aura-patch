@@ -11,7 +11,8 @@ export const metadata: Metadata = {
     "Aura Core is the everyday Aura ritual: 19 ingredients in one daily patch. Peel, apply, go. 30-day pouch.",
   openGraph: {
     title: "The Aura Collection — Core, Restore, Energy",
-    description: "Three formulas. One Aura. Start with Core, the daily wellness patch.",
+    description:
+      "Next-generation daily wellness. Core, Restore, and Energy — three patches designed for all-day support. Start with Core.",
     images: ["/images/aura-core-front.jpeg"],
     type: "website",
     siteName: "Aura Patch",
@@ -19,7 +20,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "The Aura Collection — Core, Restore, Energy",
-    description: "Three formulas. One Aura. Start with Core, the daily wellness patch.",
+    description:
+      "Next-generation daily wellness. Core, Restore, and Energy — three patches designed for all-day support. Start with Core.",
   },
   alternates: {
     canonical: "https://www.getaurapatch.com/us",
