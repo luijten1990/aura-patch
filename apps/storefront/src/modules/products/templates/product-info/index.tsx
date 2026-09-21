@@ -21,9 +21,10 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
             {product.collection.title}
           </LocalizedClientLink>
         )}
-        <p className="text-[11px] uppercase tracking-[0.18em] text-aura-gold">
+        <p className="text-[11px] uppercase tracking-[0.18em] text-aura-ember">
           {isCore ? auraCore.use : "Daily wellness"}
         </p>
+        <span className="aura-spark" />
         <Heading
           level="h2"
           className="aura-display text-[46px] leading-none text-aura-forest"

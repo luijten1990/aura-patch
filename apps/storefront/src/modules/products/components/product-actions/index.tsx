@@ -305,7 +305,7 @@ export default function ProductActions({
           className={`w-full h-12 !rounded-full uppercase tracking-[0.12em] ${
             isAdding
               ? "!bg-aura-forest !text-aura-cream !opacity-100"
-              : "!bg-aura-gold !text-aura-forest hover:!bg-aura-forest hover:!text-aura-cream"
+              : "!bg-aura-ember !text-aura-cream hover:!bg-aura-forest hover:!text-aura-cream"
           }`}
           data-testid="add-product-button"
         >

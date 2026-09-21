@@ -79,7 +79,11 @@
   }
 
   .aura-button {
-    @apply items-center justify-center rounded-full bg-aura-gold px-7 py-4 text-[13px] font-medium uppercase tracking-[0.12em] text-aura-forest transition-colors hover:bg-aura-forest hover:text-aura-cream;
+    @apply items-center justify-center rounded-full bg-aura-ember px-7 py-4 text-[13px] font-medium uppercase tracking-[0.12em] text-aura-cream transition-colors hover:bg-aura-forest hover:text-aura-cream;
+  }
+
+  .aura-spark {
+    @apply block h-px w-10 bg-aura-ember;
   }
 
   .aura-button-outline {

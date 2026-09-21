@@ -37,16 +37,17 @@ const Hero = ({ product }: HeroProps) => {
     <div className="bg-aura-cream text-aura-forest">
       <section className="aura-shell grid items-center gap-10 py-14 small:grid-cols-[1fr_0.8fr] small:py-16">
         <div className="max-w-[600px]">
-          <p className="aura-eyebrow">The Aura Collection</p>
+          <p className="aura-eyebrow text-aura-gold">The Aura Collection</p>
+          <span className="mt-5 aura-spark" />
           <h1 className="aura-display mt-6 text-[50px] leading-[1.04] small:text-[68px]">
-            Three formulas.<br />One Aura.
+            Three formulas.<br />One daily ritual.
           </h1>
           <p className="mt-7 max-w-[540px] text-[16px] leading-7 text-aura-forest/80">
             Core, Restore, and Energy — three daily rituals in one considered patch format. Peel, apply, go. Up to 12 hours. A 30-day pouch.
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <LocalizedClientLink href={productHref} className="aura-button">Shop Aura Core</LocalizedClientLink>
-            <a href="#collection" className="aura-button-outline">Compare formulas</a>
+            <LocalizedClientLink href={productHref} className="aura-button">Shop Aura</LocalizedClientLink>
+            <a href="#how-it-works" className="aura-button-outline">Learn how it works</a>
           </div>
         </div>
         <div className="relative mx-auto w-full max-w-[460px]">
@@ -54,7 +55,7 @@ const Hero = ({ product }: HeroProps) => {
               <div className="relative aspect-[4/5] overflow-hidden">
                 <Image
                   src="/images/aura-core-front.webp"
-                  alt="Aura Core 30-day pouch"
+                  alt="Aura Core 30-day daily wellness pouch with gold mandala"
                   fill
                   priority
                   className="object-contain transition-transform duration-700 group-hover:scale-[1.015]"
@@ -142,7 +143,7 @@ const Hero = ({ product }: HeroProps) => {
                 />
 
                 <div className="absolute right-[5%] top-[13%] hidden w-[250px] small:block">
-                  <span className="mb-3 block h-px w-24 bg-aura-gold" />
+                  <span className="mb-3 block h-px w-24 bg-aura-ember" />
                   <h3 className="aura-display text-[28px] leading-none">Protective outer layer</h3>
                   <p className="mt-3 text-[14px] leading-6 text-aura-forest/70">
                     Helps keep the ingredient matrix stable and effective.
@@ -150,7 +151,7 @@ const Hero = ({ product }: HeroProps) => {
                 </div>
 
                 <div className="absolute left-[5%] top-[45%] hidden w-[230px] text-right small:block">
-                  <span className="mb-3 ml-auto block h-px w-24 bg-aura-gold" />
+                  <span className="mb-3 ml-auto block h-px w-24 bg-aura-ember" />
                   <h3 className="aura-display text-[28px] leading-none">Ingredient matrix</h3>
                   <p className="mt-3 text-[14px] leading-6 text-aura-forest/70">
                     Holds Aura’s carefully formulated wellness ingredients.
@@ -158,7 +159,7 @@ const Hero = ({ product }: HeroProps) => {
                 </div>
 
                 <div className="absolute bottom-[11%] right-[6%] hidden w-[260px] small:block">
-                  <span className="mb-3 block h-px w-24 bg-aura-gold" />
+                  <span className="mb-3 block h-px w-24 bg-aura-ember" />
                   <h3 className="aura-display text-[28px] leading-none">Medical-grade adhesive</h3>
                   <p className="mt-3 text-[14px] leading-6 text-aura-forest/70">
                     Designed to stay securely in place for up to 12 hours.

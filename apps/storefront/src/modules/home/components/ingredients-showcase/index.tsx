@@ -1,6 +1,12 @@
 import Image from "next/image"
 
-import { AURA_COLLECTION_EYEBROW, AURA_COLLECTION_LINE, AURA_COLLECTION_SUPPORT, auraCollection } from "@lib/data/aura-collection"
+import {
+  AURA_COLLECTION_EYEBROW,
+  AURA_COLLECTION_SUPPORT,
+  auraCollection,
+  formulaAccentBar,
+  formulaAccentText,
+} from "@lib/data/aura-collection"
 
 const IngredientsShowcase = () => (
   <div id="ingredients">
@@ -9,9 +15,22 @@ const IngredientsShowcase = () => (
       <div className="grid gap-10 small:grid-cols-[0.9fr_1.1fr] small:items-end">
         <div>
           <p className="aura-eyebrow text-aura-gold">{AURA_COLLECTION_EYEBROW}</p>
-          <h2 className="aura-display mt-6 text-[48px] leading-[1.02] tracking-[0.005em] small:text-[62px]">Three formulas.<br />One Aura.</h2>
+          <span className="mt-5 aura-spark" />
+          <h2 className="aura-display mt-6 text-[48px] leading-[1.02] tracking-[0.005em] small:text-[62px]">Three formulas.<br />One daily ritual.</h2>
         </div>
         <p className="max-w-[650px] text-[18px] leading-8 text-aura-cream/75 small:justify-self-end">{AURA_COLLECTION_SUPPORT}</p>
+      </div>
+
+      <div className="relative mt-12 overflow-hidden rounded-[1.75rem] bg-aura-cream">
+        <div className="relative aspect-[3/2] min-h-[240px] small:aspect-[16/10] small:min-h-[480px]">
+          <Image
+            src="/images/aura-collection.webp"
+            alt="The Aura Collection: Core, Restore, and Energy pouches"
+            fill
+            className="object-contain object-center p-4 small:p-8"
+            sizes="(max-width: 1023px) 100vw, 1320px"
+          />
+        </div>
       </div>
 
       <div className="mt-14 space-y-6">
@@ -27,9 +46,17 @@ const IngredientsShowcase = () => (
               <div className="p-6 small:p-9 medium:p-11">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-aura-gold">{product.categories}</p>
                 <h3 className="aura-display mt-5 text-[42px] leading-none tracking-[0.01em] small:text-[52px]">{product.name}</h3>
+                <span className={`mt-4 block h-px w-10 ${formulaAccentBar(product.accent)}`} />
                 <p className="mt-3 text-[14px] font-medium uppercase tracking-[0.12em] text-aura-cream/65">{product.subtitle}</p>
                 <p className="aura-display mt-8 text-[29px] leading-tight text-aura-gold">{product.tagline}</p>
                 <p className="mt-5 max-w-[760px] text-[14px] leading-6 text-aura-cream/72">{product.description}</p>
+                <ul className="mt-7 flex flex-wrap gap-x-6 gap-y-2">
+                  {product.traits.map((trait) => (
+                    <li key={trait} className={`text-[10px] font-semibold uppercase tracking-[0.18em] ${formulaAccentText(product.accent)}`}>
+                      {trait}
+                    </li>
+                  ))}
+                </ul>
                 <div className="mt-9 border-t border-aura-cream/15 pt-7">
                   <div className="flex items-baseline justify-between gap-5">
                     <h4 className="aura-display text-[28px]">Inside the formula</h4>

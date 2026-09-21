@@ -13,11 +13,13 @@ export type AuraFormula = {
   categories: string
   subtitle: string
   description: string
+  accent: "ember" | "plum"
+  traits: string[]
   ingredients: string[]
 }
 
 export const AURA_COLLECTION_EYEBROW = "The Aura Collection"
-export const AURA_COLLECTION_LINE = "Three formulas. One Aura."
+export const AURA_COLLECTION_LINE = "Three formulas. One daily ritual."
 export const AURA_COLLECTION_SUPPORT =
   "Three targeted approaches to everyday wellness — same daily ritual, different moments in the day."
 
@@ -27,17 +29,19 @@ export const auraCollection: AuraFormula[] = [
     name: "Aura Core",
     shortName: "Core",
     tagline: "Your daily foundation.",
-    use: "Daily wellness",
+    use: "Daily Wellness",
     bestFor: "Everyday ritual",
     status: "available",
     href: "/products/aura-patch",
     image: "/images/aura-core-front.webp",
-    imageAlt: "Aura Core 30-day wellness pouch",
-    cardTone: "bg-[#e7eeea]",
-    categories: "Daily · Foundation · Ritual",
+    imageAlt: "Aura Core 30-day daily wellness pouch with gold mandala",
+    cardTone: "bg-[#dce8e4]",
+    categories: "Daily · Balance · Vitality",
     subtitle: "Daily wellness patch",
     description:
-      "Aura Core is the everyday Aura ritual: 19 ingredients in one patch, made to peel, apply, and wear for up to 12 hours. A 30-day pouch for the days that simply need a considered baseline.",
+      "Aura Core is the everyday Aura ritual: 19 ingredients in one daily patch. Peel, apply, go. Wear for up to 12 hours. A 30-day pouch for days that need a considered baseline.",
+    accent: "ember",
+    traits: ["Daily Wellness", "Balance", "Vitality"],
     ingredients: [
       "Stabilized Allicin",
       "Organic Ashwagandha",
@@ -64,18 +68,20 @@ export const auraCollection: AuraFormula[] = [
     key: "restore",
     name: "Aura Restore",
     shortName: "Restore",
-    tagline: "Recovery and renewal.",
-    use: "Recovery support",
+    tagline: "For recovery & renewal.",
+    use: "Recovery & Renewal",
     bestFor: "Quieter, replenishing days",
     status: "coming-soon",
     href: "/#formulations",
     image: "/images/aura-restore-front.webp",
-    imageAlt: "Aura Restore 30-day wellness pouch",
-    cardTone: "bg-[#e8ece0]",
-    categories: "Recovery · Renewal · Restore",
+    imageAlt: "Aura Restore 30-day recovery and renewal pouch with gold mandala",
+    cardTone: "bg-[#e4eadc]",
+    categories: "Recovery · Immune Support · Rejuvenation",
     subtitle: "Recovery & renewal patch",
     description:
-      "Aura Restore is a quieter formula for days that ask for replenishment. Same peel-and-apply patch, same 30-day pouch — arriving soon as part of the collection.",
+      "Aura Restore is a quieter formula for recovery and renewal. Same peel-and-apply patch, same 30-day pouch — arriving soon as part of the collection.",
+    accent: "plum",
+    traits: ["Recovery", "Immune Support", "Rejuvenation"],
     ingredients: [
       "Organic Ashwagandha",
       "Vitamin C",
@@ -93,18 +99,20 @@ export const auraCollection: AuraFormula[] = [
     key: "energy",
     name: "Aura Energy",
     shortName: "Energy",
-    tagline: "Energy and vitality.",
-    use: "Daily energy support",
+    tagline: "For energy & vitality.",
+    use: "Energy & Vitality",
     bestFor: "Brighter, more lifted days",
     status: "coming-soon",
     href: "/#formulations",
     image: "/images/aura-energy-front.webp",
-    imageAlt: "Aura Energy 30-day wellness pouch",
-    cardTone: "bg-[#f3efe4] ring-1 ring-aura-forest/15",
-    categories: "Energy · Vitality · Daily",
+    imageAlt: "Aura Energy 30-day energy and vitality pouch with gold mandala",
+    cardTone: "bg-[#f3eee6]",
+    categories: "Energy · Focus · Stamina",
     subtitle: "Energy & vitality patch",
     description:
-      "Aura Energy is a brighter daily ritual for ordinary days that need more lift. Same considered patch format, in a 30-day pouch — arriving soon.",
+      "Aura Energy is a brighter daily ritual for energy and vitality. Same considered patch format, in a 30-day pouch — arriving soon.",
+    accent: "ember",
+    traits: ["Energy", "Focus", "Stamina"],
     ingredients: [
       "BCAA + EAA Blend",
       "Organic Ashwagandha",
@@ -121,3 +129,9 @@ export const auraCollection: AuraFormula[] = [
 ]
 
 export const auraCore = auraCollection[0]
+
+export const formulaAccentBar = (accent: AuraFormula["accent"]) =>
+  accent === "plum" ? "bg-aura-plum" : "bg-aura-ember"
+
+export const formulaAccentText = (accent: AuraFormula["accent"]) =>
+  accent === "plum" ? "text-aura-plum" : "text-aura-ember"

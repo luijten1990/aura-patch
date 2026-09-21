@@ -62,11 +62,12 @@ export default async function ProductPreview({
       </LocalizedClientLink>
         <div className="mt-5 flex items-end justify-between gap-5 border-t border-aura-forest/15 pt-5">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.18em] text-aura-gold">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-aura-ember">
               {product.handle === "aura-patch" ? auraCore.use : "Daily wellness"}
             </p>
+            <span className="mt-3 aura-spark" />
             <LocalizedClientLink href={`/products/${product.handle}`}>
-              <h2 className="aura-display mt-2 text-[34px] leading-none transition-colors hover:text-aura-gold" data-testid="product-title">
+              <h2 className="aura-display mt-2 text-[34px] leading-none transition-colors hover:text-aura-ember" data-testid="product-title">
                 {product.handle === "aura-patch" ? auraCore.name : product.title}
               </h2>
             </LocalizedClientLink>
@@ -77,7 +78,7 @@ export default async function ProductPreview({
         </div>
         <div className="mt-6 flex items-center gap-3">
           {hasMultipleVariants ? (
-            <LocalizedClientLink href={`/products/${product.handle}`} className="flex min-h-12 flex-1 items-center justify-center rounded-full bg-aura-gold px-6 text-[11px] font-bold uppercase tracking-[0.15em] text-aura-forest transition-colors hover:bg-aura-forest hover:text-aura-cream">
+            <LocalizedClientLink href={`/products/${product.handle}`} className="flex min-h-12 flex-1 items-center justify-center rounded-full bg-aura-ember px-6 text-[11px] font-bold uppercase tracking-[0.15em] text-aura-cream transition-colors hover:bg-aura-forest hover:text-aura-cream">
               Choose options
             </LocalizedClientLink>
           ) : (

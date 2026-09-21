@@ -39,11 +39,12 @@ const StoreTemplate = async ({
         <div className="grid gap-6 border-b border-aura-forest/15 pb-10 small:grid-cols-[1fr_0.7fr] small:items-end">
           <div>
             <p className="aura-eyebrow text-aura-gold">The Aura Collection</p>
+            <span className="mt-5 aura-spark" />
             <h1
               className="aura-display mt-5 text-[52px] leading-none small:text-[72px]"
               data-testid="store-page-title"
             >
-              Three formulas. One Aura.
+              Three formulas. One daily ritual.
             </h1>
           </div>
           <div className="max-w-[480px] small:justify-self-end">

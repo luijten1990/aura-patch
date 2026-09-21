@@ -3,6 +3,8 @@ import {
   AURA_COLLECTION_LINE,
   AURA_COLLECTION_SUPPORT,
   auraCollection,
+  formulaAccentBar,
+  formulaAccentText,
 } from "@lib/data/aura-collection"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Image from "next/image"
@@ -16,6 +18,7 @@ const CollectionChooser = ({ corePrice }: CollectionChooserProps) => (
     <div className="flex flex-col gap-8 small:flex-row small:items-end small:justify-between">
       <div>
         <p className="aura-eyebrow text-aura-gold">{AURA_COLLECTION_EYEBROW}</p>
+        <span className="mt-5 aura-spark" />
         <h2 className="aura-display mt-6 max-w-[760px] text-[50px] leading-none small:text-[64px]">
           {AURA_COLLECTION_LINE}
         </h2>
@@ -48,9 +51,17 @@ const CollectionChooser = ({ corePrice }: CollectionChooserProps) => (
               />
             </div>
             <div className="flex flex-col gap-4 px-7 pb-8 pt-1">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-aura-gold">{formula.use}</p>
+              <p className={`text-[11px] uppercase tracking-[0.18em] ${formulaAccentText(formula.accent)}`}>{formula.use}</p>
               <h3 className="aura-display text-[34px] leading-none">{formula.name}</h3>
+              <span className={`block h-px w-10 ${formulaAccentBar(formula.accent)}`} />
               <p className="aura-display text-[22px] leading-tight text-aura-forest/80">{formula.tagline}</p>
+              <ul className="flex flex-wrap gap-x-4 gap-y-1">
+                {formula.traits.map((trait) => (
+                  <li key={trait} className="text-[10px] uppercase tracking-[0.16em] text-aura-forest/50">
+                    {trait}
+                  </li>
+                ))}
+              </ul>
               <p className="text-[14px] leading-6 text-aura-forest/65">
                 30 patches · {formula.use}
               </p>
@@ -60,7 +71,7 @@ const CollectionChooser = ({ corePrice }: CollectionChooserProps) => (
                     <p className="text-[15px] font-semibold">{corePrice}</p>
                   )}
                   <LocalizedClientLink href={formula.href} className="aura-button text-center">
-                    Choose {formula.name}
+                    Explore {formula.shortName}
                   </LocalizedClientLink>
                 </div>
               ) : (
@@ -85,14 +96,15 @@ const CollectionChooser = ({ corePrice }: CollectionChooserProps) => (
             key={formula.key}
             className={`px-7 py-8 small:px-10 ${index < auraCollection.length - 1 ? "border-b border-aura-forest/10 small:border-b-0 small:border-r" : ""}`}
           >
-            <p className="text-[11px] uppercase tracking-[0.18em] text-aura-gold">{formula.shortName}</p>
+            <p className={`text-[11px] uppercase tracking-[0.18em] ${formulaAccentText(formula.accent)}`}>{formula.shortName}</p>
+            <span className={`mt-3 block h-px w-8 ${formulaAccentBar(formula.accent)}`} />
             <p className="aura-display mt-4 text-[26px] leading-none">{formula.tagline}</p>
             <p className="mt-4 text-[14px] leading-6 text-aura-forest/65">Best for: {formula.bestFor}</p>
             <p className="mt-2 text-[14px] leading-6 text-aura-forest/65">30-day pouch</p>
             {formula.status === "available" ? (
               <LocalizedClientLink
                 href={formula.href}
-                className="mt-6 inline-flex text-[11px] font-bold uppercase tracking-[0.16em] underline decoration-aura-gold decoration-2 underline-offset-8"
+                className="mt-6 inline-flex text-[11px] font-bold uppercase tracking-[0.16em] underline decoration-aura-ember decoration-2 underline-offset-8"
               >
                 Shop {formula.shortName}
               </LocalizedClientLink>

@@ -22,9 +22,11 @@ module.exports = {
       colors: {
         aura: {
           forest: "#193f37",
-          cream: "#f7f4ed",
+          cream: "#f5efe7",
           sage: "#e5e8e1",
           gold: "#bd9956",
+          ember: "#f46729",
+          plum: "#8c005d",
         },
         grey: {
           0: "#FFFFFF",
