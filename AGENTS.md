@@ -1,5 +1,31 @@
 # AGENTS.md
 
+## Website roles
+
+These are reusable role instructions. They do not run in the background. Use one agent sequentially by default; if the user requests parallel agents, assign independent scopes and avoid overlapping edits.
+
+Ask:
+
+- "Follow agents/audit.md and audit this website. Write findings without changing the application."
+- "Follow agents/iterate.md and fix the three highest-priority verified issues."
+- "Follow agents/visual-qa.md and review the homepage and main conversion flow."
+- "Follow agents/seo.md and fix confirmed technical SEO issues."
+
+Use `agents/build.md` for implementation; `agents/design.md`, `agents/design-system.md`, `agents/accessibility.md`, `agents/performance.md`, `agents/security.md`, `agents/conversion.md`, and `agents/completeness.md` for focused reviews. Use `agents/architect.md` before complex structure changes. Use `agents/interrogate.md` before substantial releases.
+
+Project-specific verification lives in `.cursor/skills/verify-aura-patch/`. The prove-it-works skill in `.cursor/skills/prove-it-works/` applies to every significant change.
+
+### Local commands
+
+- `npm run qa:plan` lists the checks without executing them.
+- `npm run qa` runs the configured checks; a failed or blocked required check returns a nonzero exit code.
+- `npm run qa:scan` lists source locations worth inspecting for incomplete content. Candidates are not confirmed bugs.
+- `npm run typecheck` runs TypeScript checks separately from the production build.
+
+See `docs/architecture.md` for prerequisites and coverage gaps. Browser QA uses browser tools, not these Node scripts. Record screenshots under `artifacts/qa/` and evidence in `WEBSITE_SCORE.md`. There is no numerical score until real criteria have been assessed.
+
+Stay inside existing Aura Patch claims (daily ritual, 19 ingredients, peel/apply, up to 12 hours, 30-day pouch). Do not invent disease treatment, clinical results, testimonials, or new ingredient promises.
+
 ## Overview
 
 Medusa DTC Starter — a Turborepo workspace monorepo containing a Medusa backend (`@medusajs/medusa` latest, Node 20+, PostgreSQL 15+) and an optional storefront (Next.js, Tanstack, etc...).

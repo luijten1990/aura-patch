@@ -13,6 +13,7 @@
     "postbuild": "node scripts/package-hostinger.cjs",
     "start": "next start -p 8000",
     "lint": "next lint",
+    "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --test src/lib/util/*.unit.test.ts",
     "analyze": "ANALYZE=true next build"
   },

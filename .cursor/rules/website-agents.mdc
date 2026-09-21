@@ -1,0 +1,9 @@
+---
+description: Website agent roles for storefront QA and iteration
+alwaysApply: false
+globs: "{agents,docs,artifacts}/**/*"
+---
+
+# Website agents
+
+For website audits and visual/SEO/conversion work, follow the Website roles section in `AGENTS.md` and `agents/*.md`. Prove shopper-facing changes with `.cursor/skills/verify-aura-patch/SKILL.md`.

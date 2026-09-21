@@ -15,6 +15,12 @@ node_modules
 
 # Testing
 coverage
+test-results/
+
+# Verification evidence (keep markdown; ignore binary captures)
+artifacts/qa/**/*.png
+artifacts/qa/**/*.jpg
+artifacts/qa/**/*.webp
 
 # Next.js
 **/.next/
