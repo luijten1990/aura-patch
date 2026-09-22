@@ -1,5 +1,9 @@
 # AGENTS.md
 
+## Codex skill entry points
+
+Project-local skills in `.agents/skills/` expose verification, prove-it-works, website review, interrogate, architect, and verification maintenance. Their `SKILL.md` files reuse the existing Cursor verification recipes and specialist roles below. Use the relevant skill for the task; do not run every workflow on every edit. Instruction-only changes need file/link/schema validation rather than a full application verification run.
+
 ## Website roles
 
 These are reusable role instructions. They do not run in the background. Use one agent sequentially by default; if the user requests parallel agents, assign independent scopes and avoid overlapping edits.

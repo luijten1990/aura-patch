@@ -1,3 +1,67 @@
+# Aurapatch — learning to build with AI
+
+**New to vibe coding. Completely hooked on AI.**
+
+[Visit the live website](https://www.getaurapatch.com/us) · [Explore the agent workflows](#the-agent-workflows) · [Project setup](#project-setup)
+
+[![Aurapatch homepage with forest-green navigation, cream background, and Aura Core product imagery](docs/showcase/aurapatch-homepage.png)](https://www.getaurapatch.com/us)
+
+## My story
+
+I'm new to vibe coding, and I'm absolutely loving what AI makes possible. Aurapatch is one of the projects I'm building as I learn: a real website where I can turn ideas into something I can see, use, and keep improving.
+
+I bring the direction, questions, and feedback. AI helps me work through the implementation and explore ways to improve it. There's plenty I still need to learn, but having a real project makes me want to keep going.
+
+One thing I'm learning is to ask better follow-up questions. Does this work on a phone? Does that button actually do what it promises? What evidence do we have that a change works?
+
+That's why I've started adding reusable agent workflows alongside the website. I want checking the work to become part of how I build.
+
+## The project
+
+Aurapatch has a **Next.js / React storefront** and a **Medusa commerce backend**, built on the Medusa DTC Starter. The repository includes product browsing, cart and checkout code, customer accounts, and subscription functionality.
+
+The screenshot above shows the live homepage. It's a visual preview, not a claim that every commerce flow has passed end-to-end testing.
+
+## The agent workflows
+
+Inspired by [Lauren Tan (poteto)](https://github.com/poteto) and her [pstack](https://github.com/cursor/plugins/tree/main/pstack), these project-specific instructions help a coding assistant verify, review, and design changes. They are reusable skills, not bots running continuously in the background.
+
+| Workflow | What it helps me do |
+|---|---|
+| [Verify Aurapatch](.agents/skills/verify-aurapatch/SKILL.md) | Exercise the storefront like a shopper and capture the result. |
+| [Prove it works](.agents/skills/aurapatch-prove-it-works/SKILL.md) | Separate “implemented” from “verified” using actual evidence. |
+| [Website review](.agents/skills/aurapatch-website-review/SKILL.md) | Inspect mobile layouts, usability, content, and conversion paths. |
+| [Interrogate](.agents/skills/aurapatch-interrogate/SKILL.md) | Challenge substantial changes and investigate concrete failure scenarios. |
+| [Architect](.agents/skills/aurapatch-architect/SKILL.md) | Compare approaches before committing to a complex feature. |
+| [Maintain verification](.agents/skills/aurapatch-create-verification-skill/SKILL.md) | Keep verification instructions aligned with the changing application. |
+
+The Codex skills live in `.agents/skills/`. They reuse the existing [storefront verification recipes](.cursor/skills/verify-aura-patch/SKILL.md) and [specialist roles](agents/), so the project keeps one shared set of checks.
+
+For example, in a coding session opened in this repository:
+
+- “Use $verify-aurapatch to check the product-to-cart journey in a local test environment.”
+- “Use $aurapatch-website-review to review the homepage on mobile.”
+- “Use $aurapatch-interrogate to review this change before release.”
+
+## What I'm learning next
+
+I want to get better at checking real user journeys, understanding the code AI helps me write, and making thoughtful choices about what to build next. Existing findings and coverage belong in [AUDIT.md](AUDIT.md) and [WEBSITE_SCORE.md](WEBSITE_SCORE.md); having a workflow installed is not the same as passing its checks.
+
+I'm sharing this as a work in progress. AI has made building things exciting for me, and I want to keep learning by doing it.
+
+## Credits
+
+- [Medusa](https://github.com/medusajs/medusa) and the [DTC Starter](https://github.com/medusajs/dtc-starter) provide the commerce foundation.
+- [Lauren Tan's pstack](https://github.com/cursor/plugins/tree/main/pstack) inspired the verification and review approach. The project skills are AI-assisted local adaptations, not an official pstack distribution or workflows I claim to have invented.
+- Built with AI coding assistance, with human direction and feedback.
+
+## Project setup
+
+The original starter documentation is retained below. It includes upstream pnpm examples; this repository currently declares **npm** in `package.json` and has a `package-lock.json`. Use the repository's declared package manager and [AGENTS.md](AGENTS.md) for current project commands.
+
+<details>
+<summary>Original Medusa DTC Starter documentation and configuration</summary>
+
 <p align="center">
   <a href="https://www.medusajs.com">
   <picture>
@@ -180,3 +244,5 @@ variables.
 
 - [Medusa Documentation](https://docs.medusajs.com)
 - [Medusa Cloud](https://cloud.medusajs.com)
+
+</details>
