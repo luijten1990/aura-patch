@@ -1,5 +1,35 @@
-# Design system review
+# Design System Review
 
-Identify tokens actually in use (colors, type, spacing, radii, buttons, inputs, cards). List accidental inconsistencies. Do not normalize intentional differences (for example Subscribe vs one-time treatments).
+Inspect the entire project for visual inconsistencies.
 
-Do not redesign the site without evidence from the current direction. Prefer reusable components over one-off styles.
+Identify the actual design tokens currently being used:
+
+- colors
+- typography
+- font sizes
+- font weights
+- spacing
+- border radius
+- shadows
+- buttons
+- inputs
+- cards
+- containers
+
+Then identify inconsistencies.
+
+For example:
+
+Button A: border-radius 8px
+
+Button B: border-radius 14px
+
+Button C: border-radius 999px
+
+Determine whether these differences are intentional.
+
+Do not normalize intentional differences (Subscribe vs one-time treatments, filled vs outline CTAs).
+
+Where inconsistencies are accidental, refactor toward reusable design tokens/components.
+
+Do not redesign the site without evidence from the existing design direction (forest, cream, wine, gold).

@@ -7,14 +7,15 @@ Last assessed: 2026-09-22 (homepage only, local storefront already running).
 ## Functionality
 
 - [x] Navigation (header links present on `/us`; cart empty)
+- [ ] Forms
+- [ ] Authentication
 - [ ] Catalog and product pages
 - [ ] One-time add to cart
 - [ ] Subscribe & Save cart
 - [ ] Checkout (stop before live charge unless asked)
-- [ ] Account login/dashboard
 - [ ] Error handling
 - [ ] Loading states
-- [ ] Empty cart
+- [ ] Empty states
 - [ ] 404
 
 ## Design
@@ -57,15 +58,18 @@ Last assessed: 2026-09-22 (homepage only, local storefront already running).
 
 - [ ] No placeholders
 - [ ] No broken links
-- [ ] Claims stay within approved copy
+- [ ] Clear messaging
 - [ ] FAQs
 - [ ] Trust elements (no invented testimonials)
+- [ ] Claims stay within approved copy
 
 ## Quality
 
+- [ ] No TODOs
+- [ ] No console errors
+- [ ] No duplicated components
+- [ ] No unnecessary dependencies
 - [ ] `npm run qa` required checks
-- [ ] No TODOs left in production UI copy
-- [ ] No console errors on verified pages
 - [ ] Subscribe-cart tests
 
 ## Evidence

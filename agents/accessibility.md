@@ -1,6 +1,16 @@
 # Accessibility review
 
-Check keyboard access, focus visibility, labels, contrast, semantic HTML, and ARIA. Prefer native elements.
+Check:
+
+- keyboard navigation
+- focus states
+- labels
+- contrast
+- semantic elements
+- ARIA usage
+- screen-reader issues
+
+Prefer native elements over extra ARIA.
 
 The storefront has an Accessibility page; do not contradict it with invented legal claims.
 

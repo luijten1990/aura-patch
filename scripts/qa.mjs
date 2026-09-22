@@ -67,11 +67,13 @@ const scanTerms = [
   "FIXME",
   "placeholder",
   "lorem ipsum",
+  "mock data",
+  "console.log",
+  "temporary",
   "coming soon",
   "example.com",
   "dummy",
-  "mock data",
-  "console.log",
+  "test content",
 ]
 
 function walk(dir, files = []) {

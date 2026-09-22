@@ -21,10 +21,62 @@ Project-specific verification lives in `.cursor/skills/verify-aura-patch/`. The 
 - `npm run qa` runs the configured checks; a failed or blocked required check returns a nonzero exit code.
 - `npm run qa:scan` lists source locations worth inspecting for incomplete content. Candidates are not confirmed bugs.
 - `npm run typecheck` runs TypeScript checks separately from the production build.
+- `npm run lint` / `npm test` / `npm run build` remain available; build is on-demand because the monorepo build is heavy.
 
 See `docs/architecture.md` for prerequisites and coverage gaps. Browser QA uses browser tools, not these Node scripts. Record screenshots under `artifacts/qa/` and evidence in `WEBSITE_SCORE.md`. There is no numerical score until real criteria have been assessed.
 
 Stay inside existing Aura Patch claims (daily ritual, 19 ingredients, peel/apply, up to 12 hours, 30-day pouch). Do not invent disease treatment, clinical results, testimonials, or new ingredient promises.
+
+### Objective
+
+Build a polished, production-ready storefront. Prioritize:
+
+1. Functionality
+2. UX
+3. Visual quality
+4. Performance
+5. Accessibility
+6. SEO
+7. Maintainability
+
+Never consider a feature complete simply because the code compiles.
+
+### Development loop
+
+For every significant change:
+
+1. Inspect the existing implementation.
+2. Identify dependencies and affected components.
+3. Make the smallest coherent implementation.
+4. Run linting.
+5. Run type checking.
+6. Run tests.
+7. Run the production build when the change can break it.
+8. Inspect the UI visually.
+9. Check responsive behavior.
+10. Fix issues discovered.
+11. Re-run validation.
+12. Update documentation if necessary.
+
+Do not stop after the first successful build.
+
+### Design rules
+
+Avoid generic AI-looking layouts, excessive rounded cards, random gradients, inconsistent spacing, unnecessary animations, excessive shadows, and placeholder content in production UI.
+
+Prefer strong visual hierarchy, consistent spacing and typography, clear CTA hierarchy, intentional whitespace, responsive layouts, and reusable components.
+
+### Code rules
+
+Before creating a new component: search the codebase for an existing one, follow naming conventions, avoid duplicating functionality, keep components focused, and avoid unnecessary dependencies.
+
+Never rewrite large parts of the application without first understanding the existing architecture.
+
+### Completion criteria
+
+A task is not complete when the code compiles, the page renders, or only the happy path works.
+
+A task is complete only when functionality works, errors are handled, mobile and desktop work, accessibility is reasonable, SEO is implemented where relevant, loading and empty states exist where relevant, visual consistency is maintained, and applicable tests/build pass. Prove shopper-facing work with `.cursor/skills/prove-it-works/` and `.cursor/skills/verify-aura-patch/`.
 
 ## Overview
 

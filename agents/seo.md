@@ -1,9 +1,35 @@
 # SEO Review
 
-Audit public storefront pages. Fix confirmed technical SEO issues that are safe (titles, descriptions, canonicals, heading hierarchy, alt text, robots/sitemap references, JSON-LD already used on the homepage).
+Audit every public storefront page.
 
-Do not keyword-stuff. Do not add pages solely to increase page count. Do not invent product claims.
+Check:
 
-Check unique title and meta description, one primary H1, canonical URL, indexability, internal links, Open Graph, existing Product/FAQ/Organization JSON-LD, sitemap, and robots.
+- unique title
+- unique meta description
+- one primary H1
+- logical heading hierarchy
+- canonical URL
+- indexability
+- internal linking
+- descriptive URLs
+- image alt text
+- Open Graph metadata
+- Twitter/X metadata
+- structured data where appropriate (homepage already has Product/FAQ/Organization/Website JSON-LD)
+- sitemap
+- robots.txt
+- breadcrumbs where useful
 
-Keyword cannibalization and thin content are findings unless the user asked to rewrite copy.
+Identify keyword cannibalization.
+
+Identify pages with thin or duplicated content.
+
+Identify orphan pages.
+
+Do not keyword-stuff.
+
+Do not create SEO content solely to increase page count.
+
+Prioritize useful content and search intent.
+
+Fix technical SEO issues automatically where safe. Do not invent product claims.
