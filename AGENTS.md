@@ -13,9 +13,10 @@ Ask:
 - "Follow agents/audit.md and audit this website. Write findings without changing the application."
 - "Follow agents/iterate.md and fix the three highest-priority verified issues."
 - "Follow agents/visual-qa.md and review the homepage and main conversion flow."
+- "Follow agents/frontend-design.md and review image quality and premium look on the homepage and product pages."
 - "Follow agents/seo.md and fix confirmed technical SEO issues."
 
-Use `agents/build.md` for implementation; `agents/design.md`, `agents/design-system.md`, `agents/accessibility.md`, `agents/performance.md`, `agents/security.md`, `agents/conversion.md`, and `agents/completeness.md` for focused reviews. Use `agents/architect.md` before complex structure changes. Use `agents/interrogate.md` before substantial releases.
+Use `agents/build.md` for implementation; `agents/design.md`, `agents/frontend-design.md`, `agents/design-system.md`, `agents/accessibility.md`, `agents/performance.md`, `agents/security.md`, `agents/conversion.md`, and `agents/completeness.md` for focused reviews. Use `agents/architect.md` before complex structure changes. Use `agents/interrogate.md` before substantial releases.
 
 Project-specific verification lives in `.cursor/skills/verify-aura-patch/`. The prove-it-works skill in `.cursor/skills/prove-it-works/` applies to every significant change.
 

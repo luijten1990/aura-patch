@@ -20,7 +20,7 @@ Look for:
 - buttons that look clickable but aren't
 - inconsistent components
 - awkward responsive transitions
-- images that crop incorrectly
+- images that crop incorrectly (if photos look cheap or clipped, continue in `agents/frontend-design.md`)
 - excessive whitespace
 - cramped sections
 - visual bugs
