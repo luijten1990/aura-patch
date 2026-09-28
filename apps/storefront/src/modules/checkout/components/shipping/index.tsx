@@ -1,6 +1,6 @@
 "use client"
 import { Radio, RadioGroup } from "@headlessui/react"
-import { calculatePriceForShippingOption } from "@lib/data/fulfillment"
+import { calculatePriceForShippingOption, listCheckoutCarrierQuotes } from "@lib/data/fulfillment"
 import { convertToLocale } from "@lib/util/money"
 import { CheckCircleSolid, Loader } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
@@ -11,6 +11,11 @@ import { Button, clx, Heading, Text } from "@modules/common/components/ui"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useCheckoutCart } from "../checkout-cart-provider"
+import CarrierMark from "./carrier-mark"
+import {
+  shippingOptionCatalogId,
+  type QuotedShippingCarrier,
+} from "@lib/util/shipping-carrier"
 
 const PICKUP_OPTION_ON = "__PICKUP_ON"
 const PICKUP_OPTION_OFF = "__PICKUP_OFF"
@@ -71,11 +76,20 @@ function shippingMethodRank(option: HttpTypes.StoreCartShippingOption) {
 
 function shippingOptionCopy(
   option: HttpTypes.StoreCartShippingOption,
-  isUsShipping: boolean
+  isUsShipping: boolean,
+  quoted?: QuotedShippingCarrier | null
 ) {
   const optionId = String(
     (option.data as { id?: string } | null | undefined)?.id || ""
   )
+  const bestValueDetail = (fallback: { us: string; intl: string }) => {
+    if (quoted?.label) {
+      return isUsShipping
+        ? `Tracked · ${quoted.label} · typically 2–7 business days`
+        : `Tracked · ${quoted.label} · typically 6–12 business days`
+    }
+    return isUsShipping ? fallback.us : fallback.intl
+  }
   const catalog: Record<string, { title: string; detail: string }> = {
     "easypost-usps": {
       title: "USPS",
@@ -109,13 +123,16 @@ function shippingOptionCopy(
     },
     "easypost-alt": {
       title: "Best value",
-      detail: isUsShipping
-        ? "Tracked · lowest-cost carrier besides USPS and UPS · typically 2–7 business days"
-        : "Tracked · lowest-cost carrier besides USPS and UPS · typically 6–12 business days",
+      detail: bestValueDetail({
+        us: "Tracked · lowest-cost carrier besides USPS and UPS · typically 2–7 business days",
+        intl: "Tracked · lowest-cost carrier besides USPS and UPS · typically 6–12 business days",
+      }),
     },
     "easypost-intl-standard": {
       title: "Best value",
-      detail: "Tracked · typically 6–12 business days",
+      detail: quoted?.label
+        ? `Tracked · ${quoted.label} · typically 6–12 business days`
+        : "Tracked · typically 6–12 business days",
     },
     "easypost-express": {
       title: "Express",
@@ -170,6 +187,9 @@ const Shipping: React.FC<ShippingProps> = ({
   const [calculatedPricesMap, setCalculatedPricesMap] = useState<
     Record<string, number>
   >({})
+  const [carrierQuotes, setCarrierQuotes] = useState<
+    Record<string, QuotedShippingCarrier>
+  >({})
   const [error, setError] = useState<string | null>(null)
   const [shippingMethodId, setShippingMethodId] = useState<string | null>(
     cart.shipping_methods?.at(-1)?.shipping_option_id || null
@@ -219,9 +239,16 @@ const Shipping: React.FC<ShippingProps> = ({
       }
     }
 
+    const cartId = cart.id || initialCart.id
     const promises = (_shippingMethods || [])
       .filter((sm) => sm.price_type === "calculated" && !knownPrices[sm.id])
-      .map((sm) => calculatePriceForShippingOption(sm.id, cart.id, { easypost_live: true }))
+      .map((sm) => calculatePriceForShippingOption(sm.id, cartId, { easypost_live: true }))
+
+    if (cartId) {
+      void listCheckoutCarrierQuotes(cartId).then((quotes) => {
+        setCarrierQuotes(quotes)
+      })
+    }
 
     if (!promises.length) {
       setCalculatedPricesMap(knownPrices)
@@ -454,7 +481,8 @@ const Shipping: React.FC<ShippingProps> = ({
                       return hasValidCalculatedAmount(option, calculatedPricesMap)
                     })
                     .map((option) => {
-                    const copy = shippingOptionCopy(option, isUsShipping)
+                    const quoted = carrierQuotes[shippingOptionCatalogId(option)]
+                    const copy = shippingOptionCopy(option, isUsShipping, quoted)
                     return (
                       <Radio
                         key={option.id}
@@ -474,6 +502,7 @@ const Shipping: React.FC<ShippingProps> = ({
                           <MedusaRadio
                             checked={option.id === shippingMethodId}
                           />
+                          <CarrierMark option={option} quoted={quoted} />
                           <span className="min-w-0">
                             <span className="block text-[15px] leading-6">
                               {copy.title}

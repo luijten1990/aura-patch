@@ -171,3 +171,37 @@ export function matchesEasyPostOption(
   }
   return true
 }
+
+export function formatCarrierDisplayName(carrier?: string, service?: string) {
+  const blob = rateBlob(carrier, service)
+  if (!blob) {
+    return ""
+  }
+  if (isUspsRate(carrier, service)) {
+    return "USPS"
+  }
+  if (isUpsRate(carrier, service)) {
+    return "UPS"
+  }
+  if (blob.includes("fedex")) {
+    return "FedEx"
+  }
+  if (blob.includes("asendia")) {
+    return "Asendia"
+  }
+  if (blob.includes("dhl")) {
+    if (isPremiumExpressRate(carrier, service) && !isEconomyRate(carrier, service)) {
+      return "DHL Express"
+    }
+    return "DHL"
+  }
+  const raw = String(carrier || "").trim()
+  return raw.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/[_-]+/g, " ")
+}
+
+export const EASYPOST_CHECKOUT_OPTION_IDS = [
+  "easypost-usps",
+  "easypost-ups",
+  "easypost-alt",
+  "easypost-express",
+] as const

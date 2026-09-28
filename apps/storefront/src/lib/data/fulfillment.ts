@@ -60,3 +60,23 @@ export const calculatePriceForShippingOption = async (
       } as HttpTypes.StoreCartShippingOption
     })
 }
+
+export const listCheckoutCarrierQuotes = async (cartId: string) => {
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+
+  return sdk.client
+    .fetch<{
+      quotes: Record<string, { carrier: string; service: string; label: string }>
+    }>("/store/easypost/checkout-quotes", {
+      method: "POST",
+      body: { cart_id: cartId },
+      headers,
+      cache: "no-store",
+    })
+    .then((result) => result.quotes || {})
+    .catch(() => {
+      return {} as Record<string, { carrier: string; service: string; label: string }>
+    })
+}

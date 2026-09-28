@@ -11,6 +11,7 @@ import type {
 import {
   EASYPOST_RATE_OPTIONS,
   LEGACY_EASYPOST_OPTION_ID,
+  formatCarrierDisplayName,
   isPremiumExpressRate,
   isUspsRate,
   isUpsRate,
@@ -174,6 +175,41 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
         calculated_amount: 0,
         is_calculated_price_tax_inclusive: false,
       }
+    }
+  }
+
+  async describeCheckoutRate(
+    optionData: CalculateShippingOptionPriceDTO["optionData"],
+    data: CalculateShippingOptionPriceDTO["data"],
+    context: CalculateShippingOptionPriceDTO["context"]
+  ) {
+    const destination = context.shipping_address as Address | undefined
+    const origin = this.originAddress(
+      data as Record<string, unknown> | undefined,
+      context as LocationContext
+    )
+    if (!this.hasAddress(origin) || !this.hasAddress(destination)) {
+      return null
+    }
+    try {
+      const optionId = this.optionId(
+        optionData as Record<string, unknown>,
+        data as Record<string, unknown>
+      )
+      const rate = await this.quoteRate(
+        origin as Address,
+        destination as Address,
+        optionId
+      )
+      return {
+        option_id: optionId,
+        carrier: rate.carrier || "",
+        service: rate.service || "",
+        label: formatCarrierDisplayName(rate.carrier, rate.service),
+        amount: this.customerCharge(rate),
+      }
+    } catch {
+      return null
     }
   }
 

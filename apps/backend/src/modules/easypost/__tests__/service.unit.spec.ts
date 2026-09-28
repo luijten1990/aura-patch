@@ -216,6 +216,16 @@ describe("EasyPostFulfillmentService", () => {
         is_calculated_price_tax_inclusive: false,
       })
       await expect(
+        service.describeCheckoutRate({ id: "easypost-alt" }, { easypost_live: true }, {
+          shipping_address: netherlands,
+        } as never)
+      ).resolves.toMatchObject({
+        option_id: "easypost-alt",
+        carrier: "DhlEcs",
+        label: "DHL",
+        amount: 15.1,
+      })
+      await expect(
         service.calculatePrice({ id: "easypost-express" }, { easypost_live: true }, {
           shipping_address: netherlands,
         } as never)
