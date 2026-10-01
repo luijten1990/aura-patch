@@ -4,6 +4,7 @@ import Image from "next/image"
 const footerLinks = [
   ["Home", "/"],
   ["Shop", "/store"],
+  ["Why a patch?", "/why-a-patch"],
   ["Wholesale", "/wholesale"],
   ["Ambassadors", "/ambassadors"],
   ["Investor Relations", "/investors"],

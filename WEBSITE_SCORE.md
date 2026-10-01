@@ -2,6 +2,10 @@
 
 Aura Patch. No numerical score until real criteria have been assessed. Mark items only with evidence (command output, screenshot path, or blocked prerequisite).
 
+## Why-a-patch advertorial (2026-10-02)
+
+Draft implementation at `/[countryCode]/why-a-patch`. Targeted lint and 14 storefront tests pass. Typecheck has the same 26 existing diagnostics with and without the new page. Desktop/mobile isolated component layout and disclosure checks pass. Full storefront verification and production build remain **blocked** by missing Medusa environment configuration; isolated screenshots do not establish a working purchase flow. Evidence and remaining checks: [advertorial QA notes](artifacts/qa/why-a-patch/notes.md).
+
 Last assessed: 2026-09-22 (full read-only audit; local storefront + Medusa already running). Findings: `AUDIT.md`.
 
 ## Functionality

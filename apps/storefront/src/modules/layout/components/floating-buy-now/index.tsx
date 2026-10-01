@@ -27,6 +27,7 @@ export default function FloatingBuyNow({
     path.includes("/order/") ||
     path.includes("/account") ||
     path.includes("/products/") ||
+    path.endsWith("/why-a-patch") ||
     path.includes("/store")
   ) {
     return null
