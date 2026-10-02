@@ -62,6 +62,10 @@ export default function Footer() {
           <span>© {new Date().getFullYear()} Aura Patch</span>
           <span>Daily wellness, simplified</span>
         </div>
+        <section aria-labelledby="footer-disclaimer" className="mt-8 max-w-4xl pb-16 text-sm leading-7 text-aura-cream/80">
+          <h2 id="footer-disclaimer" className="font-semibold">Disclaimer</h2>
+          <p>These statements have not been evaluated by the Food and Drug Administration or MHRA. These products are not intended to diagnose, treat, cure or prevent any disease.</p>
+        </section>
       </div>
     </footer>
   )

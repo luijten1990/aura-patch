@@ -1,4 +1,6 @@
 import type { PurchaseType } from "@lib/util/subscription"
+import type { HttpTypes } from "@medusajs/types"
+import { notifyCart } from "./cart-events"
 
 async function cartJson(path: string, method: string, body: Record<string, unknown>) {
   const response = await fetch(path, {
@@ -58,11 +60,14 @@ export async function addLineItemRequest({
   const result = (await response.json().catch(() => null)) as {
     ok?: boolean
     error?: string
+    cart?: HttpTypes.StoreCart
   } | null
 
-  if (!response.ok || !result?.ok) {
+  if (!response.ok || !result?.ok || !result.cart) {
     throw new Error(
       result?.error || "Could not add Aura Patch to the cart. Please try again."
     )
   }
+  notifyCart({ status: "updated", cart: result.cart })
+  return result.cart
 }

@@ -1,6 +1,7 @@
 "use client"
 
 import { addLineItemRequest } from "@lib/util/cart-client"
+import { notifyCart } from "@lib/util/cart-events"
 import { useIntersection } from "@lib/hooks/use-in-view"
 import { convertToLocale } from "@lib/util/money"
 import {
@@ -123,8 +124,8 @@ export default function ProductActions({
       params.delete("v_id")
     }
 
-    router.replace(pathname + "?" + params.toString())
-  }, [selectedVariant, isValidVariant, isAdding])
+    window.history.replaceState(null, "", pathname + "?" + params.toString())
+  }, [selectedVariant, isValidVariant, isAdding, pathname, searchParams])
 
   // check if the selected variant is in stock
   const inStock = useMemo(() => {
@@ -170,6 +171,7 @@ export default function ProductActions({
     setPurchaseType(nextPurchaseType)
     setAddError(null)
     setIsAdding(true)
+    notifyCart({ status: "adding" })
 
     try {
       await addLineItemRequest({
@@ -178,7 +180,6 @@ export default function ProductActions({
         countryCode: countryCode || "us",
         purchaseType: nextPurchaseType,
       })
-      router.push(cartHref)
     } catch (error) {
       addingRef.current = false
       const message =
@@ -190,6 +191,9 @@ export default function ProductActions({
           ? "Could not add Aura Patch to the cart. Please try again."
           : message
       )
+      notifyCart({ status: "error", message })
+    } finally {
+      addingRef.current = false
       setIsAdding(false)
     }
   }
@@ -225,12 +229,13 @@ export default function ProductActions({
           purchaseType={purchaseType}
         />
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2" role="group" aria-label="Purchase option">
           <button
             type="button"
             disabled={isAdding}
+            aria-pressed={purchaseType === "subscription"}
             onClick={() => {
-              void handleAddToCart("subscription")
+              setPurchaseType("subscription")
             }}
             className={`rounded-2xl border px-4 py-3 text-left transition-colors ${
               purchaseType === "subscription"
@@ -257,14 +262,15 @@ export default function ProductActions({
               )}
             </div>
             <p className="mt-1 text-[13px] leading-5 text-aura-forest/65">
-              Every month we charge your card, ship a new box, and buy the
-              label. Cancel anytime from your account.
+              A new pouch each month, billed monthly. Cancel anytime from your account.
             </p>
           </button>
           <button
             type="button"
+            disabled={isAdding}
+            aria-pressed={purchaseType === "one_time"}
             onClick={() => {
-              void handleAddToCart("one_time")
+              setPurchaseType("one_time")
             }}
             className={`rounded-2xl border px-4 py-3 text-left transition-colors ${
               purchaseType === "one_time"

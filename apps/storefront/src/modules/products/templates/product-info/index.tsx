@@ -26,7 +26,7 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
         </p>
         <span className="aura-spark" />
         <Heading
-          level="h2"
+          level="h1"
           className="aura-display text-[46px] leading-none text-aura-forest"
           data-testid="product-title"
         >
