@@ -228,6 +228,18 @@ claude mcp add --transport http medusa https://docs.medusajs.com/mcp # or agent 
 - Running the test task without a reachable PostgreSQL — integration suites need a live DB.
 - Silencing `@medusajs/*` ESLint rules instead of fixing the underlying pattern.
 
+## Cursor Cloud specific instructions
+
+The Cloud Agent image starts PostgreSQL 16 and Redis, then boots the Medusa backend on port 9000 and the Next.js storefront on port 8000. Use npm (`packageManager` is `npm@11.19.0`). Do not use pnpm.
+
+- Local database: `postgres://postgres@localhost:5432/medusa-backend` (localhost trust auth). `apps/backend/.env` is created from `apps/backend/.env.template` when it is missing. Do not commit it.
+- `apps/storefront/.env.local` is generated after migrate with `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY`. The storefront publishable key is not a secret, but leave the file untracked.
+- Admin (local only): `admin@test.com` / `supersecret` at `http://localhost:9000/app`.
+- `sudo service` can be blocked by `policy-rc.d`. Postgres is started with `pg_ctlcluster`. Redis is started with `redis-server --daemonize yes`.
+- Without `EASYPOST_API_KEY`, fulfillment uses the manual provider so `medusa db:migrate` can seed shipping options. EasyPost replaces that provider when its key is set.
+- The migration seed is the Medusa starter catalog (t-shirt, sweatshirt, sweatpants, shorts) plus a United States region in USD. There is no `aura-patch` product, so `/us/products/aura-patch` is a 404 until that product is created. `/us` and `/us/products/t-shirt` are the local shopper checks.
+- Stripe, PayPal, and Brevo stay empty in local `.env`. Checkout can be reviewed with the system payment provider; do not place a live paid order.
+
 ## Off-Limits
 
 - `apps/backend/.medusa/`, `.next/`, `dist/`, `out/`, `.turbo/` — build output, excluded from the workspace and regenerated.
