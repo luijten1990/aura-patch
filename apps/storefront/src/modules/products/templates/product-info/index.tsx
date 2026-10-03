@@ -1,5 +1,6 @@
 import { HttpTypes } from "@medusajs/types"
 import { auraCore } from "@lib/data/aura-collection"
+import { AURA_REVIEW_COUNT } from "@lib/data/aura-reviews"
 import { Heading, Text } from "@modules/common/components/ui"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
@@ -37,10 +38,10 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
           <a
             href="#customer-reviews"
             className="inline-flex min-h-11 flex-wrap items-center gap-2 self-start text-sm text-aura-forest underline-offset-4 hover:underline"
-            aria-label="Read the featured customer review, rated 5 out of 5 stars"
+            aria-label={`Read ${AURA_REVIEW_COUNT} customer reviews, rated 5 out of 5 stars`}
           >
             <span aria-hidden="true" className="tracking-[0.12em]">★★★★★</span>
-            <span>5/5 · 1 featured review</span>
+            <span>5/5 · {AURA_REVIEW_COUNT} reviews</span>
           </a>
         )}
 

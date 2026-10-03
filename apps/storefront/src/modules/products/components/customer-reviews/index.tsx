@@ -1,30 +1,8 @@
 "use client"
 
+import { auraReviews } from "@lib/data/aura-reviews"
 import Image from "next/image"
 import { useRef } from "react"
-
-const photos = [
-  {
-    src: "/images/reviews/wear-shoulder.webp",
-    alt: "Person wearing an Aura patch on the shoulder",
-  },
-  {
-    src: "/images/reviews/wear-day.webp",
-    alt: "Person wearing an Aura patch outdoors",
-  },
-  {
-    src: "/images/reviews/wear-desk.webp",
-    alt: "Person wearing an Aura patch while at a desk",
-  },
-  {
-    src: "/images/reviews/wear-rest.webp",
-    alt: "Person resting while wearing an Aura patch",
-  },
-  {
-    src: "/images/reviews/wear-close.webp",
-    alt: "Close view of an Aura patch worn on the shoulder",
-  },
-]
 
 export default function CustomerReviews({ featured }: { featured: boolean }) {
   const scroller = useRef<HTMLDivElement>(null)
@@ -77,45 +55,44 @@ export default function CustomerReviews({ featured }: { featured: boolean }) {
           ref={scroller}
           className="mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto no-scrollbar pb-2"
         >
-          <article
-            className="w-[280px] shrink-0 snap-start border border-aura-forest/20 bg-white/30"
-            aria-label="Review by Sheila Amos"
-          >
-            <div className="relative aspect-square overflow-hidden">
-              <Image
-                src={photos[0].src}
-                alt={photos[0].alt}
-                fill
-                sizes="280px"
-                className="object-cover"
-              />
-            </div>
-            <div className="p-5">
-              <div className="flex items-center justify-between gap-3">
-                <p className="font-semibold">Sheila Amos</p>
-                <span role="img" aria-label="5 out of 5 stars" className="tracking-[0.12em] text-aura-forest">
-                  ★★★★★
-                </span>
-              </div>
-              <p className="mt-2 text-sm text-aura-forest/70">
-                United States · <time dateTime="2026-05-03">May 3, 2026</time>
-              </p>
-              <h3 className="mt-4 text-lg font-semibold">I love it</h3>
-              <blockquote className="mt-2 text-base leading-7">“I love this patch.”</blockquote>
-              <p className="mt-4 text-xs text-aura-forest/60">Featured review excerpt.</p>
-            </div>
-          </article>
-          {photos.slice(1).map((photo) => (
+          {auraReviews.map((review) => (
             <article
-              key={photo.src}
-              className="w-[220px] shrink-0 snap-start border border-aura-forest/20 bg-white/30"
+              key={`${review.name}-${review.title}`}
+              className="w-[280px] shrink-0 snap-start border border-aura-forest/20 bg-white/30"
+              aria-label={`Review by ${review.name}`}
             >
               <div className="relative aspect-square overflow-hidden">
-                <Image src={photo.src} alt={photo.alt} fill sizes="220px" className="object-cover" />
+                <Image
+                  src={review.photo}
+                  alt={review.photoAlt}
+                  fill
+                  sizes="280px"
+                  className="object-cover"
+                />
               </div>
-              <p className="p-4 text-xs leading-5 text-aura-forest/60">
-                Aura patch, worn through the day.
-              </p>
+              <div className="p-5">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="font-semibold">{review.name}</p>
+                  <span
+                    role="img"
+                    aria-label="5 out of 5 stars"
+                    className="tracking-[0.12em] text-aura-forest"
+                  >
+                    ★★★★★
+                  </span>
+                </div>
+                <p className="mt-2 text-sm text-aura-forest/70">
+                  United States
+                  {review.date && review.dateLabel ? (
+                    <>
+                      {" "}
+                      · <time dateTime={review.date}>{review.dateLabel}</time>
+                    </>
+                  ) : null}
+                </p>
+                <h3 className="mt-4 text-lg font-semibold">{review.title}</h3>
+                <blockquote className="mt-2 text-base leading-7">“{review.quote}”</blockquote>
+              </div>
             </article>
           ))}
         </div>
