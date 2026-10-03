@@ -82,9 +82,20 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
         <h2 id="customer-reviews-title" className="aura-display text-[36px]">
           Customer reviews
         </h2>
-        <p className="mt-4 max-w-2xl text-base leading-7">
-          No customer reviews have been published here yet.
-        </p>
+        {product.handle === "aura-patch" ? (
+          <article className="mt-6 max-w-2xl border border-aura-forest/20 bg-white/30 p-6 small:p-8" aria-label="Review by Sheila Amos">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="font-semibold">Sheila Amos</p>
+              <span role="img" aria-label="5 out of 5 stars" className="tracking-[0.12em] text-aura-forest">★★★★★</span>
+            </div>
+            <p className="mt-2 text-sm text-aura-forest/70">United States · <time dateTime="2026-05-03">May 3, 2026</time></p>
+            <h3 className="mt-5 text-lg font-semibold">I love it</h3>
+            <blockquote className="mt-2 text-base leading-7">“I love this patch.”</blockquote>
+            <p className="mt-4 text-xs text-aura-forest/60">Featured review excerpt.</p>
+          </article>
+        ) : (
+          <p className="mt-4 max-w-2xl text-base leading-7">No customer reviews have been published here yet.</p>
+        )}
         <p className="mt-3 max-w-2xl text-sm leading-7">
           Have experience with Aura Core?{" "}
           <a

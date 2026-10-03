@@ -33,6 +33,17 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
           {isCore ? auraCore.name : product.title}
         </Heading>
 
+        {isCore && (
+          <a
+            href="#customer-reviews"
+            className="inline-flex min-h-11 flex-wrap items-center gap-2 self-start text-sm text-aura-forest underline-offset-4 hover:underline"
+            aria-label="Read the featured customer review, rated 5 out of 5 stars"
+          >
+            <span aria-hidden="true" className="tracking-[0.12em]">★★★★★</span>
+            <span>5/5 · 1 featured review</span>
+          </a>
+        )}
+
         <Text
           className="text-[15px] leading-7 text-aura-forest/70 whitespace-pre-line"
           data-testid="product-description"
