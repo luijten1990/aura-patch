@@ -43,15 +43,10 @@ function DhlMark() {
 function DhlExpressMark() {
   return (
     <span
-      className={`${markClass} min-w-[3.5rem] flex-col gap-0 bg-[#D40511] py-0.5 leading-none`}
+      className={`${markClass} bg-[#D40511] text-[10px] font-extrabold tracking-[0.12em] text-white`}
       aria-hidden="true"
     >
-      <span className="text-[8px] font-extrabold tracking-[0.12em] text-white">
-        DHL
-      </span>
-      <span className="text-[6px] font-semibold uppercase tracking-[0.16em] text-white/90">
-        Express
-      </span>
+      DHL
     </span>
   )
 }

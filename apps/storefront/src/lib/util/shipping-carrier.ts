@@ -91,15 +91,102 @@ export function shippingCarrierKind(
   return "generic"
 }
 
-export function isBestValueOption(option: {
+type PricedShippingOption = {
+  id: string
+  name?: string | null
+  price_type?: string | null
+  amount?: number | null
+  data?: { id?: unknown } | Record<string, unknown> | null
+}
+
+export function shippingOptionAmount(
+  option: PricedShippingOption,
+  prices: Record<string, number> = {}
+) {
+  if (option.price_type === "calculated") {
+    const amount = prices[option.id] ?? option.amount
+    return typeof amount === "number" && amount > 0 ? amount : null
+  }
+
+  return typeof option.amount === "number" ? option.amount : null
+}
+
+export function shippingCatalogRank(option: {
   name?: string | null
   data?: { id?: unknown } | Record<string, unknown> | null
 }) {
   const optionId = shippingOptionCatalogId(option)
   const name = (option.name || "").toLowerCase()
-  return (
+
+  if (/free standard/.test(name) || optionId === "free-standard-us") {
+    return 0
+  }
+  if (optionId === "easypost-usps" || optionId.includes("usps") || /\busps\b/.test(name)) {
+    return 1
+  }
+  if (
+    optionId === "easypost-ups" ||
+    (optionId.includes("ups") && !optionId.includes("usps")) ||
+    (/\bups\b/.test(name) && !/\busps\b/.test(name))
+  ) {
+    return 2
+  }
+  if (
     optionId === "easypost-alt" ||
     optionId === "easypost-intl-standard" ||
-    /best value/.test(name)
+    /best value/.test(name) ||
+    /economy/.test(name)
+  ) {
+    return 3
+  }
+  if (optionId.includes("express") || /express/.test(name)) {
+    return 4
+  }
+  return 5
+}
+
+export function compareShippingOptions(
+  a: PricedShippingOption,
+  b: PricedShippingOption,
+  prices: Record<string, number> = {}
+) {
+  const amountA = shippingOptionAmount(a, prices)
+  const amountB = shippingOptionAmount(b, prices)
+
+  if (amountA != null && amountB != null && amountA !== amountB) {
+    return amountA - amountB
+  }
+  if (amountA != null && amountB == null) {
+    return -1
+  }
+  if (amountA == null && amountB != null) {
+    return 1
+  }
+  return shippingCatalogRank(a) - shippingCatalogRank(b)
+}
+
+export function cheapestPaidOptionId(
+  options: PricedShippingOption[],
+  prices: Record<string, number> = {}
+) {
+  const waitingOnQuote = options.some(
+    (option) =>
+      option.price_type === "calculated" &&
+      shippingOptionAmount(option, prices) == null
   )
+  if (waitingOnQuote) {
+    return null
+  }
+
+  const paid = options.flatMap((option) => {
+    const amount = shippingOptionAmount(option, prices)
+    return amount != null && amount > 0 ? [{ id: option.id, amount }] : []
+  })
+
+  if (paid.length < 2) {
+    return null
+  }
+
+  paid.sort((a, b) => a.amount - b.amount)
+  return paid[0].id
 }
