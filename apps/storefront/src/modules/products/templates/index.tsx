@@ -120,7 +120,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
                 className="absolute bottom-0 left-0 h-auto !w-[308%] !max-w-none"
               />
             </div>
-            <figcaption className="mt-3 text-xs leading-5 text-aura-forest/60">AI-generated lifestyle illustration. Not a customer photograph.</figcaption>
+            <figcaption className="mt-3 text-xs leading-5 text-aura-forest/60">Lifestyle illustration.</figcaption>
           </figure>
           <div>
             <p className="aura-eyebrow">Made for everyday moments</p>
