@@ -154,11 +154,6 @@ export default function ProductActions({
   const actionsRef = useRef<HTMLDivElement>(null)
 
   const inView = useIntersection(actionsRef, "0px")
-  const cartHref = `/${countryCode || "us"}/cart`
-
-  useEffect(() => {
-    router.prefetch(cartHref)
-  }, [cartHref, router])
 
   // add the selected variant to the cart
   const handleAddToCart = async (nextPurchaseType: PurchaseType = purchaseType) => {
@@ -180,6 +175,9 @@ export default function ProductActions({
         countryCode: countryCode || "us",
         purchaseType: nextPurchaseType,
       })
+      // The API mutation does not invalidate Next's client router cache.
+      // Refresh it so the cart page cannot reuse a pre-add empty snapshot.
+      router.refresh()
     } catch (error) {
       addingRef.current = false
       const message =
