@@ -1,4 +1,5 @@
 import React, { Suspense } from "react"
+import Image from "next/image"
 
 import ImageGallery from "@modules/products/components/image-gallery"
 import ProductActions from "@modules/products/components/product-actions"
@@ -106,6 +107,29 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
           </a>
         </p>
       </section>
+      {product.handle === "aura-patch" && (
+        <section className="content-container grid items-center gap-8 border-t border-aura-forest/15 py-12 small:grid-cols-2 small:gap-16" aria-labelledby="everyday-aura-title">
+          <figure className="max-w-[480px]">
+            <div className="relative aspect-square overflow-hidden">
+              <Image
+                src="/images/aura-lifestyle-collage.png"
+                alt="Illustration of a woman wearing a patch while sitting at her laptop"
+                width={1536}
+                height={1024}
+                sizes="(max-width: 768px) 300vw, 1440px"
+                className="absolute bottom-0 left-0 h-auto !w-[308%] !max-w-none"
+              />
+            </div>
+            <figcaption className="mt-3 text-xs leading-5 text-aura-forest/60">AI-generated lifestyle illustration. Not a customer photograph.</figcaption>
+          </figure>
+          <div>
+            <p className="aura-eyebrow">Made for everyday moments</p>
+            <h2 id="everyday-aura-title" className="mt-4 font-sans text-[32px] leading-tight small:text-[40px]">A simple step in your daily routine.</h2>
+            <p className="mt-5 max-w-lg text-base leading-7 text-aura-forest/75">Peel, apply as directed, and carry on with your day. Discover the thinking behind Aura Core’s wearable format.</p>
+            <a href={`/${countryCode}/why-a-patch`} className="aura-button-outline mt-6">Why a patch?</a>
+          </div>
+        </section>
+      )}
       {product.handle === "aura-patch" && <AuraIngredientsGallery />}
       <div
         className="content-container my-16 small:my-32"
