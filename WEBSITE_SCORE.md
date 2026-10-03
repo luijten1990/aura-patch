@@ -78,6 +78,7 @@ Last assessed: 2026-09-22 (full read-only audit; local storefront + Medusa alrea
 
 ## Evidence
 
+- 2026-10-03: Buy-more pouch prices match $49.99 / $89.98 / $127.47 / $159.97 in `bundle.unit.test.ts`. Storefront tests passed. Product-page browser check blocked: this environment has no Medusa publishable key or backend, so `/us/products/aura-patch` cannot render. Lifestyle illustration caption removed. Sheila Amos stays the only featured review; other pasted reviews were not published.
 - 2026-10-02: Cart/PDP improvements, transparent label, truthful review state, and footer disclaimer. 21 storefront tests pass. Isolated desktop/mobile component checks pass; full live checkout/build blocked by missing Medusa configuration. See `artifacts/qa/cart-product/notes.md`. Unsupported JSON-LD rating removed; product title now H1. Earlier audit checkboxes above are historical, not a fresh full-site score.
 
 - 2026-09-22: Homepage doctor+drive on existing `localhost:8000/us`. Title, H1, Shop Aura Core, nav verified via accessibility snapshot. Screenshot capture timed out. Notes: `artifacts/qa/homepage/notes.md`. Cart/checkout not driven.

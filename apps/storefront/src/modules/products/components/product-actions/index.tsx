@@ -2,6 +2,12 @@
 
 import { addLineItemRequest } from "@lib/util/cart-client"
 import { notifyCart } from "@lib/util/cart-events"
+import {
+  bundleAmount,
+  bundleTiers,
+  bundleUnitAmount,
+  BUNDLE_UNIT_PRICE,
+} from "@lib/util/bundle"
 import { useIntersection } from "@lib/hooks/use-in-view"
 import { convertToLocale } from "@lib/util/money"
 import {
@@ -46,6 +52,7 @@ export default function ProductActions({
   const [isAdding, setIsAdding] = useState(false)
   const [addError, setAddError] = useState<string | null>(null)
   const [purchaseType, setPurchaseType] = useState<PurchaseType>("subscription")
+  const [bundleQuantity, setBundleQuantity] = useState(1)
   const addingRef = useRef(false)
   const params = useParams()
   const countryCode = (
@@ -171,7 +178,7 @@ export default function ProductActions({
     try {
       await addLineItemRequest({
         variantId,
-        quantity: 1,
+        quantity: nextPurchaseType === "subscription" ? 1 : bundleQuantity,
         countryCode: countryCode || "us",
         purchaseType: nextPurchaseType,
       })
@@ -234,6 +241,7 @@ export default function ProductActions({
             aria-pressed={purchaseType === "subscription"}
             onClick={() => {
               setPurchaseType("subscription")
+              setBundleQuantity(1)
             }}
             className={`rounded-2xl border px-4 py-3 text-left transition-colors ${
               purchaseType === "subscription"
@@ -293,6 +301,64 @@ export default function ProductActions({
             </div>
           </button>
         </div>
+
+        {product.handle === "aura-patch" && (
+          <div>
+            <h2 className="text-[12px] font-bold uppercase tracking-[0.14em] text-aura-forest">
+              Buy more, save more
+            </h2>
+            <p className="mt-2 text-[13px] leading-5 text-aura-forest/65">
+              One-time pouches. Each pouch is a 30-day supply.
+            </p>
+            <div
+              className="mt-3 flex flex-col gap-2"
+              role="radiogroup"
+              aria-label="Buy more, save more"
+            >
+              {bundleTiers.map((tier) => {
+                const unitPrice =
+                  selectedVariant?.calculated_price?.calculated_amount ||
+                  BUNDLE_UNIT_PRICE
+                const currency =
+                  selectedVariant?.calculated_price?.currency_code || "usd"
+                const selected =
+                  purchaseType === "one_time" && bundleQuantity === tier.quantity
+                const total = bundleAmount(unitPrice, tier.quantity)
+                const perPouch = bundleUnitAmount(unitPrice, tier.quantity)
+                return (
+                  <button
+                    key={tier.quantity}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    disabled={isAdding}
+                    data-testid={`bundle-option-${tier.quantity}`}
+                    onClick={() => {
+                      setPurchaseType("one_time")
+                      setBundleQuantity(tier.quantity)
+                    }}
+                    className={`grid grid-cols-[1fr_auto] gap-x-4 rounded-2xl border px-4 py-3 text-left transition-colors ${
+                      selected
+                        ? "border-aura-gold bg-aura-gold/15"
+                        : "border-aura-forest/15 bg-white/40"
+                    }`}
+                  >
+                    <span className="text-[14px] font-semibold text-aura-forest">
+                      {tier.quantity} {tier.quantity === 1 ? "pouch" : "pouches"} · {tier.days} days
+                    </span>
+                    <span className="text-[14px] font-semibold text-aura-forest">
+                      {convertToLocale({ amount: total, currency_code: currency })}
+                    </span>
+                    <span className="text-[12px] leading-5 text-aura-forest/65">
+                      {tier.percent ? `${tier.percent}% off` : "Full price"} ·{" "}
+                      {convertToLocale({ amount: perPouch, currency_code: currency })} per pouch
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
         <Button
           onClick={() => {
