@@ -29,6 +29,18 @@ describe("lineItemAmount", () => {
       49.99
     )
   })
+
+  it("applies the two-pouch price to a one-time line", () => {
+    assert.equal(
+      lineItemAmount({
+        unit_price: 49.99,
+        quantity: 2,
+        total: 99.98,
+        metadata: { purchase_type: "one_time" },
+      }),
+      89.98
+    )
+  })
 })
 
 describe("withCartMoney", () => {
@@ -79,5 +91,25 @@ describe("withCartMoney", () => {
 
     assert.equal(cart.item_subtotal, 50)
     assert.equal(cart.total, 56.07)
+  })
+
+  it("totals a two-pouch cart at the 10% bundle price", () => {
+    const cart = withCartMoney({
+      currency_code: "usd",
+      items: [
+        {
+          unit_price: 49.99,
+          quantity: 2,
+          total: 99.98,
+          metadata: { purchase_type: "one_time" },
+        },
+      ],
+      shipping_methods: [{ amount: 0 }],
+      tax_total: 0,
+      total: 99.98,
+    })
+
+    assert.equal(cart.item_subtotal, 89.98)
+    assert.equal(cart.total, 89.98)
   })
 })

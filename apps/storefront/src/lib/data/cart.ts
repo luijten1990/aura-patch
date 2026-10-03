@@ -16,6 +16,10 @@ import {
 import { getRegion } from "./regions"
 import { getLocale } from "./locale-actions"
 import {
+  bundleCodeForQuantity,
+  isBundleCode,
+} from "@lib/util/bundle"
+import {
   isSubscriptionCart,
   SUBSCRIBE_CODE,
   SUBSCRIPTION_INTERVAL,
@@ -233,10 +237,25 @@ function purchaseTypePayload(
   purchaseType: PurchaseType
 ) {
   const subscribe = purchaseType === "subscription"
-  const existingCodes = (cart.promotions || [])
+  const appliedCodes = (cart.promotions || [])
     .map((promotion) => promotion.code)
     .filter((code): code is string => Boolean(code))
-    .filter((code) => code !== SUBSCRIBE_CODE)
+  const keptCodes = appliedCodes.filter(
+    (code) => code !== SUBSCRIBE_CODE && !isBundleCode(code)
+  )
+  const bundleQuantity = subscribe
+    ? 0
+    : (cart.items || []).reduce((highest, item) => {
+        if (item.metadata?.purchase_type === "subscription") {
+          return highest
+        }
+        return Math.max(highest, item.quantity || 0)
+      }, 0)
+  const bundleCode = bundleCodeForQuantity(bundleQuantity)
+  const bundleMatches = bundleCode
+    ? appliedCodes.includes(bundleCode) &&
+      appliedCodes.filter(isBundleCode).length === 1
+    : !appliedCodes.some(isBundleCode)
 
   return {
     subscribe,
@@ -246,11 +265,12 @@ function purchaseTypePayload(
       subscription_period: subscribe ? SUBSCRIPTION_PERIOD : 0,
     },
     promo_codes: subscribe
-      ? [...existingCodes.filter((code) => code !== "ILOVEAURA"), SUBSCRIBE_CODE]
-      : existingCodes,
-    hasPromo: Boolean(
-      (cart.promotions || []).some((promotion) => promotion.code === SUBSCRIBE_CODE)
-    ),
+      ? [...keptCodes.filter((code) => code !== "ILOVEAURA"), SUBSCRIBE_CODE]
+      : bundleCode
+      ? [...keptCodes, bundleCode]
+      : keptCodes,
+    hasPromo: appliedCodes.includes(SUBSCRIBE_CODE),
+    bundleMatches,
   }
 }
 
@@ -260,14 +280,12 @@ async function syncCartPurchaseType(purchaseType: PurchaseType) {
     return
   }
 
-  const { subscribe, metadata, promo_codes, hasPromo } = purchaseTypePayload(
-    cart,
-    purchaseType
-  )
+  const { subscribe, metadata, promo_codes, hasPromo, bundleMatches } =
+    purchaseTypePayload(cart, purchaseType)
   const metaMatches =
     Boolean(cart.metadata?.subscription_interval) === subscribe &&
     (!subscribe || Number(cart.metadata?.subscription_period) > 0)
-  const promoMatches = subscribe ? hasPromo : !hasPromo
+  const promoMatches = (subscribe ? hasPromo : !hasPromo) && bundleMatches
   const headers = {
     ...(await getAuthHeaders()),
   }
@@ -317,13 +335,16 @@ export async function ensureCheckoutPurchaseType(cart: HttpTypes.StoreCart) {
   const purchaseType: PurchaseType = isSubscriptionCart(cart)
     ? "subscription"
     : "one_time"
-  const { subscribe, hasPromo } = purchaseTypePayload(cart, purchaseType)
+  const { subscribe, hasPromo, bundleMatches } = purchaseTypePayload(
+    cart,
+    purchaseType
+  )
   const metaReady =
     !subscribe ||
     (cart.metadata?.subscription_interval === SUBSCRIPTION_INTERVAL &&
       Number(cart.metadata?.subscription_period) > 0)
 
-  if (metaReady && (subscribe ? hasPromo : !hasPromo)) {
+  if (metaReady && (subscribe ? hasPromo : !hasPromo) && bundleMatches) {
     return cart
   }
 

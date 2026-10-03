@@ -53,6 +53,10 @@ function action({ cartId = "cart_existing", fail, existing = null } = {}) {
     "./regions": { getRegion: async () => ({ id: "region" }) },
     "./locale-actions": { getLocale: async () => "en" },
     "@lib/util/subscription": {},
+    "@lib/util/bundle": {
+      bundleCodeForQuantity: () => null,
+      isBundleCode: () => false,
+    },
   }
   const source = fs.readFileSync(
     path.join(__dirname, "../src/lib/data/cart.ts"),

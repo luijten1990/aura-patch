@@ -1,4 +1,5 @@
 import { HttpTypes } from "@medusajs/types"
+import { bundleAmount, bundlePercentForQuantity } from "./bundle.ts"
 import {
   isSubscriptionCart,
   SUBSCRIBE_CODE,
@@ -49,6 +50,11 @@ export const lineItemAmount = (
     return Math.min(apiTotal, subscriptionAmount(original))
   }
 
+  const bundlePercent = bundlePercentForQuantity(item?.quantity || 1)
+  if (!itemIsSubscribe && bundlePercent > 0 && original > 0) {
+    return Math.min(apiTotal, bundleAmount(Number(item?.unit_price) || 0, item?.quantity || 1))
+  }
+
   return apiTotal || original
 }
 
@@ -74,6 +80,13 @@ export const withCartMoney = <T extends MoneyCart>(cart: T) => {
   const hasSubscribePromo = Boolean(
     cart.promotions?.some((promotion) => promotion.code === SUBSCRIBE_CODE)
   )
+  const hasBundle =
+    !subscribe &&
+    (cart.items || []).some(
+      (item) =>
+        item.metadata?.purchase_type !== "subscription" &&
+        bundlePercentForQuantity(item.quantity || 1) > 0
+    )
   const itemsAmount = cartItemsAmount(cart)
   const originalItems = (cart.items || []).reduce(
     (sum, item) =>
@@ -81,7 +94,7 @@ export const withCartMoney = <T extends MoneyCart>(cart: T) => {
     0
   )
   const item_subtotal =
-    subscribe || hasSubscribePromo
+    subscribe || hasSubscribePromo || hasBundle
       ? itemsAmount
       : cart.item_subtotal && cart.item_subtotal > 0
       ? cart.item_subtotal
@@ -103,7 +116,7 @@ export const withCartMoney = <T extends MoneyCart>(cart: T) => {
     shippingFromMethods
   const tax = Number(cart.tax_total) || 0
   const total =
-    subscribe || hasSubscribePromo
+    subscribe || hasSubscribePromo || hasBundle
       ? item_subtotal + shipping + tax
       : cart.total && cart.total > 0
       ? Math.max(cart.total, item_subtotal + shipping + tax)

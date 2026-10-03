@@ -138,6 +138,8 @@ export default function CartDropdown({
                         <p className="mt-1 text-sm">
                           {item.metadata?.purchase_type === "subscription"
                             ? "Subscribe & Save · monthly"
+                            : item.quantity >= 2
+                            ? `One-time · ${item.quantity} pouches`
                             : "One-time purchase"}
                         </p>
                         <p

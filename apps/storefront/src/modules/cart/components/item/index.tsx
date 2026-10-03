@@ -89,7 +89,11 @@ const Item = ({ item, type = "full", currencyCode, isSubscription }: ItemProps) 
           {isSubscription || item.metadata?.purchase_type === "subscription" ? (
             <p className="mb-1 text-aura-gold">Subscribe & Save · 20% off · renews monthly</p>
           ) : (
-            <p className="mb-1">One-time purchase</p>
+            <p className="mb-1">
+              {item.quantity >= 2
+                ? `One-time · ${item.quantity} pouches`
+                : "One-time purchase"}
+            </p>
           )}
           {type === "full" && (
             <button
