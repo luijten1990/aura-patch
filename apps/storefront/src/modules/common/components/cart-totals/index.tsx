@@ -106,7 +106,7 @@ const CartTotals: React.FC<CartTotalsProps> = ({
         <span
           className={clx(
             variant === "aura"
-              ? "aura-display text-[30px] leading-none"
+              ? "font-sans text-[30px] leading-none"
               : "txt-xlarge-plus",
           )}
           data-testid="cart-total"

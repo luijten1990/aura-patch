@@ -74,7 +74,7 @@ export default function CartDropdown({
             data-testid="nav-cart-dropdown"
           >
             <div className="flex items-center justify-between border-b border-aura-forest/15 px-6 py-5">
-              <DialogTitle className="aura-display text-[32px]">
+              <DialogTitle className="font-sans text-[32px]">
                 Your cart <span className="font-sans text-sm">({count})</span>
               </DialogTitle>
               <button
@@ -162,7 +162,7 @@ export default function CartDropdown({
                 </ul>
               ) : !pending && !error ? (
                 <div className="py-12">
-                  <p className="aura-display text-[34px]">
+                  <p className="font-sans text-[34px]">
                     Your cart is empty.
                   </p>
                   <p className="mt-4 text-base leading-7">

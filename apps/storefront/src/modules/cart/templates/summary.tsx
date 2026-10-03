@@ -30,7 +30,7 @@ const Summary = ({ cart }: SummaryProps) => {
     <div className="flex flex-col gap-y-5">
       <Heading
         level="h2"
-        className="aura-display text-[38px] font-normal leading-none"
+        className="font-sans text-[38px] font-normal leading-none"
       >
         Order summary
       </Heading>
