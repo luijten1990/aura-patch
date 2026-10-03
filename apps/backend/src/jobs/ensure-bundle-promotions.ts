@@ -9,10 +9,10 @@ export default async function ensureBundlePromotionsJob(
 
   try {
     const { result } = await ensureBundlePromotionsWorkflow(container).run()
-    const outcome = result as { created?: string[] }
-    logger.info(
-      `Bundle promotions ready: ${(outcome.created || []).join(", ") || "already present"}`
-    )
+    const outcome = result as { created?: string[]; updated?: string[] }
+    const created = (outcome.created || []).join(", ") || "none"
+    const updated = (outcome.updated || []).join(", ") || "none"
+    logger.info(`Bundle promotions ready. Created: ${created}. Updated: ${updated}.`)
   } catch (error) {
     logger.error(`Unable to ensure bundle promotions: ${String(error)}`)
   }
