@@ -14,7 +14,7 @@
     "start": "next start -p 8000",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test src/lib/util/*.unit.test.ts",
+    "test": "node --experimental-strip-types --test src/lib/util/*.unit.test.ts && node --test scripts/cart-add.test.cjs",
     "analyze": "ANALYZE=true next build"
   },
   "dependencies": {

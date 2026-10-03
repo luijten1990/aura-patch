@@ -2,10 +2,12 @@
 
 import { subscribeWelcomeOffer } from "@lib/data/welcome-offer"
 import { FormEvent, useEffect, useState } from "react"
+import { usePathname } from "next/navigation"
 
 const DISMISSED_KEY = "aura-welcome-offer-dismissed"
 
 export default function WelcomePopup() {
+  const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [email, setEmail] = useState("")
   const [message, setMessage] = useState("")
@@ -13,11 +15,15 @@ export default function WelcomePopup() {
   const [sent, setSent] = useState(false)
 
   useEffect(() => {
+    if (pathname.includes("/products/")) {
+      setOpen(false)
+      return
+    }
     if (window.localStorage.getItem(DISMISSED_KEY)) return
 
     const timer = window.setTimeout(() => setOpen(true), 8000)
     return () => window.clearTimeout(timer)
-  }, [])
+  }, [pathname])
 
   useEffect(() => {
     if (!open) return

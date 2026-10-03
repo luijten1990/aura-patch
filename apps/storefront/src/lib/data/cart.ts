@@ -76,13 +76,16 @@ const ADD_TO_CART_FIELDS =
   "id,region_id,metadata,*items.id,*items.variant_id,*items.quantity,*items.metadata,*promotions"
 
 export async function getOrSetCart(countryCode: string) {
-  const region = await getRegion(countryCode)
+  const [region, existingCart] = await Promise.all([
+    getRegion(countryCode),
+    retrieveCart(undefined, ADD_TO_CART_FIELDS),
+  ])
 
   if (!region) {
     throw new Error(`Region not found for country code: ${countryCode}`)
   }
 
-  let cart = await retrieveCart(undefined, ADD_TO_CART_FIELDS)
+  let cart = existingCart
 
   const headers = {
     ...(await getAuthHeaders()),
@@ -151,7 +154,7 @@ export async function addToCart({
 
   if (cartId) {
     try {
-      await sdk.store.cart.createLineItem(
+      const { cart: updatedCart } = await sdk.store.cart.createLineItem(
         cartId,
         {
           variant_id: variantId,
@@ -164,9 +167,10 @@ export async function addToCart({
         headers
       )
       await revalidateByTag("carts")
-      return
-    } catch {
-      // Cart may be missing, or this variant is already in the cart.
+      return updatedCart
+    } catch (error) {
+      // Retry only a missing cart, never an ambiguous timeout or validation error.
+      if ((error as { status?: number })?.status !== 404) throw error
     }
   }
 
@@ -180,13 +184,14 @@ export async function addToCart({
     (item) => item.variant_id === variantId || item.variant?.id === variantId
   )
 
+  let updatedCart: HttpTypes.StoreCart
   try {
     if (existing?.id) {
-      await sdk.store.cart.updateLineItem(
+      const result = await sdk.store.cart.updateLineItem(
         cart.id,
         existing.id,
         {
-          quantity,
+          quantity: existing.quantity + quantity,
           metadata: {
             ...(existing.metadata || {}),
             purchase_type: purchaseType,
@@ -195,8 +200,9 @@ export async function addToCart({
         {},
         headers
       )
+      updatedCart = result.cart
     } else {
-      await sdk.store.cart.createLineItem(
+      const result = await sdk.store.cart.createLineItem(
         cart.id,
         {
           variant_id: variantId,
@@ -208,6 +214,7 @@ export async function addToCart({
         {},
         headers
       )
+      updatedCart = result.cart
     }
   } catch (error) {
     const message =
@@ -218,6 +225,7 @@ export async function addToCart({
   }
 
   await revalidateByTag("carts")
+  return updatedCart
 }
 
 function purchaseTypePayload(

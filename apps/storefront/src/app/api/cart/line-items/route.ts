@@ -27,13 +27,13 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await addToCart({
+    const cart = await addToCart({
       variantId,
       quantity,
       countryCode,
       purchaseType,
     })
-    return NextResponse.json({ ok: true })
+    return NextResponse.json({ ok: true, cart })
   } catch (error) {
     const message =
       error instanceof Error && error.message

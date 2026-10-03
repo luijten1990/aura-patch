@@ -2,6 +2,10 @@
 
 Aura Patch. No numerical score until real criteria have been assessed. Mark items only with evidence (command output, screenshot path, or blocked prerequisite).
 
+## Why-a-patch advertorial (2026-10-02)
+
+Draft implementation at `/[countryCode]/why-a-patch`. Targeted lint and 14 storefront tests pass. Typecheck has the same 26 existing diagnostics with and without the new page. Desktop/mobile isolated component layout and disclosure checks pass. Full storefront verification and production build remain **blocked** by missing Medusa environment configuration; isolated screenshots do not establish a working purchase flow. Evidence and remaining checks: [advertorial QA notes](artifacts/qa/why-a-patch/notes.md).
+
 Last assessed: 2026-09-22 (full read-only audit; local storefront + Medusa already running). Findings: `AUDIT.md`.
 
 ## Functionality
@@ -73,6 +77,8 @@ Last assessed: 2026-09-22 (full read-only audit; local storefront + Medusa alrea
 - [ ] Subscribe-cart tests (not run this audit)
 
 ## Evidence
+
+- 2026-10-02: Cart/PDP improvements, transparent label, truthful review state, and footer disclaimer. 21 storefront tests pass. Isolated desktop/mobile component checks pass; full live checkout/build blocked by missing Medusa configuration. See `artifacts/qa/cart-product/notes.md`. Unsupported JSON-LD rating removed; product title now H1. Earlier audit checkboxes above are historical, not a fresh full-site score.
 
 - 2026-09-22: Homepage doctor+drive on existing `localhost:8000/us`. Title, H1, Shop Aura Core, nav verified via accessibility snapshot. Screenshot capture timed out. Notes: `artifacts/qa/homepage/notes.md`. Cart/checkout not driven.
 - 2026-09-22: Full audit. Notes: `artifacts/qa/audit/notes.md`. Screenshots under `artifacts/qa/audit/`. Report: `AUDIT.md`.

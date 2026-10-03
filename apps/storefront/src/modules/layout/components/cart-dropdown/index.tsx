@@ -1,216 +1,225 @@
 "use client"
 
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogPanel,
+  DialogTitle,
+} from "@headlessui/react"
 import { convertToLocale } from "@lib/util/money"
 import { cartCurrencyCode, cartItemsAmount } from "@lib/util/cart-money"
-import { HttpTypes } from "@medusajs/types"
+import { CART_EVENT, type CartEventDetail } from "@lib/util/cart-events"
+import type { HttpTypes } from "@medusajs/types"
 import DeleteButton from "@modules/common/components/delete-button"
-import LineItemOptions from "@modules/common/components/line-item-options"
 import LineItemPrice from "@modules/common/components/line-item-price"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "@modules/products/components/thumbnail"
 import { usePathname } from "next/navigation"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 
-const CartDropdown = ({
-  cart: cartState,
+export default function CartDropdown({
+  cart: initialCart,
 }: {
   cart?: HttpTypes.StoreCart | null
-}) => {
-  const [activeTimer, setActiveTimer] = useState<NodeJS.Timer | undefined>(
-    undefined
-  )
-  const [cartDropdownOpen, setCartDropdownOpen] = useState(false)
-
-  const open = () => setCartDropdownOpen(true)
-  const close = () => setCartDropdownOpen(false)
-
-  const totalItems =
-    cartState?.items?.reduce((acc, item) => {
-      return acc + item.quantity
-    }, 0) || 0
-
-  const subtotal = cartState?.subtotal ?? cartItemsAmount(cartState)
-  const currencyCode = cartCurrencyCode(cartState)
-  const itemRef = useRef<number>(totalItems || 0)
-
-  const timedOpen = () => {
-    open()
-
-    const timer = setTimeout(close, 5000)
-
-    setActiveTimer(timer)
-  }
-
-  const openAndCancel = () => {
-    if (activeTimer) {
-      clearTimeout(activeTimer)
-    }
-
-    open()
-  }
-
-  useEffect(() => {
-    return () => {
-      if (activeTimer) {
-        clearTimeout(activeTimer)
-      }
-    }
-  }, [activeTimer])
-
+}) {
+  const [cart, setCart] = useState(initialCart)
+  const [open, setOpen] = useState(false)
+  const [pending, setPending] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const pathname = usePathname()
 
   useEffect(() => {
-    if (itemRef.current !== totalItems && !(pathname || "").includes("/cart")) {
-      timedOpen()
+    setCart(initialCart)
+  }, [initialCart])
+  useEffect(() => {
+    setOpen(false)
+  }, [pathname])
+  useEffect(() => {
+    const onCart = (event: Event) => {
+      const detail = (event as CustomEvent<CartEventDetail>).detail
+      setOpen(true)
+      setPending(detail.status === "adding")
+      setError(detail.status === "error" ? detail.message : null)
+      if (detail.status === "updated") setCart(detail.cart)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [totalItems, itemRef.current])
+    window.addEventListener(CART_EVENT, onCart)
+    return () => window.removeEventListener(CART_EVENT, onCart)
+  }, [])
+
+  const count = cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0
+  const currency = cartCurrencyCode(cart)
+  const close = () => setOpen(false)
 
   return (
-    <div
-      className="relative z-50 h-full"
-      onMouseEnter={openAndCancel}
-      onMouseLeave={close}
-    >
-      <LocalizedClientLink
-        className="flex h-full items-center text-[12px] uppercase tracking-[0.08em] transition-opacity hover:opacity-70"
-        href="/cart"
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        className="flex min-h-11 items-center text-[12px] uppercase tracking-[0.08em] hover:opacity-70"
         data-testid="nav-cart-link"
-      >{`Cart (${totalItems})`}</LocalizedClientLink>
-      {cartDropdownOpen && (
-          <div
-            className="absolute right-0 top-[calc(100%+12px)] hidden w-[400px] overflow-hidden rounded-[1.5rem] border border-aura-forest/15 bg-[#f5efe4] text-aura-forest shadow-[0_18px_50px_rgba(25,63,55,0.12)] small:block"
+      >
+        Cart ({count})
+      </button>
+      <Dialog open={open} onClose={close} className="relative z-[120]">
+        <DialogBackdrop
+          transition
+          className="fixed inset-0 bg-black/40 transition-opacity duration-200 data-[closed]:opacity-0 motion-reduce:transition-none"
+        />
+        <div className="fixed inset-0 flex justify-end">
+          <DialogPanel
+            transition
+            className="flex h-full w-full max-w-[480px] flex-col bg-aura-cream text-aura-forest shadow-xl transition-transform duration-300 ease-out data-[closed]:translate-x-full motion-reduce:transition-none"
             data-testid="nav-cart-dropdown"
           >
-            <div className="flex items-end justify-between border-b border-aura-forest/10 px-6 py-5">
-              <h3 className="aura-display text-[28px] font-normal leading-none">
-                Your cart
-              </h3>
-              <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-aura-forest/50">
-                {totalItems} {totalItems === 1 ? "item" : "items"}
-              </span>
+            <div className="flex items-center justify-between border-b border-aura-forest/15 px-6 py-5">
+              <DialogTitle className="aura-display text-[32px]">
+                Your cart <span className="font-sans text-sm">({count})</span>
+              </DialogTitle>
+              <button
+                type="button"
+                onClick={close}
+                aria-label="Close cart"
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-aura-forest/20 text-2xl"
+                autoFocus
+              >
+                ×
+              </button>
             </div>
-            {cartState && cartState.items?.length ? (
-              <>
-                <div className="no-scrollbar grid max-h-[402px] grid-cols-1 gap-y-6 overflow-y-scroll px-6 py-5">
-                  {cartState.items
-                    .sort((a, b) => {
-                      return (a.created_at ?? "") > (b.created_at ?? "")
-                        ? -1
-                        : 1
-                    })
-                    .map((item) => (
-                      <div
-                        className="grid grid-cols-[88px_1fr] gap-x-4"
-                        key={item.id}
-                        data-testid="cart-item"
+            <div
+              className="min-h-0 flex-1 overflow-y-auto px-6 py-6"
+              aria-busy={pending}
+            >
+              {pending && (
+                <p
+                  role="status"
+                  className="mb-5 border-l-2 border-aura-gold pl-4 text-sm"
+                >
+                  Adding your item…
+                </p>
+              )}
+              {error && (
+                <p role="alert" className="mb-5 text-sm text-red-800">
+                  {error}
+                </p>
+              )}
+              {cart?.items?.length ? (
+                <ul className="space-y-7">
+                  {[...cart.items].reverse().map((item) => (
+                    <li
+                      key={item.id}
+                      className="grid grid-cols-[80px_1fr] gap-4"
+                      data-testid="cart-item"
+                    >
+                      <LocalizedClientLink
+                        href={`/products/${item.product_handle}`}
+                        onClick={close}
                       >
+                        <Thumbnail
+                          thumbnail={
+                            item.product_handle === "aura-patch"
+                              ? "/images/aura-core-front.webp"
+                              : item.thumbnail
+                          }
+                          size="square"
+                        />
+                      </LocalizedClientLink>
+                      <div className="min-w-0">
                         <LocalizedClientLink
                           href={`/products/${item.product_handle}`}
-                          className="w-[72px]"
+                          onClick={close}
+                          className="text-base font-semibold"
                         >
-                          <Thumbnail
-                            thumbnail={
-                              item.product_handle === "aura-patch"
-                                ? "/images/aura-core-front.webp"
-                                : item.thumbnail
-                            }
-                            images={item.variant?.product?.images}
-                            size="square"
-                            className="!rounded-[1.25rem] !border !border-aura-forest/10 !bg-[#f7f4ed] !p-0 !shadow-none"
-                          />
+                          {item.product_handle === "aura-patch"
+                            ? "Aura Core"
+                            : item.title}
                         </LocalizedClientLink>
-                        <div className="flex flex-1 flex-col justify-between">
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="mr-2 min-w-0 flex-1">
-                              <h3 className="overflow-hidden text-ellipsis text-[15px] font-semibold leading-5 text-aura-forest">
-                                <LocalizedClientLink
-                                  href={`/products/${item.product_handle}`}
-                                  data-testid="product-link"
-                                >
-                                  {item.title}
-                                </LocalizedClientLink>
-                              </h3>
-                              <div className="mt-1 text-[12px] text-aura-forest/55">
-                                <LineItemOptions
-                                  variant={item.variant}
-                                  data-testid="cart-item-variant"
-                                  data-value={item.variant}
-                                />
-                              </div>
-                              <span
-                                className="mt-1 block text-[12px] text-aura-forest/55"
-                                data-testid="cart-item-quantity"
-                                data-value={item.quantity}
-                              >
-                                Quantity: {item.quantity}
-                              </span>
-                            </div>
-                            <div className="shrink-0 text-[14px] font-semibold text-aura-forest">
-                              <LineItemPrice
-                                item={item}
-                                style="tight"
-                                currencyCode={currencyCode}
-                              />
-                            </div>
-                          </div>
-                          <DeleteButton
-                            id={item.id}
-                            className="mt-2"
-                            data-testid="cart-item-remove-button"
-                          >
-                            Remove
-                          </DeleteButton>
+                        <p className="mt-1 text-sm">
+                          {item.metadata?.purchase_type === "subscription"
+                            ? "Subscribe & Save · monthly"
+                            : "One-time purchase"}
+                        </p>
+                        <p
+                          className="mt-1 text-sm"
+                          data-testid="cart-item-quantity"
+                        >
+                          Quantity: {item.quantity}
+                        </p>
+                        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                          <LineItemPrice
+                            item={item}
+                            style="tight"
+                            currencyCode={currency}
+                          />
+                          {!pending && (
+                            <DeleteButton id={item.id}>Remove</DeleteButton>
+                          )}
                         </div>
                       </div>
-                    ))}
-                </div>
-                <div className="flex flex-col gap-y-4 border-t border-aura-forest/10 px-6 py-5">
-                  <div className="flex items-end justify-between">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-aura-forest/55">
-                      Subtotal
-                    </span>
-                    <span
-                      className="aura-display text-[28px] leading-none"
-                      data-testid="cart-subtotal"
-                      data-value={subtotal}
-                    >
-                      {convertToLocale({
-                        amount: subtotal,
-                        currency_code: currencyCode,
-                      })}
-                    </span>
-                  </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : !pending && !error ? (
+                <div className="py-12">
+                  <p className="aura-display text-[34px]">
+                    Your cart is empty.
+                  </p>
+                  <p className="mt-4 text-base leading-7">
+                    Find a daily ritual that fits your day.
+                  </p>
                   <LocalizedClientLink
-                    href="/cart"
-                    className="flex min-h-12 w-full items-center justify-center rounded-full bg-aura-wine px-6 text-[11px] font-bold uppercase tracking-[0.16em] text-aura-cream transition-colors hover:bg-aura-forest hover:text-aura-cream"
-                    data-testid="go-to-cart-button"
+                    href="/store"
+                    onClick={close}
+                    className="aura-button mt-6"
                   >
-                    Go to cart
+                    Explore products
                   </LocalizedClientLink>
                 </div>
-              </>
-            ) : (
-              <div className="flex flex-col items-start px-6 py-10">
-                <span className="aura-eyebrow text-aura-gold">
-                  Your bag is waiting
-                </span>
-                <p className="aura-display mt-3 text-[32px] leading-none">
-                  Your cart is empty
-                </p>
-                <LocalizedClientLink
-                  href="/store"
-                  className="aura-button mt-6 inline-flex"
-                  onClick={close}
-                >
-                  Explore products
-                </LocalizedClientLink>
-              </div>
-            )}
-          </div>
-      )}
-    </div>
+              ) : null}
+            </div>
+            <div className="border-t border-aura-forest/15 px-6 pt-5 pb-[max(24px,env(safe-area-inset-bottom))]">
+              {!!cart?.items?.length && (
+                <>
+                  <div className="flex justify-between gap-4 text-lg">
+                    <span>Item subtotal</span>
+                    <strong data-testid="cart-subtotal">
+                      {convertToLocale({
+                        amount: cartItemsAmount(cart),
+                        currency_code: currency,
+                      })}
+                    </strong>
+                  </div>
+                  <p className="mt-2 text-xs leading-5">
+                    Shipping and taxes calculated at checkout.
+                  </p>
+                  {pending ? (
+                    <p className="mt-5 text-sm">
+                      Your cart will be ready in a moment.
+                    </p>
+                  ) : (
+                    <LocalizedClientLink
+                      href="/cart"
+                      onClick={close}
+                      className="aura-button mt-5 w-full"
+                      data-testid="go-to-cart-button"
+                    >
+                      Review cart &amp; checkout
+                    </LocalizedClientLink>
+                  )}
+                </>
+              )}
+              <button
+                type="button"
+                onClick={close}
+                className="mt-4 min-h-11 w-full text-sm underline underline-offset-4"
+              >
+                Continue shopping
+              </button>
+            </div>
+          </DialogPanel>
+        </div>
+      </Dialog>
+    </>
   )
 }
-
-export default CartDropdown
