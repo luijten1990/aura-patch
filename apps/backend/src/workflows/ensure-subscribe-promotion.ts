@@ -6,6 +6,7 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { SUBSCRIBE_CODE, SUBSCRIBE_PERCENT } from "../modules/subscription/constants"
+import { ensurePromotionRule, noBundleRule, subscriptionRule } from "../lib/promotion-rules"
 
 const ensureSubscribePromotionStep = createStep(
   "ensure-subscribe-promotion",
@@ -13,7 +14,7 @@ const ensureSubscribePromotionStep = createStep(
     const promotionModule = container.resolve(Modules.PROMOTION)
     const existing = await promotionModule.listPromotions(
       { code: SUBSCRIBE_CODE },
-      { relations: ["application_method"] }
+      { relations: ["application_method", "rules", "rules.values"] }
     )
     const applicationMethod = {
       type: "percentage" as const,
@@ -24,9 +25,12 @@ const ensureSubscribePromotionStep = createStep(
 
     if (existing.length) {
       const promotion = existing[0]
+      await ensurePromotionRule(promotionModule, promotion.id, promotion.rules || [], noBundleRule)
+      await ensurePromotionRule(promotionModule, promotion.id, promotion.rules || [], subscriptionRule)
       const method = promotion.application_method
       const current = method ? Number(method.value) : null
       const needsUpdate =
+        !promotion.is_automatic ||
         promotion.status !== "active" ||
         method?.type !== "percentage" ||
         method?.target_type !== "items" ||
@@ -37,6 +41,7 @@ const ensureSubscribePromotionStep = createStep(
           id: promotion.id,
           status: "active",
           type: "standard",
+          is_automatic: true,
           application_method: applicationMethod,
         })
       }
@@ -53,7 +58,8 @@ const ensureSubscribePromotionStep = createStep(
         code: SUBSCRIBE_CODE,
         type: "standard",
         status: "active",
-        is_automatic: false,
+        is_automatic: true,
+        rules: [noBundleRule, subscriptionRule],
         application_method: applicationMethod,
       })
     } catch (error) {

@@ -5,6 +5,7 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys, MedusaError, Modules } from "@medusajs/framework/utils"
+import { ensurePromotionRule, noBundleRule, oneTimeRule } from "../lib/promotion-rules"
 
 export const WELCOME_OFFER_CODE = "ILOVEAURA"
 export const WELCOME_OFFER_PERCENT = 15
@@ -24,9 +25,11 @@ const ensureWelcomeOfferStep = createStep(
     const promotionModule = container.resolve(Modules.PROMOTION)
     const existing = await promotionModule.listPromotions({
       code: WELCOME_OFFER_CODE,
-    })
+    }, { relations: ["rules", "rules.values"] })
 
     if (existing.length) {
+      await ensurePromotionRule(promotionModule, existing[0].id, existing[0].rules || [], noBundleRule)
+      await ensurePromotionRule(promotionModule, existing[0].id, existing[0].rules || [], oneTimeRule)
       return new StepResponse({ code: WELCOME_OFFER_CODE, created: false })
     }
 
@@ -36,6 +39,7 @@ const ensureWelcomeOfferStep = createStep(
         type: "standard",
         status: "active",
         is_automatic: false,
+        rules: [noBundleRule, oneTimeRule],
         application_method: {
           type: "percentage",
           target_type: "items",

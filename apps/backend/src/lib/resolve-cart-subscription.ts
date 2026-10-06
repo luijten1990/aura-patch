@@ -2,7 +2,7 @@ import { SubscriptionInterval } from "../modules/subscription/types"
 
 export type CartSubscriptionSource = {
   metadata?: Record<string, unknown> | null
-  items?: { metadata?: Record<string, unknown> | null }[] | null
+  items?: ({ metadata?: Record<string, unknown> | null } | null | undefined)[] | null
 }
 
 type ResolvedCartSubscription =
