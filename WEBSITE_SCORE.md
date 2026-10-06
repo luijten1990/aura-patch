@@ -78,6 +78,7 @@ Last assessed: 2026-09-22 (full read-only audit; local storefront + Medusa alrea
 
 ## Evidence
 
+- 2026-10-03: Shipping Best value follows the cheapest paid quote. For $0 / $5.58 USPS / $10.57 DHL / $21.67 express, the badge is on USPS and the list is sorted by price. Screenshots: `artifacts/qa/shipping-best-value/`. Live EasyPost checkout was not driven because Medusa is not configured here.
 - 2026-10-03: Buy-more pouch prices match $49.99 / $89.98 / $127.47 / $159.97 in `bundle.unit.test.ts`. Storefront tests passed. Product-page browser check blocked: this environment has no Medusa publishable key or backend, so `/us/products/aura-patch` cannot render. Lifestyle illustration caption removed. Sheila Amos stays the only featured review; other pasted reviews were not published.
 - 2026-10-02: Cart/PDP improvements, transparent label, truthful review state, and footer disclaimer. 21 storefront tests pass. Isolated desktop/mobile component checks pass; full live checkout/build blocked by missing Medusa configuration. See `artifacts/qa/cart-product/notes.md`. Unsupported JSON-LD rating removed; product title now H1. Earlier audit checkboxes above are historical, not a fresh full-site score.
 

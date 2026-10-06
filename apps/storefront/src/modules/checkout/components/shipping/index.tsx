@@ -13,6 +13,8 @@ import { useEffect, useState } from "react"
 import { useCheckoutCart } from "../checkout-cart-provider"
 import CarrierMark from "./carrier-mark"
 import {
+  cheapestPaidOptionId,
+  compareShippingOptions,
   shippingOptionCatalogId,
   type QuotedShippingCarrier,
 } from "@lib/util/shipping-carrier"
@@ -49,29 +51,6 @@ function formatAddress(address: HttpTypes.StoreCartAddress) {
   }
 
   return ret
-}
-
-function shippingMethodRank(option: HttpTypes.StoreCartShippingOption) {
-  const optionId = String(
-    (option.data as { id?: string } | null | undefined)?.id || ""
-  )
-  const name = (option.name || "").toLowerCase()
-  if (/free standard/.test(name) || optionId === "free-standard-us") {
-    return 0
-  }
-  if (optionId === "easypost-alt" || /best value/.test(name)) {
-    return 1
-  }
-  if (optionId === "easypost-usps" || optionId.includes("usps")) {
-    return 2
-  }
-  if (optionId === "easypost-ups" || optionId.includes("ups")) {
-    return 3
-  }
-  if (optionId.includes("express") || /express/.test(name)) {
-    return 4
-  }
-  return 5
 }
 
 function shippingOptionCopy(
@@ -122,14 +101,14 @@ function shippingOptionCopy(
         : "Tracked · typically 3–7 business days",
     },
     "easypost-alt": {
-      title: "Best value",
+      title: "Economy",
       detail: bestValueDetail({
-        us: "Tracked · lowest-cost carrier besides USPS and UPS · typically 2–7 business days",
-        intl: "Tracked · lowest-cost carrier besides USPS and UPS · typically 6–12 business days",
+        us: "Tracked · typically 2–7 business days",
+        intl: "Tracked · typically 6–12 business days",
       }),
     },
     "easypost-intl-standard": {
-      title: "Best value",
+      title: "Economy",
       detail: quoted?.label
         ? `Tracked · ${quoted.label} · typically 6–12 business days`
         : "Tracked · typically 6–12 business days",
@@ -153,6 +132,14 @@ function shippingOptionCopy(
     return {
       title: name,
       detail: "Tracked · United States · typically 5–7 business days",
+    }
+  }
+  if (/best value/i.test(name)) {
+    return {
+      title: "Economy",
+      detail: isUsShipping
+        ? "Tracked · typically 2–7 business days"
+        : "Tracked · typically 6–12 business days",
     }
   }
   return {
@@ -223,7 +210,7 @@ const Shipping: React.FC<ShippingProps> = ({
       return true
     }
   )?.slice()
-    .sort((a, b) => shippingMethodRank(a) - shippingMethodRank(b))
+    .sort((a, b) => compareShippingOptions(a, b, calculatedPricesMap))
 
   const _pickupMethods = availableShippingMethods?.filter(
     (sm) => (sm as unknown as { service_zone?: { fulfillment_set?: { type?: string; location?: { address: HttpTypes.StoreCartAddress } } } }).service_zone?.fulfillment_set?.type === "pickup"
@@ -470,8 +457,8 @@ const Shipping: React.FC<ShippingProps> = ({
                       supported.
                     </span>
                   )}
-                  {_shippingMethods
-                    ?.filter((option) => {
+                  {(() => {
+                    const visibleShippingMethods = (_shippingMethods || []).filter((option) => {
                       if (option.price_type !== "calculated") {
                         return true
                       }
@@ -480,9 +467,15 @@ const Shipping: React.FC<ShippingProps> = ({
                       }
                       return hasValidCalculatedAmount(option, calculatedPricesMap)
                     })
-                    .map((option) => {
+                    const bestValueId = cheapestPaidOptionId(
+                      visibleShippingMethods,
+                      calculatedPricesMap
+                    )
+                    return visibleShippingMethods.map((option) => {
                     const quoted = carrierQuotes[shippingOptionCatalogId(option)]
                     const copy = shippingOptionCopy(option, isUsShipping, quoted)
+                    const isBestValue = option.id === bestValueId
+
                     return (
                       <Radio
                         key={option.id}
@@ -504,8 +497,16 @@ const Shipping: React.FC<ShippingProps> = ({
                           />
                           <CarrierMark option={option} quoted={quoted} />
                           <span className="min-w-0">
-                            <span className="block text-[15px] leading-6">
-                              {copy.title}
+                            <span className="flex flex-wrap items-center gap-2 text-[15px] leading-6">
+                              <span>{copy.title}</span>
+                              {isBestValue ? (
+                                <span
+                                  className="rounded-full bg-aura-gold/25 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-aura-forest"
+                                  data-testid="delivery-best-value"
+                                >
+                                  Best value
+                                </span>
+                              ) : null}
                             </span>
                             {copy.detail ? (
                               <span className="mt-1 block text-[12px] leading-5 text-aura-forest/55">
@@ -533,7 +534,8 @@ const Shipping: React.FC<ShippingProps> = ({
                         </span>
                       </Radio>
                     )
-                  })}
+                  })
+                  })()}
                 </RadioGroup>
               </div>
             </div>
@@ -640,7 +642,9 @@ const Shipping: React.FC<ShippingProps> = ({
                   Method
                 </Text>
                 <Text className="text-[14px] leading-6 text-aura-forest/70">
-                  {cart.shipping_methods!.at(-1)!.name}{" "}
+                  {/best value/i.test(cart.shipping_methods!.at(-1)!.name || "")
+                    ? "Economy"
+                    : cart.shipping_methods!.at(-1)!.name}{" "}
                   {convertToLocale({
                     amount: cart.shipping_methods!.at(-1)!.amount!,
                     currency_code: cart?.currency_code,

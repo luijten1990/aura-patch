@@ -3,7 +3,8 @@ import { describe, it } from "node:test"
 
 import {
   carrierKindFromQuotedName,
-  isBestValueOption,
+  cheapestPaidOptionId,
+  compareShippingOptions,
   shippingCarrierKind,
 } from "./shipping-carrier.ts"
 
@@ -53,8 +54,50 @@ describe("carrierKindFromQuotedName", () => {
   })
 })
 
-describe("isBestValueOption", () => {
-  it("detects the lowest-cost non-USPS/UPS option", () => {
-    assert.equal(isBestValueOption({ data: { id: "easypost-alt" } }), true)
+describe("cheapestPaidOptionId", () => {
+  const options = [
+    {
+      id: "free",
+      name: "Free Standard Shipping (5–7 business days)",
+      price_type: "flat",
+      amount: 0,
+      data: { id: "free-standard-us" },
+    },
+    {
+      id: "dhl",
+      name: "Economy",
+      price_type: "calculated",
+      data: { id: "easypost-alt" },
+    },
+    {
+      id: "usps",
+      name: "USPS",
+      price_type: "calculated",
+      data: { id: "easypost-usps" },
+    },
+    {
+      id: "express",
+      name: "Express",
+      price_type: "calculated",
+      data: { id: "easypost-express" },
+    },
+  ]
+
+  it("marks USPS when it is cheaper than DHL", () => {
+    const prices = { dhl: 10.57, usps: 5.58, express: 21.67 }
+    assert.equal(cheapestPaidOptionId(options, prices), "usps")
+    assert.deepEqual(
+      [...options].sort((a, b) => compareShippingOptions(a, b, prices)).map((option) => option.id),
+      ["free", "usps", "dhl", "express"]
+    )
+  })
+
+  it("marks DHL when that quote is the lowest paid price", () => {
+    const prices = { dhl: 4, usps: 5.58, express: 21.67 }
+    assert.equal(cheapestPaidOptionId(options, prices), "dhl")
+  })
+
+  it("waits until every calculated quote has a price", () => {
+    assert.equal(cheapestPaidOptionId(options, { usps: 5.58 }), null)
   })
 })

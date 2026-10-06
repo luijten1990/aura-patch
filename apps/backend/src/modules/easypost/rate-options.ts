@@ -38,11 +38,11 @@ const BUCKETS: {
   },
   {
     id: "easypost-alt",
-    name: "Best value",
-    code: "best-value",
+    name: "Economy",
+    code: "economy",
     bucket: "alt",
-    us: "Lowest-cost tracked carrier besides USPS and UPS · typically 2–7 business days",
-    intl: "Lowest-cost tracked carrier besides USPS and UPS · typically 6–12 business days",
+    us: "Tracked · typically 2–7 business days",
+    intl: "Tracked · typically 6–12 business days",
   },
   {
     id: "easypost-express",
