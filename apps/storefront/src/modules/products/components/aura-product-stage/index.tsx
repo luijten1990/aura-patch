@@ -24,15 +24,21 @@ const AuraProductStage = ({
       className="grid items-start gap-8 small:grid-cols-2 small:gap-12"
       data-testid="aura-product-stage"
     >
-      <div className="small:sticky small:top-24">
-        <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#f6f0e6]">
+      <div
+        className="self-start small:sticky"
+        style={{ top: "6.5rem" }}
+      >
+        <div
+          className="relative w-full overflow-hidden bg-[#f6f0e6]"
+          style={{ height: "min(70vh, 640px)" }}
+        >
           <Image
             src={auraCore.image}
             alt={auraCore.imageAlt}
             fill
             priority
-            sizes="(max-width: 900px) 100vw, 50vw"
-            className="object-contain p-6 small:p-10"
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            className="object-contain p-8"
           />
         </div>
       </div>
