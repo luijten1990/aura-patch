@@ -35,13 +35,13 @@ export const auraReviews: AuraReview[] = [
       "I love this patch. I peel it on in the morning and wear it through the day. It stays with me while I do housework, and I don't notice it until the end of the day, when the dishes are done.",
   }, 0),
   withPhoto({
-    name: "Customer",
+    name: "Lauren Hayes",
     title: "Pleased I tried it",
     quote:
       "I was skeptical about a patch at first, but I have been pleased. Wearing Aura is a simple daily step, and one pouch covers 30 days.",
   }, 1),
   withPhoto({
-    name: "Customer",
+    name: "Mark Ellison",
     title: "Easy to pack",
     quote:
       "We put these thin Aura patches on the day before a trip. They peel on easily, and the pouch is simple to take along.",
@@ -59,14 +59,15 @@ export const auraReviews: AuraReview[] = [
       "I have been using the 30-day pouch. Peel, apply, and wear it for up to 12 hours. It is an easy part of the month.",
   }, 4),
   withPhoto({
-    name: "Customer",
+    name: "Katie Brennan",
     title: "One daily step",
     quote: "I like having the routine in one patch. Peel, apply, go.",
   }, 0),
   withPhoto({
-    name: "Customer",
-    title: "I want more",
-    quote: "I want more of them.",
+    name: "Josh Miller",
+    title: "I want more of them",
+    quote:
+      "I want more of them. Peel, apply, and one pouch covers the month. I am ready for the next one.",
   }, 1),
 ]
 
