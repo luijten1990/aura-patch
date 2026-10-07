@@ -6,15 +6,18 @@ import {
   type PurchaseType,
 } from "@lib/util/subscription"
 import { HttpTypes } from "@medusajs/types"
+import { bundleAmount } from "@lib/util/bundle"
 
 export default function ProductPrice({
   product,
   variant,
   purchaseType = "subscription",
+  bundleQuantity = 1,
 }: {
   product: HttpTypes.StoreProduct
   variant?: HttpTypes.StoreProductVariant
   purchaseType?: PurchaseType
+  bundleQuantity?: number
 }) {
   const { cheapestPrice, variantPrice } = getProductPrice({
     product,
@@ -30,7 +33,7 @@ export default function ProductPrice({
   const isSubscribe = purchaseType === "subscription"
   const displayAmount = isSubscribe
     ? subscriptionAmount(selectedPrice.calculated_price_number)
-    : selectedPrice.calculated_price_number
+    : bundleAmount(selectedPrice.calculated_price_number, bundleQuantity)
   const displayPrice = convertToLocale({
     amount: displayAmount,
     currency_code: selectedPrice.currency_code,

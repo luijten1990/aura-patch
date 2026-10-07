@@ -232,6 +232,7 @@ export default function ProductActions({
           product={product}
           variant={selectedVariant}
           purchaseType={purchaseType}
+          bundleQuantity={purchaseType === "one_time" ? bundleQuantity : 1}
         />
 
         <div className="flex flex-col gap-2" role="group" aria-label="Purchase option">
@@ -302,13 +303,13 @@ export default function ProductActions({
           </button>
         </div>
 
-        {product.handle === "aura-patch" && (
+        {product.handle === "aura-patch" && selectedVariant?.calculated_price?.currency_code === "usd" && (
           <div>
             <h2 className="text-[12px] font-bold uppercase tracking-[0.14em] text-aura-forest">
               Buy more, save more
             </h2>
             <p className="mt-2 text-[13px] leading-5 text-aura-forest/65">
-              One-time pouches. Each pouch is a 30-day supply.
+              One-time pouches. Each pouch is a 30-day supply. Free standard US shipping.
             </p>
             <div
               className="mt-3 flex flex-col gap-2"
@@ -331,7 +332,7 @@ export default function ProductActions({
                     type="button"
                     role="radio"
                     aria-checked={selected}
-                    disabled={isAdding}
+                    disabled={isAdding || Boolean(selectedVariant?.manage_inventory && !selectedVariant?.allow_backorder && (selectedVariant?.inventory_quantity ?? 0) < tier.quantity)}
                     data-testid={`bundle-option-${tier.quantity}`}
                     onClick={() => {
                       setPurchaseType("one_time")
@@ -357,6 +358,9 @@ export default function ProductActions({
                 )
               })}
             </div>
+            <p className="mt-2 text-[12px] leading-5 text-aura-forest/65">
+              Bundle savings apply automatically and cannot be combined with welcome or subscription discounts.
+            </p>
           </div>
         )}
 
@@ -405,6 +409,7 @@ export default function ProductActions({
           show={!inView}
           optionsDisabled={!!disabled || isAdding}
           purchaseType={purchaseType}
+          bundleQuantity={purchaseType === "one_time" ? bundleQuantity : 1}
         />
       </div>
     </>

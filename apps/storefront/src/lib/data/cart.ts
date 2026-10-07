@@ -15,10 +15,7 @@ import {
 } from "./cookies"
 import { getRegion } from "./regions"
 import { getLocale } from "./locale-actions"
-import {
-  bundleCodeForQuantity,
-  isBundleCode,
-} from "@lib/util/bundle"
+import { isBundleCode } from "@lib/util/bundle"
 import {
   isSubscriptionCart,
   SUBSCRIBE_CODE,
@@ -167,7 +164,7 @@ export async function addToCart({
             purchase_type: purchaseType,
           },
         },
-        {},
+        { fields: CART_FIELDS },
         headers
       )
       await revalidateByTag("carts")
@@ -201,7 +198,7 @@ export async function addToCart({
             purchase_type: purchaseType,
           },
         },
-        {},
+        { fields: CART_FIELDS },
         headers
       )
       updatedCart = result.cart
@@ -215,7 +212,7 @@ export async function addToCart({
             purchase_type: purchaseType,
           },
         },
-        {},
+        { fields: CART_FIELDS },
         headers
       )
       updatedCart = result.cart
@@ -243,19 +240,8 @@ function purchaseTypePayload(
   const keptCodes = appliedCodes.filter(
     (code) => code !== SUBSCRIBE_CODE && !isBundleCode(code)
   )
-  const bundleQuantity = subscribe
-    ? 0
-    : (cart.items || []).reduce((highest, item) => {
-        if (item.metadata?.purchase_type === "subscription") {
-          return highest
-        }
-        return Math.max(highest, item.quantity || 0)
-      }, 0)
-  const bundleCode = bundleCodeForQuantity(bundleQuantity)
-  const bundleMatches = bundleCode
-    ? appliedCodes.includes(bundleCode) &&
-      appliedCodes.filter(isBundleCode).length === 1
-    : !appliedCodes.some(isBundleCode)
+  // Medusa calculates automatic bundle eligibility whenever the cart changes.
+  const bundleMatches = true
 
   return {
     subscribe,
@@ -266,8 +252,6 @@ function purchaseTypePayload(
     },
     promo_codes: subscribe
       ? [...keptCodes.filter((code) => code !== "ILOVEAURA"), SUBSCRIBE_CODE]
-      : bundleCode
-      ? [...keptCodes, bundleCode]
       : keptCodes,
     hasPromo: appliedCodes.includes(SUBSCRIBE_CODE),
     bundleMatches,
@@ -527,7 +511,7 @@ export async function applyPromotions(codes: string[]) {
     .catch(medusaError)
 }
 
-export async function applyGiftCard(code: string) {
+export async function applyGiftCard(_code: string) {
   //   const cartId = getCartId()
   //   if (!cartId) return "No cartId cookie found"
   //   try {
@@ -539,7 +523,7 @@ export async function applyGiftCard(code: string) {
   //   }
 }
 
-export async function removeDiscount(code: string) {
+export async function removeDiscount(_code: string) {
   // const cartId = getCartId()
   // if (!cartId) return "No cartId cookie found"
   // try {
@@ -551,8 +535,8 @@ export async function removeDiscount(code: string) {
 }
 
 export async function removeGiftCard(
-  codeToRemove: string,
-  giftCards: any[]
+  _codeToRemove: string,
+  _giftCards: unknown[]
   // giftCards: GiftCard[]
 ) {
   //   const cartId = getCartId()
@@ -577,8 +561,8 @@ export async function submitPromotionForm(
   const code = formData.get("code") as string
   try {
     await applyPromotions([code])
-  } catch (e: any) {
-    return e.message
+  } catch (e: unknown) {
+    return e instanceof Error ? e.message : "Unable to apply the promotion."
   }
 }
 
@@ -654,9 +638,9 @@ export async function setAddresses(currentState: unknown, formData: FormData) {
       String(formData.get("checkout_country") || countryCode).toLowerCase() ||
       countryCode
     redirect(`/${checkoutCountry}/checkout?step=delivery`)
-  } catch (e: any) {
+  } catch (e: unknown) {
     unstable_rethrow(e)
-    return e.message
+    return e instanceof Error ? e.message : "Unable to save the address."
   }
 }
 

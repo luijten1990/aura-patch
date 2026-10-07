@@ -1,24 +1,19 @@
 import { HttpTypes } from "@medusajs/types"
-import { bundleAmount, bundlePercentForQuantity } from "./bundle.ts"
-import {
-  isSubscriptionCart,
-  SUBSCRIBE_CODE,
-  subscriptionAmount,
-} from "./subscription.ts"
 
 type MoneyItem = {
   total?: number | null
+  subtotal?: number | null
   original_total?: number | null
   unit_price?: number | null
   quantity?: number
   metadata?: Record<string, unknown> | null
 }
-
 type MoneyCart = {
   currency_code?: string | null
   total?: number | null
   subtotal?: number | null
   item_subtotal?: number | null
+  item_total?: number | null
   shipping_subtotal?: number | null
   shipping_total?: number | null
   discount_subtotal?: number | null
@@ -27,108 +22,35 @@ type MoneyCart = {
   promotions?: { code?: string | null }[] | null
   region?: { currency_code?: string | null } | null
   items?: MoneyItem[] | null
-  shipping_methods?: {
-    amount?: number | null
-    total?: number | null
-  }[] | null
+  shipping_methods?: { amount?: number | null; total?: number | null }[] | null
 }
 
 export const cartCurrencyCode = (cart?: MoneyCart | null) =>
   cart?.currency_code || cart?.region?.currency_code || "usd"
 
-export const lineItemAmount = (
-  item?: MoneyItem | null,
-  subscribeCart?: boolean
-) => {
-  const original = (Number(item?.unit_price) || 0) * (item?.quantity || 1)
-  const apiTotal =
-    item?.total != null && item.total > 0 ? item.total : original
-  const itemIsSubscribe =
-    subscribeCart || item?.metadata?.purchase_type === "subscription"
-
-  if (itemIsSubscribe && original > 0) {
-    return Math.min(apiTotal, subscriptionAmount(original))
-  }
-
-  const bundlePercent = bundlePercentForQuantity(item?.quantity || 1)
-  if (!itemIsSubscribe && bundlePercent > 0 && original > 0) {
-    return Math.min(apiTotal, bundleAmount(Number(item?.unit_price) || 0, item?.quantity || 1))
-  }
-
-  return apiTotal || original
-}
+// The cart must show Medusa's confirmed amount, including zero-priced items.
+// Purchase-type metadata is intent, not proof that a discount was applied.
+export const lineItemAmount = (item?: MoneyItem | null, _subscribeCart?: boolean) =>
+  item?.total ?? (Number(item?.unit_price) || 0) * (item?.quantity ?? 1)
 
 export const cartItemsAmount = (cart?: MoneyCart | null) =>
-  (cart?.items || []).reduce(
-    (sum, item) => sum + lineItemAmount(item, isSubscriptionCart(cart)),
-    0
-  )
+  cart?.item_total ?? (cart?.items || []).reduce((sum, item) => sum + lineItemAmount(item), 0)
 
-export const cartNeedsTotalsRefresh = (cart?: MoneyCart | null) => {
-  const pricedItems = cartItemsAmount(cart)
-  const computedTotal = Number(cart?.total) || 0
-  const computedItemTotal = (cart?.items || []).reduce(
-    (sum, item) => sum + (Number(item.total) || 0),
-    0
-  )
-
-  return pricedItems > 0 && computedTotal === 0 && computedItemTotal === 0
-}
+export const cartNeedsTotalsRefresh = (cart?: MoneyCart | null) =>
+  Boolean(cart?.items?.length && cart.total == null)
 
 export const withCartMoney = <T extends MoneyCart>(cart: T) => {
-  const subscribe = isSubscriptionCart(cart)
-  const hasSubscribePromo = Boolean(
-    cart.promotions?.some((promotion) => promotion.code === SUBSCRIBE_CODE)
-  )
-  const hasBundle =
-    !subscribe &&
-    (cart.items || []).some(
-      (item) =>
-        item.metadata?.purchase_type !== "subscription" &&
-        bundlePercentForQuantity(item.quantity || 1) > 0
-    )
-  const itemsAmount = cartItemsAmount(cart)
   const originalItems = (cart.items || []).reduce(
-    (sum, item) =>
-      sum + (Number(item.unit_price) || 0) * (item.quantity || 1),
-    0
+    (sum, item) => sum + (item.subtotal ?? (Number(item.unit_price) || 0) * (item.quantity ?? 1)), 0
   )
-  const item_subtotal =
-    subscribe || hasSubscribePromo || hasBundle
-      ? itemsAmount
-      : cart.item_subtotal && cart.item_subtotal > 0
-      ? cart.item_subtotal
-      : cart.subtotal && cart.subtotal > 0
-      ? cart.subtotal
-      : itemsAmount
-  const discount_subtotal = Math.max(
-    Number(cart.discount_subtotal) || 0,
-    originalItems - item_subtotal
-  )
-  const shippingFromMethods = (cart.shipping_methods || []).reduce(
-    (sum, method) =>
-      sum + (Number(method.total) || Number(method.amount) || 0),
-    0
-  )
-  const shipping =
-    Number(cart.shipping_subtotal) ||
-    Number(cart.shipping_total) ||
-    shippingFromMethods
-  const tax = Number(cart.tax_total) || 0
-  const total =
-    subscribe || hasSubscribePromo || hasBundle
-      ? item_subtotal + shipping + tax
-      : cart.total && cart.total > 0
-      ? Math.max(cart.total, item_subtotal + shipping + tax)
-      : item_subtotal + shipping + tax
-
+  const item_subtotal = cart.item_subtotal ?? originalItems
+  const shipping = cart.shipping_subtotal ?? cart.shipping_total ??
+    (cart.shipping_methods || []).reduce((sum, method) => sum + (method.total ?? method.amount ?? 0), 0)
+  const discount = cart.discount_subtotal ?? 0
+  const total = cart.total ?? item_subtotal - discount + shipping + (cart.tax_total ?? 0)
   return {
-    ...cart,
-    currency_code: cartCurrencyCode(cart),
-    item_subtotal,
-    subtotal: item_subtotal,
-    shipping_subtotal: shipping,
-    discount_subtotal,
-    total,
+    ...cart, currency_code: cartCurrencyCode(cart), item_subtotal,
+    subtotal: cart.subtotal ?? item_subtotal, shipping_subtotal: shipping,
+    discount_subtotal: discount, total,
   } as T & HttpTypes.StoreCart
 }

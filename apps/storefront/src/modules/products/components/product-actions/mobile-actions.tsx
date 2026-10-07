@@ -9,6 +9,7 @@ import X from "@modules/common/icons/x"
 import { getProductPrice } from "@lib/util/get-product-price"
 import { convertToLocale } from "@lib/util/money"
 import { subscriptionAmount, type PurchaseType } from "@lib/util/subscription"
+import { bundleAmount } from "@lib/util/bundle"
 import OptionSelect from "./option-select"
 import { HttpTypes } from "@medusajs/types"
 import { isSimpleProduct } from "@lib/util/product"
@@ -24,6 +25,7 @@ type MobileActionsProps = {
   show: boolean
   optionsDisabled: boolean
   purchaseType?: PurchaseType
+  bundleQuantity?: number
 }
 
 const MobileActions: React.FC<MobileActionsProps> = ({
@@ -37,6 +39,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
   show,
   optionsDisabled,
   purchaseType = "subscription",
+  bundleQuantity = 1,
 }) => {
   const { state, open, close } = useToggleState()
 
@@ -106,7 +109,10 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                       /mo
                     </span>
                   ) : (
-                    selectedPrice.calculated_price
+                    convertToLocale({
+                      amount: bundleAmount(selectedPrice.calculated_price_number, bundleQuantity),
+                      currency_code: selectedPrice.currency_code,
+                    })
                   )}
                   </span>
                 </div>
