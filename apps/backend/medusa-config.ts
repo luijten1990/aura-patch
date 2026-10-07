@@ -123,7 +123,13 @@ module.exports = defineConfig({
     {
       resolve: "@medusajs/medusa/fulfillment",
       options: {
-        providers: [...easypostProvider],
+        providers: [
+          {
+            resolve: "@medusajs/medusa/fulfillment-manual",
+            id: "manual",
+          },
+          ...easypostProvider,
+        ],
       },
     },
     {
