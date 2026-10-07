@@ -16,7 +16,12 @@ export type AuraFormula = {
   accent: "ember" | "plum"
   traits: string[]
   ingredients: string[]
-  pouchNotes: string[]
+  benefits: AuraBenefit[]
+}
+
+export type AuraBenefit = {
+  title: string
+  body: string
 }
 
 export const AURA_COLLECTION_EYEBROW = "The Aura Collection"
@@ -64,12 +69,27 @@ export const auraCollection: AuraFormula[] = [
       "Bifidobacterium longum",
       "Lemon Powder",
     ],
-    pouchNotes: [
-      "30 patches in the pouch. Peel, apply, and wear each one for up to 12 hours.",
-      "Vitamin C, zinc, and vitamin A are in the blend for their established roles in normal immune function.",
-      "Lactobacillus casei, Lactobacillus paracasei, and Bifidobacterium longum — three named probiotic cultures in the formula.",
-      "Stabilized allicin, a garlic-derived botanical, with ginger, a warming root long used in traditional wellness.",
-      "Organic ashwagandha and rhodiola, traditional adaptogenic botanicals, inside the 19-ingredient daily ritual.",
+    benefits: [
+      {
+        title: "A patch for the whole day",
+        body: "Peel, apply, and wear it for up to 12 hours. The pouch holds 30 patches, one for each day of the ritual.",
+      },
+      {
+        title: "Daily wellness, balance, and vitality",
+        body: "Aura Core is 19 ingredients in one daily patch, for days that need a considered baseline.",
+      },
+      {
+        title: "Nutrients known for normal immune function",
+        body: "Vitamin C, zinc, and vitamin A are in the blend for their established roles in normal immune function.",
+      },
+      {
+        title: "Three probiotic cultures, named",
+        body: "Lactobacillus casei, Lactobacillus paracasei, and Bifidobacterium longum are part of the formula.",
+      },
+      {
+        title: "Botanicals with a long traditional use",
+        body: "Stabilized allicin, a garlic-derived botanical, sits with ginger, a warming root. Organic ashwagandha and rhodiola are traditional adaptogenic botanicals in the same pouch.",
+      },
     ],
   },
   {
@@ -102,12 +122,27 @@ export const auraCollection: AuraFormula[] = [
       "Alpha-Lipoic Acid (ALA)",
       "Electrolytes",
     ],
-    pouchNotes: [
-      "A 30-day pouch for recovery and renewal. The same peel-and-apply patch, arriving soon.",
-      "Set for recovery, immune support, and rejuvenation, with vitamin C included for its established role in normal immune function.",
-      "Organic ashwagandha, a traditional adaptogenic botanical, in this quieter blend.",
-      "Ginger, a warming root with a long history of traditional wellness use.",
-      "Onion, wormwood, cloves, and black walnut hull, with milk thistle, alpha-lipoic acid, and electrolytes in the formula.",
+    benefits: [
+      {
+        title: "A quieter 30-day pouch",
+        body: "The same peel-and-apply patch, set for recovery and renewal. Arriving soon.",
+      },
+      {
+        title: "Recovery, immune support, and rejuvenation",
+        body: "Those are the three traits of this blend. Vitamin C is included for its established role in normal immune function.",
+      },
+      {
+        title: "Ashwagandha in a quieter formula",
+        body: "Organic ashwagandha, a traditional adaptogenic botanical, is part of Restore.",
+      },
+      {
+        title: "Ginger, a warming root",
+        body: "Ginger is included for its long history of culinary and traditional wellness use.",
+      },
+      {
+        title: "A replenishing botanical blend",
+        body: "Onion, wormwood, cloves, and black walnut hull, with milk thistle, alpha-lipoic acid, and electrolytes in the formula.",
+      },
     ],
   },
   {
@@ -140,12 +175,27 @@ export const auraCollection: AuraFormula[] = [
       "Magnesium L-Threonate",
       "Vitamin B6 (Pyridoxine HCl)",
     ],
-    pouchNotes: [
-      "A 30-day pouch for energy and vitality. The same considered patch, arriving soon.",
-      "A BCAA and EAA blend: amino acids the body uses as building blocks.",
-      "B-complex, vitamin B6, and vitamin C in the brighter daily blend.",
-      "Magnesium L-threonate, glycine, and vitamin D3 with K2.",
-      "Organic ashwagandha and ginger, for a formula aimed at energy, focus, and stamina.",
+    benefits: [
+      {
+        title: "A brighter 30-day pouch",
+        body: "The same considered patch, aimed at energy and vitality. Arriving soon.",
+      },
+      {
+        title: "Energy, focus, and stamina",
+        body: "Aura Energy is the brighter daily ritual, set for those three traits.",
+      },
+      {
+        title: "Amino acids the body uses as building blocks",
+        body: "A BCAA and EAA blend is in the formula.",
+      },
+      {
+        title: "B vitamins in the daily blend",
+        body: "B-complex, vitamin B6, and vitamin C are part of the brighter pouch.",
+      },
+      {
+        title: "Magnesium, glycine, and vitamins D3 with K2",
+        body: "Magnesium L-threonate, glycine, and vitamin D3 with K2 sit alongside organic ashwagandha and ginger.",
+      },
     ],
   },
 ]

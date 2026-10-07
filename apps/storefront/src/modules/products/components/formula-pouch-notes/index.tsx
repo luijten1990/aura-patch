@@ -13,20 +13,40 @@ const FormulaPouchNotes = ({
 
   return (
     <div data-testid={`pouch-notes-${formula.key}`}>
-      <p className="aura-eyebrow text-aura-gold">In the 30-day pouch</p>
-      <ul className="mt-5 space-y-3">
-        {formula.pouchNotes.map((note) => (
-          <li
-            key={note}
-            className={`flex gap-3 text-[15px] leading-7 ${
-              onDark ? "text-aura-cream/80" : "text-aura-forest/75"
-            }`}
-          >
-            <span className="mt-[0.7rem] h-px w-5 shrink-0 bg-aura-gold" />
-            <span>{note}</span>
-          </li>
+      <p className="aura-eyebrow text-aura-gold">Benefits</p>
+      <div
+        className={`mt-2 divide-y ${
+          onDark ? "divide-aura-cream/15" : "divide-aura-forest/10"
+        }`}
+      >
+        {formula.benefits.map((benefit) => (
+          <div key={benefit.title} className="py-6">
+            <h3
+              className={`aura-display text-[28px] leading-[1.08] small:text-[32px] ${
+                onDark ? "text-aura-cream" : "text-aura-forest"
+              }`}
+            >
+              {benefit.title}
+            </h3>
+            <p
+              className={`mt-3 text-[15px] leading-7 ${
+                onDark ? "text-aura-cream/75" : "text-aura-forest/70"
+              }`}
+            >
+              {benefit.body}
+            </p>
+          </div>
         ))}
-      </ul>
+      </div>
+      <p
+        className={`text-[12px] leading-5 ${
+          onDark ? "text-aura-cream/50" : "text-aura-forest/50"
+        }`}
+      >
+        These notes describe the pouch and the ingredients in it. They are
+        general wellness information, not a claim that the finished patch
+        treats or prevents any condition.
+      </p>
     </div>
   )
 }

@@ -10,6 +10,7 @@ import { notFound } from "next/navigation"
 import { HttpTypes } from "@medusajs/types"
 
 import AuraIngredientsGallery from "@modules/products/components/aura-ingredients-gallery"
+import CustomerReviews from "@modules/products/components/customer-reviews"
 import FormulaPouchNotes from "@modules/products/components/formula-pouch-notes"
 import { auraCore } from "@lib/data/aura-collection"
 
@@ -38,6 +39,40 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
         ]
       : images
 
+  if (product.handle === "aura-patch") {
+    return (
+      <>
+        <div
+          className="content-container grid gap-10 py-10 small:grid-cols-[1.05fr_0.95fr] small:items-start small:py-16"
+          data-testid="product-container"
+        >
+          <div className="small:sticky small:top-28">
+            <ImageGallery images={displayImages} />
+          </div>
+          <div className="flex flex-col gap-8">
+            <ProductInfo product={product} />
+            <FormulaPouchNotes formula={auraCore} />
+            <div className="rounded-[1.5rem] border border-aura-forest/10 bg-white/35 p-6">
+              <Suspense fallback={null}>
+                <ProductActions product={product} region={region} />
+              </Suspense>
+            </div>
+            <CustomerReviews />
+          </div>
+        </div>
+        <AuraIngredientsGallery />
+        <div
+          className="content-container my-16 small:my-32"
+          data-testid="related-products-container"
+        >
+          <Suspense fallback={<SkeletonRelatedProducts />}>
+            <RelatedProducts product={product} countryCode={countryCode} />
+          </Suspense>
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       <div
@@ -57,19 +92,6 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
           </Suspense>
         </div>
       </div>
-      {product.handle === "aura-patch" && (
-        <section className="content-container pb-4" aria-label="What is in the Aura Core pouch">
-          <div className="max-w-[760px] border-t border-aura-forest/10 pt-10">
-            <FormulaPouchNotes formula={auraCore} />
-            <p className="mt-6 max-w-[640px] text-[12px] leading-5 text-aura-forest/50">
-              These notes describe ingredients in the pouch. They are general
-              wellness information, not a claim that the finished patch treats
-              or prevents any condition.
-            </p>
-          </div>
-        </section>
-      )}
-      {product.handle === "aura-patch" && <AuraIngredientsGallery />}
       <div
         className="content-container my-16 small:my-32"
         data-testid="related-products-container"

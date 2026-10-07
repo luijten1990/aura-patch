@@ -26,8 +26,8 @@ export function ProductJsonLd() {
     },
     aggregateRating: {
       "@type": "AggregateRating",
-      ratingValue: "4.8",
-      reviewCount: "127",
+      ratingValue: "5",
+      reviewCount: "7",
     },
   }
 

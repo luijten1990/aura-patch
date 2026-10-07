@@ -1,8 +1,12 @@
+import { auraCore } from "@lib/data/aura-collection"
 import { listProducts } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
 import { getProductPrice } from "@lib/util/get-product-price"
 import CollectionChooser from "@modules/home/components/collection-chooser"
 import IngredientsShowcase from "@modules/home/components/ingredients-showcase"
+import CustomerReviews from "@modules/products/components/customer-reviews"
+import FormulaPouchNotes from "@modules/products/components/formula-pouch-notes"
+import ProductPreview from "@modules/products/components/product-preview"
 import BuyNowButton from "@modules/store/components/buy-now-button"
 
 import PaginatedProducts from "./paginated-products"
@@ -32,6 +36,10 @@ const StoreTemplate = async ({
   const corePrice = featured
     ? getProductPrice({ product: featured }).cheapestPrice
     : null
+  const showCoreStory = featured?.handle === "aura-patch"
+  const otherProducts = showCoreStory
+    ? response.products.filter((product) => product.id !== featured?.id)
+    : response.products
 
   return (
     <main className="bg-aura-cream text-aura-forest" data-testid="category-container">
@@ -55,17 +63,29 @@ const StoreTemplate = async ({
             <BuyNowButton variantId={featuredVariant?.id} disabled={!inStock} />
           </div>
         </div>
-        <div className="pt-12">
-          {region ? (
+        {showCoreStory && region && featured ? (
+          <div
+            className="grid items-start gap-10 pt-12 small:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] small:gap-14"
+            data-testid="store-product-story"
+          >
+            <ProductPreview product={featured} region={region} />
+            <div className="flex flex-col gap-12 small:border-l small:border-aura-forest/10 small:pl-10">
+              <FormulaPouchNotes formula={auraCore} />
+              <CustomerReviews />
+            </div>
+          </div>
+        ) : null}
+        {region && otherProducts.length > 0 ? (
+          <div className="pt-12">
             <PaginatedProducts
               page={1}
               countryCode={countryCode}
               region={region}
-              products={response.products}
-              count={response.count}
+              products={otherProducts}
+              count={otherProducts.length}
             />
-          ) : null}
-        </div>
+          </div>
+        ) : null}
       </section>
       <CollectionChooser corePrice={corePrice?.calculated_price} />
       <IngredientsShowcase />
