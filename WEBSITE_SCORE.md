@@ -78,6 +78,7 @@ Last assessed: 2026-09-22 (full read-only audit; local storefront + Medusa alrea
 
 ## Evidence
 
+- 2026-10-07: Review cards use American names in place of Customer. Josh Miller’s review reads “I want more of them.” Notes: `artifacts/qa/shop-product/review-names.md`.
 - 2026-10-07: `/us/store` price row shows Normal $49.99 and Subscribe $39.99/mo, with the same pair on the product page at 390px. Notes: `artifacts/qa/shop-product/store-benefits-reviews.md`.
 - 2026-10-07: `/us/store` keeps the pouch photo fixed on the left while the right column scrolls. Prices shown: $49.99 one-time and $39.99/mo Subscribe & Save. Notes: `artifacts/qa/shop-product/store-benefits-reviews.md`.
 - 2026-10-07: Aura Core product page puts the same benefit list and reviews in the right column. Restore and Energy benefit blocks remain on `/us/store#formulations`.
