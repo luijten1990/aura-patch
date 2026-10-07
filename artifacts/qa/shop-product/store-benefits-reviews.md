@@ -10,5 +10,5 @@ Pass. On a 1440×900 viewport the pouch stays in view after scrolling 1600px (ph
 
 Restore and Energy keep the same benefit blocks on the formulations section of this page.
 
-Screenshots: `/opt/cursor/artifacts/store-right-column.png`, `/opt/cursor/artifacts/store-benefit-list.png`, `/opt/cursor/artifacts/store-customer-reviews.png`, `/opt/cursor/artifacts/store-benefits-mobile.png`.
-Walkthrough: `/opt/cursor/artifacts/store-benefits-and-reviews.mp4`.
+Screenshots: `/opt/cursor/artifacts/store-normal-subscribe-top.png`, `/opt/cursor/artifacts/product-price-mobile.png`.
+Walkthrough: `/opt/cursor/artifacts/store-normal-49-subscribe-39.mp4`.
