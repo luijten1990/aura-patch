@@ -6,7 +6,7 @@ Viewport: 1440px desktop, 390px mobile
 
 ## Result
 
-Pass. The Aura Core product sits on the left. The right column lists five benefit blocks (heading plus a short paragraph) and the seven customer reviews already published on the live product page, including Sheila Amos, Hillary Ivy, and Amandeep Singh.
+Pass. On a 1440px viewport the pouch photo fills the left half and stays in place while the right column scrolls. That column holds Choose your pouch (Subscribe & Save and one-time), the five benefit blocks, and the seven published customer reviews. Measured boxes: image x=147, pouch options x=753, benefits and reviews x=734.
 
 Restore and Energy keep the same benefit blocks on the formulations section of this page.
 

@@ -3,11 +3,13 @@ import { AuraFormula } from "@lib/data/aura-collection"
 type FormulaPouchNotesProps = {
   formula: AuraFormula
   tone?: "forest" | "cream"
+  dense?: boolean
 }
 
 const FormulaPouchNotes = ({
   formula,
   tone = "forest",
+  dense = false,
 }: FormulaPouchNotesProps) => {
   const onDark = tone === "cream"
 
@@ -20,11 +22,13 @@ const FormulaPouchNotes = ({
         }`}
       >
         {formula.benefits.map((benefit) => (
-          <div key={benefit.title} className="py-6">
+          <div key={benefit.title} className={dense ? "py-4" : "py-6"}>
             <h3
-              className={`aura-display text-[28px] leading-[1.08] small:text-[32px] ${
-                onDark ? "text-aura-cream" : "text-aura-forest"
-              }`}
+              className={`aura-display leading-[1.08] ${
+                dense
+                  ? "text-[22px] small:text-[26px]"
+                  : "text-[28px] small:text-[32px]"
+              } ${onDark ? "text-aura-cream" : "text-aura-forest"}`}
             >
               {benefit.title}
             </h3>

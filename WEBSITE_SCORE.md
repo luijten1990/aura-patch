@@ -74,7 +74,7 @@ Last assessed: 2026-09-22 (full read-only audit; local storefront + Medusa alrea
 
 ## Evidence
 
-- 2026-10-07: `/us/store` places Aura Core on the left and a benefit list plus the seven published customer reviews on the right. Notes: `artifacts/qa/shop-product/store-benefits-reviews.md`.
+- 2026-10-07: `/us/store` uses a two-column product stage. The pouch photo fills the left half. Subscribe & Save, one-time, benefits, and the seven published reviews sit in the right column. Notes: `artifacts/qa/shop-product/store-benefits-reviews.md`.
 - 2026-10-07: Aura Core product page puts the same benefit list and reviews in the right column. Restore and Energy benefit blocks remain on `/us/store#formulations`.
 - 2026-09-22: Homepage doctor+drive on existing `localhost:8000/us`. Title, H1, Shop Aura Core, nav verified via accessibility snapshot. Screenshot capture timed out. Notes: `artifacts/qa/homepage/notes.md`. Cart/checkout not driven.
 - 2026-09-22: Full audit. Notes: `artifacts/qa/audit/notes.md`. Screenshots under `artifacts/qa/audit/`. Report: `AUDIT.md`.

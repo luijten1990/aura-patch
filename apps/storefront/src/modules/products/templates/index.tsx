@@ -10,9 +10,7 @@ import { notFound } from "next/navigation"
 import { HttpTypes } from "@medusajs/types"
 
 import AuraIngredientsGallery from "@modules/products/components/aura-ingredients-gallery"
-import CustomerReviews from "@modules/products/components/customer-reviews"
-import FormulaPouchNotes from "@modules/products/components/formula-pouch-notes"
-import { auraCore } from "@lib/data/aura-collection"
+import AuraProductStage from "@modules/products/components/aura-product-stage"
 
 type ProductTemplateProps = {
   product: HttpTypes.StoreProduct
@@ -43,22 +41,10 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
     return (
       <>
         <div
-          className="content-container grid gap-10 py-10 small:grid-cols-[1.05fr_0.95fr] small:items-start small:py-16"
+          className="content-container py-8 small:py-12"
           data-testid="product-container"
         >
-          <div className="small:sticky small:top-28">
-            <ImageGallery images={displayImages} />
-          </div>
-          <div className="flex flex-col gap-8">
-            <ProductInfo product={product} />
-            <FormulaPouchNotes formula={auraCore} />
-            <div className="rounded-[1.5rem] border border-aura-forest/10 bg-white/35 p-6">
-              <Suspense fallback={null}>
-                <ProductActions product={product} region={region} />
-              </Suspense>
-            </div>
-            <CustomerReviews />
-          </div>
+          <AuraProductStage product={product} region={region} />
         </div>
         <AuraIngredientsGallery />
         <div
