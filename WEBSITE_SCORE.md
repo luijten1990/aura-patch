@@ -74,6 +74,7 @@ Last assessed: 2026-09-22 (full read-only audit; local storefront + Medusa alrea
 
 ## Evidence
 
+- 2026-10-07: `/us/store` price row shows Normal $49.99 and Subscribe $39.99/mo, with the same pair on the product page at 390px. Notes: `artifacts/qa/shop-product/store-benefits-reviews.md`.
 - 2026-10-07: `/us/store` keeps the pouch photo fixed on the left while the right column scrolls. Prices shown: $49.99 one-time and $39.99/mo Subscribe & Save. Notes: `artifacts/qa/shop-product/store-benefits-reviews.md`.
 - 2026-10-07: Aura Core product page puts the same benefit list and reviews in the right column. Restore and Energy benefit blocks remain on `/us/store#formulations`.
 - 2026-09-22: Homepage doctor+drive on existing `localhost:8000/us`. Title, H1, Shop Aura Core, nav verified via accessibility snapshot. Screenshot capture timed out. Notes: `artifacts/qa/homepage/notes.md`. Cart/checkout not driven.
