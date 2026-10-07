@@ -7,6 +7,7 @@ import {
   formulaAccentBar,
   formulaAccentText,
 } from "@lib/data/aura-collection"
+import FormulaPouchNotes from "@modules/products/components/formula-pouch-notes"
 
 const IngredientsShowcase = () => (
   <div id="ingredients">
@@ -50,6 +51,9 @@ const IngredientsShowcase = () => (
                 <p className="mt-3 text-[14px] font-medium uppercase tracking-[0.12em] text-aura-cream/65">{product.subtitle}</p>
                 <p className="aura-display mt-8 text-[29px] leading-tight text-aura-gold">{product.tagline}</p>
                 <p className="mt-5 max-w-[760px] text-[14px] leading-6 text-aura-cream/72">{product.description}</p>
+                <div className="mt-8 max-w-[760px]">
+                  <FormulaPouchNotes formula={product} tone="cream" />
+                </div>
                 <ul className="mt-7 flex flex-wrap gap-x-6 gap-y-2">
                   {product.traits.map((trait) => (
                     <li key={trait} className={`text-[10px] font-semibold uppercase tracking-[0.18em] ${formulaAccentText(product.accent)}`}>

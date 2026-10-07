@@ -16,6 +16,7 @@ export type AuraFormula = {
   accent: "ember" | "plum"
   traits: string[]
   ingredients: string[]
+  pouchNotes: string[]
 }
 
 export const AURA_COLLECTION_EYEBROW = "The Aura Collection"
@@ -63,6 +64,13 @@ export const auraCollection: AuraFormula[] = [
       "Bifidobacterium longum",
       "Lemon Powder",
     ],
+    pouchNotes: [
+      "30 patches in the pouch. Peel, apply, and wear each one for up to 12 hours.",
+      "Vitamin C, zinc, and vitamin A are in the blend for their established roles in normal immune function.",
+      "Lactobacillus casei, Lactobacillus paracasei, and Bifidobacterium longum — three named probiotic cultures in the formula.",
+      "Stabilized allicin, a garlic-derived botanical, with ginger, a warming root long used in traditional wellness.",
+      "Organic ashwagandha and rhodiola, traditional adaptogenic botanicals, inside the 19-ingredient daily ritual.",
+    ],
   },
   {
     key: "restore",
@@ -94,6 +102,13 @@ export const auraCollection: AuraFormula[] = [
       "Alpha-Lipoic Acid (ALA)",
       "Electrolytes",
     ],
+    pouchNotes: [
+      "A 30-day pouch for recovery and renewal. The same peel-and-apply patch, arriving soon.",
+      "Set for recovery, immune support, and rejuvenation, with vitamin C included for its established role in normal immune function.",
+      "Organic ashwagandha, a traditional adaptogenic botanical, in this quieter blend.",
+      "Ginger, a warming root with a long history of traditional wellness use.",
+      "Onion, wormwood, cloves, and black walnut hull, with milk thistle, alpha-lipoic acid, and electrolytes in the formula.",
+    ],
   },
   {
     key: "energy",
@@ -124,6 +139,13 @@ export const auraCollection: AuraFormula[] = [
       "Ginger",
       "Magnesium L-Threonate",
       "Vitamin B6 (Pyridoxine HCl)",
+    ],
+    pouchNotes: [
+      "A 30-day pouch for energy and vitality. The same considered patch, arriving soon.",
+      "A BCAA and EAA blend: amino acids the body uses as building blocks.",
+      "B-complex, vitamin B6, and vitamin C in the brighter daily blend.",
+      "Magnesium L-threonate, glycine, and vitamin D3 with K2.",
+      "Organic ashwagandha and ginger, for a formula aimed at energy, focus, and stamina.",
     ],
   },
 ]

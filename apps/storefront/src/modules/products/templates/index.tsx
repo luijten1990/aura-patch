@@ -10,6 +10,8 @@ import { notFound } from "next/navigation"
 import { HttpTypes } from "@medusajs/types"
 
 import AuraIngredientsGallery from "@modules/products/components/aura-ingredients-gallery"
+import FormulaPouchNotes from "@modules/products/components/formula-pouch-notes"
+import { auraCore } from "@lib/data/aura-collection"
 
 type ProductTemplateProps = {
   product: HttpTypes.StoreProduct
@@ -55,6 +57,18 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
           </Suspense>
         </div>
       </div>
+      {product.handle === "aura-patch" && (
+        <section className="content-container pb-4" aria-label="What is in the Aura Core pouch">
+          <div className="max-w-[760px] border-t border-aura-forest/10 pt-10">
+            <FormulaPouchNotes formula={auraCore} />
+            <p className="mt-6 max-w-[640px] text-[12px] leading-5 text-aura-forest/50">
+              These notes describe ingredients in the pouch. They are general
+              wellness information, not a claim that the finished patch treats
+              or prevents any condition.
+            </p>
+          </div>
+        </section>
+      )}
       {product.handle === "aura-patch" && <AuraIngredientsGallery />}
       <div
         className="content-container my-16 small:my-32"
