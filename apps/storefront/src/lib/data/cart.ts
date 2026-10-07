@@ -15,6 +15,7 @@ import {
 } from "./cookies"
 import { getRegion } from "./regions"
 import { getLocale } from "./locale-actions"
+import { isBundleCode } from "@lib/util/bundle"
 import {
   isSubscriptionCart,
   SUBSCRIBE_CODE,
@@ -76,13 +77,16 @@ const ADD_TO_CART_FIELDS =
   "id,region_id,metadata,*items.id,*items.variant_id,*items.quantity,*items.metadata,*promotions"
 
 export async function getOrSetCart(countryCode: string) {
-  const region = await getRegion(countryCode)
+  const [region, existingCart] = await Promise.all([
+    getRegion(countryCode),
+    retrieveCart(undefined, ADD_TO_CART_FIELDS),
+  ])
 
   if (!region) {
     throw new Error(`Region not found for country code: ${countryCode}`)
   }
 
-  let cart = await retrieveCart(undefined, ADD_TO_CART_FIELDS)
+  let cart = existingCart
 
   const headers = {
     ...(await getAuthHeaders()),
@@ -151,7 +155,7 @@ export async function addToCart({
 
   if (cartId) {
     try {
-      await sdk.store.cart.createLineItem(
+      const { cart: updatedCart } = await sdk.store.cart.createLineItem(
         cartId,
         {
           variant_id: variantId,
@@ -160,13 +164,14 @@ export async function addToCart({
             purchase_type: purchaseType,
           },
         },
-        {},
+        { fields: CART_FIELDS },
         headers
       )
       await revalidateByTag("carts")
-      return
-    } catch {
-      // Cart may be missing, or this variant is already in the cart.
+      return updatedCart
+    } catch (error) {
+      // Retry only a missing cart, never an ambiguous timeout or validation error.
+      if ((error as { status?: number })?.status !== 404) throw error
     }
   }
 
@@ -180,23 +185,25 @@ export async function addToCart({
     (item) => item.variant_id === variantId || item.variant?.id === variantId
   )
 
+  let updatedCart: HttpTypes.StoreCart
   try {
     if (existing?.id) {
-      await sdk.store.cart.updateLineItem(
+      const result = await sdk.store.cart.updateLineItem(
         cart.id,
         existing.id,
         {
-          quantity,
+          quantity: existing.quantity + quantity,
           metadata: {
             ...(existing.metadata || {}),
             purchase_type: purchaseType,
           },
         },
-        {},
+        { fields: CART_FIELDS },
         headers
       )
+      updatedCart = result.cart
     } else {
-      await sdk.store.cart.createLineItem(
+      const result = await sdk.store.cart.createLineItem(
         cart.id,
         {
           variant_id: variantId,
@@ -205,9 +212,10 @@ export async function addToCart({
             purchase_type: purchaseType,
           },
         },
-        {},
+        { fields: CART_FIELDS },
         headers
       )
+      updatedCart = result.cart
     }
   } catch (error) {
     const message =
@@ -218,6 +226,7 @@ export async function addToCart({
   }
 
   await revalidateByTag("carts")
+  return updatedCart
 }
 
 function purchaseTypePayload(
@@ -225,10 +234,14 @@ function purchaseTypePayload(
   purchaseType: PurchaseType
 ) {
   const subscribe = purchaseType === "subscription"
-  const existingCodes = (cart.promotions || [])
+  const appliedCodes = (cart.promotions || [])
     .map((promotion) => promotion.code)
     .filter((code): code is string => Boolean(code))
-    .filter((code) => code !== SUBSCRIBE_CODE)
+  const keptCodes = appliedCodes.filter(
+    (code) => code !== SUBSCRIBE_CODE && !isBundleCode(code)
+  )
+  // Medusa calculates automatic bundle eligibility whenever the cart changes.
+  const bundleMatches = true
 
   return {
     subscribe,
@@ -238,11 +251,10 @@ function purchaseTypePayload(
       subscription_period: subscribe ? SUBSCRIPTION_PERIOD : 0,
     },
     promo_codes: subscribe
-      ? [...existingCodes.filter((code) => code !== "ILOVEAURA"), SUBSCRIBE_CODE]
-      : existingCodes,
-    hasPromo: Boolean(
-      (cart.promotions || []).some((promotion) => promotion.code === SUBSCRIBE_CODE)
-    ),
+      ? [...keptCodes.filter((code) => code !== "ILOVEAURA"), SUBSCRIBE_CODE]
+      : keptCodes,
+    hasPromo: appliedCodes.includes(SUBSCRIBE_CODE),
+    bundleMatches,
   }
 }
 
@@ -252,14 +264,12 @@ async function syncCartPurchaseType(purchaseType: PurchaseType) {
     return
   }
 
-  const { subscribe, metadata, promo_codes, hasPromo } = purchaseTypePayload(
-    cart,
-    purchaseType
-  )
+  const { subscribe, metadata, promo_codes, hasPromo, bundleMatches } =
+    purchaseTypePayload(cart, purchaseType)
   const metaMatches =
     Boolean(cart.metadata?.subscription_interval) === subscribe &&
     (!subscribe || Number(cart.metadata?.subscription_period) > 0)
-  const promoMatches = subscribe ? hasPromo : !hasPromo
+  const promoMatches = (subscribe ? hasPromo : !hasPromo) && bundleMatches
   const headers = {
     ...(await getAuthHeaders()),
   }
@@ -309,13 +319,16 @@ export async function ensureCheckoutPurchaseType(cart: HttpTypes.StoreCart) {
   const purchaseType: PurchaseType = isSubscriptionCart(cart)
     ? "subscription"
     : "one_time"
-  const { subscribe, hasPromo } = purchaseTypePayload(cart, purchaseType)
+  const { subscribe, hasPromo, bundleMatches } = purchaseTypePayload(
+    cart,
+    purchaseType
+  )
   const metaReady =
     !subscribe ||
     (cart.metadata?.subscription_interval === SUBSCRIPTION_INTERVAL &&
       Number(cart.metadata?.subscription_period) > 0)
 
-  if (metaReady && (subscribe ? hasPromo : !hasPromo)) {
+  if (metaReady && (subscribe ? hasPromo : !hasPromo) && bundleMatches) {
     return cart
   }
 
@@ -498,7 +511,7 @@ export async function applyPromotions(codes: string[]) {
     .catch(medusaError)
 }
 
-export async function applyGiftCard(code: string) {
+export async function applyGiftCard(_code: string) {
   //   const cartId = getCartId()
   //   if (!cartId) return "No cartId cookie found"
   //   try {
@@ -510,7 +523,7 @@ export async function applyGiftCard(code: string) {
   //   }
 }
 
-export async function removeDiscount(code: string) {
+export async function removeDiscount(_code: string) {
   // const cartId = getCartId()
   // if (!cartId) return "No cartId cookie found"
   // try {
@@ -522,8 +535,8 @@ export async function removeDiscount(code: string) {
 }
 
 export async function removeGiftCard(
-  codeToRemove: string,
-  giftCards: any[]
+  _codeToRemove: string,
+  _giftCards: unknown[]
   // giftCards: GiftCard[]
 ) {
   //   const cartId = getCartId()
@@ -548,8 +561,8 @@ export async function submitPromotionForm(
   const code = formData.get("code") as string
   try {
     await applyPromotions([code])
-  } catch (e: any) {
-    return e.message
+  } catch (e: unknown) {
+    return e instanceof Error ? e.message : "Unable to apply the promotion."
   }
 }
 
@@ -625,9 +638,9 @@ export async function setAddresses(currentState: unknown, formData: FormData) {
       String(formData.get("checkout_country") || countryCode).toLowerCase() ||
       countryCode
     redirect(`/${checkoutCountry}/checkout?step=delivery`)
-  } catch (e: any) {
+  } catch (e: unknown) {
     unstable_rethrow(e)
-    return e.message
+    return e instanceof Error ? e.message : "Unable to save the address."
   }
 }
 

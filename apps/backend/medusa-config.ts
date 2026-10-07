@@ -123,16 +123,13 @@ module.exports = defineConfig({
     {
       resolve: "@medusajs/medusa/fulfillment",
       options: {
-        // Overriding providers replaces Medusa's defaults. Keep manual
-        // fulfillment for local seed and checkout when EasyPost is unset.
-        providers: easypostProvider.length
-          ? easypostProvider
-          : [
-              {
-                resolve: "@medusajs/medusa/fulfillment-manual",
-                id: "manual",
-              },
-            ],
+        providers: [
+          {
+            resolve: "@medusajs/medusa/fulfillment-manual",
+            id: "manual",
+          },
+          ...easypostProvider,
+        ],
       },
     },
     {

@@ -11,7 +11,7 @@ const EmptyCartMessage = () => {
       <span className="aura-eyebrow text-aura-gold">Your bag is waiting</span>
       <Heading
         level="h1"
-        className="aura-display mt-4 text-[52px] font-normal leading-none small:text-[72px]"
+        className="font-sans mt-4 text-[52px] font-normal leading-none small:text-[72px]"
       >
         Your cart is empty
       </Heading>

@@ -122,14 +122,14 @@ function shippingOptionCopy(
         : "Tracked · typically 3–7 business days",
     },
     "easypost-alt": {
-      title: "Best value",
+      title: "Standard shipping",
       detail: bestValueDetail({
         us: "Tracked · lowest-cost carrier besides USPS and UPS · typically 2–7 business days",
         intl: "Tracked · lowest-cost carrier besides USPS and UPS · typically 6–12 business days",
       }),
     },
     "easypost-intl-standard": {
-      title: "Best value",
+      title: "Standard shipping",
       detail: quoted?.label
         ? `Tracked · ${quoted.label} · typically 6–12 business days`
         : "Tracked · typically 6–12 business days",

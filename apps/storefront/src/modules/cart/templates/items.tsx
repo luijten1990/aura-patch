@@ -15,7 +15,7 @@ const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
   return (
     <div>
       <div className="flex items-end justify-between border-b border-aura-forest/15 pb-5">
-        <Heading className="aura-display text-[44px] font-normal leading-none small:text-[58px]">
+        <Heading className="font-sans text-[44px] font-normal leading-none small:text-[58px]">
           Your cart
         </Heading>
         <span className="pb-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-aura-forest/55">

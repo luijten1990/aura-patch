@@ -6,17 +6,51 @@ import {
   WorkflowResponse,
 } from "@medusajs/framework/workflows-sdk"
 import { SUBSCRIBE_CODE, SUBSCRIBE_PERCENT } from "../modules/subscription/constants"
+import { ensurePromotionRule, noBundleRule, subscriptionRule } from "../lib/promotion-rules"
 
 const ensureSubscribePromotionStep = createStep(
   "ensure-subscribe-promotion",
   async (_, { container }) => {
     const promotionModule = container.resolve(Modules.PROMOTION)
-    const existing = await promotionModule.listPromotions({
-      code: SUBSCRIBE_CODE,
-    })
+    const existing = await promotionModule.listPromotions(
+      { code: SUBSCRIBE_CODE },
+      { relations: ["application_method", "rules", "rules.values"] }
+    )
+    const applicationMethod = {
+      type: "percentage" as const,
+      target_type: "items" as const,
+      allocation: "across" as const,
+      value: SUBSCRIBE_PERCENT,
+    }
 
     if (existing.length) {
-      return new StepResponse({ code: SUBSCRIBE_CODE, created: false })
+      const promotion = existing[0]
+      await ensurePromotionRule(promotionModule, promotion.id, promotion.rules || [], noBundleRule)
+      await ensurePromotionRule(promotionModule, promotion.id, promotion.rules || [], subscriptionRule)
+      const method = promotion.application_method
+      const current = method ? Number(method.value) : null
+      const needsUpdate =
+        !promotion.is_automatic ||
+        promotion.status !== "active" ||
+        method?.type !== "percentage" ||
+        method?.target_type !== "items" ||
+        current !== SUBSCRIBE_PERCENT
+
+      if (needsUpdate) {
+        await promotionModule.updatePromotions({
+          id: promotion.id,
+          status: "active",
+          type: "standard",
+          is_automatic: true,
+          application_method: applicationMethod,
+        })
+      }
+
+      return new StepResponse({
+        code: SUBSCRIBE_CODE,
+        created: false,
+        updated: needsUpdate,
+      })
     }
 
     try {
@@ -24,13 +58,9 @@ const ensureSubscribePromotionStep = createStep(
         code: SUBSCRIBE_CODE,
         type: "standard",
         status: "active",
-        is_automatic: false,
-        application_method: {
-          type: "percentage",
-          target_type: "items",
-          allocation: "across",
-          value: SUBSCRIBE_PERCENT,
-        },
+        is_automatic: true,
+        rules: [noBundleRule, subscriptionRule],
+        application_method: applicationMethod,
       })
     } catch (error) {
       const later = await promotionModule.listPromotions({
@@ -42,7 +72,11 @@ const ensureSubscribePromotionStep = createStep(
       }
     }
 
-    return new StepResponse({ code: SUBSCRIBE_CODE, created: true })
+    return new StepResponse({
+      code: SUBSCRIBE_CODE,
+      created: true,
+      updated: false,
+    })
   }
 )
 

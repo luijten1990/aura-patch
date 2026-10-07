@@ -1,0 +1,33 @@
+{
+  "baselineErrorCount": 26,
+  "currentErrorCount": 26,
+  "newDiagnostics": [],
+  "diagnostics": [
+    "src\\app\\[countryCode]\\(main)\\categories\\[...category]\\page.tsx:913 TS18048 'productCategory' is possibly 'undefined'.",
+    "src\\app\\[countryCode]\\(main)\\categories\\[...category]\\page.tsx:979 TS18048 'productCategory' is possibly 'undefined'.",
+    "src\\lib\\data\\fulfillment.ts:1218 TS2352 Conversion of type '{ id: string; amount: null; }' to type 'StoreCartShippingOption' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.   Type '{ id: string; amount: null; }' is missing the following properties from type 'StoreCartShippingOption': name, price_type, service_zone_id, shipping_profile_id, and 7 more.",
+    "src\\lib\\util\\cart-money.ts:122 TS5097 An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.",
+    "src\\lib\\util\\cart-money.unit.test.ts:133 TS5097 An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.",
+    "src\\lib\\util\\cart-money.unit.test.ts:69 TS2307 Cannot find module 'node:test' or its corresponding type declarations.",
+    "src\\lib\\util\\shipping-carrier.unit.test.ts:171 TS5097 An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.",
+    "src\\lib\\util\\shipping-carrier.unit.test.ts:69 TS2307 Cannot find module 'node:test' or its corresponding type declarations.",
+    "src\\lib\\util\\subscription.unit.test.ts:117 TS5097 An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.",
+    "src\\lib\\util\\subscription.unit.test.ts:69 TS2307 Cannot find module 'node:test' or its corresponding type declarations.",
+    "src\\modules\\checkout\\components\\payment\\index.tsx:1032 TS18048 'cart' is possibly 'undefined'.",
+    "src\\modules\\checkout\\components\\payment\\index.tsx:1805 TS2345 Argument of type 'StoreCart | undefined' is not assignable to parameter of type 'StoreCart'.   Type 'undefined' is not assignable to type 'StoreCart'.",
+    "src\\modules\\checkout\\components\\payment\\index.tsx:3232 TS2345 Argument of type 'StoreCart | undefined' is not assignable to parameter of type 'StoreCart'.   Type 'undefined' is not assignable to type 'StoreCart'.",
+    "src\\modules\\checkout\\components\\review\\index.tsx:2724 TS2322 Type 'StoreCart | undefined' is not assignable to type 'StoreCart'.   Type 'undefined' is not assignable to type 'StoreCart'.",
+    "src\\modules\\checkout\\components\\review\\index.tsx:875 TS18048 'cart' is possibly 'undefined'.",
+    "src\\modules\\checkout\\components\\review\\index.tsx:905 TS18048 'cart' is possibly 'undefined'.",
+    "src\\modules\\checkout\\components\\review\\index.tsx:953 TS18048 'cart' is possibly 'undefined'.",
+    "src\\modules\\checkout\\components\\shipping\\index.tsx:10601 TS18048 'cart' is possibly 'undefined'.",
+    "src\\modules\\checkout\\components\\shipping\\index.tsx:11817 TS18048 'cart' is possibly 'undefined'.",
+    "src\\modules\\checkout\\components\\shipping\\index.tsx:11933 TS18048 'cart' is possibly 'undefined'.",
+    "src\\modules\\checkout\\components\\shipping\\index.tsx:18006 TS2322 Type 'string | undefined' is not assignable to type 'string'.   Type 'undefined' is not assignable to type 'string'.",
+    "src\\modules\\checkout\\components\\shipping\\index.tsx:18325 TS2322 Type 'string | undefined' is not assignable to type 'string'.   Type 'undefined' is not assignable to type 'string'.",
+    "src\\modules\\checkout\\components\\shipping\\index.tsx:21879 TS2322 Type 'string | undefined' is not assignable to type 'string'.   Type 'undefined' is not assignable to type 'string'.",
+    "src\\modules\\checkout\\components\\shipping\\index.tsx:6042 TS18048 'cart' is possibly 'undefined'.",
+    "src\\modules\\checkout\\components\\shipping\\index.tsx:6293 TS18048 'cart' is possibly 'undefined'.",
+    "src\\modules\\checkout\\components\\shipping\\index.tsx:7672 TS18048 'cart' is possibly 'undefined'."
+  ]
+}

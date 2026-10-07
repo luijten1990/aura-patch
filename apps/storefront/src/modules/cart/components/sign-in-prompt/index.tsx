@@ -7,7 +7,7 @@ const SignInPrompt = () => {
       <div>
         <Heading
           level="h2"
-          className="aura-display text-[28px] leading-tight small:text-[32px]"
+          className="font-sans text-[28px] leading-tight small:text-[32px]"
         >
           Already have an account?
         </Heading>

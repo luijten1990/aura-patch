@@ -1,3 +1,4 @@
+import { bundleAmount } from "@lib/util/bundle"
 import { getProductPrice } from "@lib/util/get-product-price"
 import { convertToLocale } from "@lib/util/money"
 import {
@@ -11,10 +12,12 @@ export default function ProductPrice({
   product,
   variant,
   purchaseType = "subscription",
+  bundleQuantity = 1,
 }: {
   product: HttpTypes.StoreProduct
   variant?: HttpTypes.StoreProductVariant
   purchaseType?: PurchaseType
+  bundleQuantity?: number
 }) {
   const { cheapestPrice, variantPrice } = getProductPrice({
     product,
@@ -27,8 +30,9 @@ export default function ProductPrice({
     return <div className="block w-28 h-7 rounded bg-aura-sage animate-pulse" />
   }
 
-  const normalAmount = selectedPrice.calculated_price_number
-  const subscribeNumber = subscriptionAmount(normalAmount)
+  const unitAmount = selectedPrice.calculated_price_number
+  const normalAmount = bundleAmount(unitAmount, bundleQuantity)
+  const subscribeNumber = subscriptionAmount(unitAmount)
   const normalPrice = convertToLocale({
     amount: normalAmount,
     currency_code: selectedPrice.currency_code,
@@ -37,6 +41,7 @@ export default function ProductPrice({
     amount: subscribeNumber,
     currency_code: selectedPrice.currency_code,
   })
+
   return (
     <div
       className="grid grid-cols-2 gap-4 text-aura-forest"

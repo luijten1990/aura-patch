@@ -24,11 +24,6 @@ export function ProductJsonLd() {
       itemCondition: "https://schema.org/NewCondition",
       seller: { "@type": "Organization", name: "Aura Patch" },
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "5",
-      reviewCount: "7",
-    },
   }
 
   return (

@@ -41,6 +41,25 @@ describe("buildRenewalSnapshot", () => {
       id: null,
     })
   })
+
+  it("stores the 20% Subscribe & Save price when the order still has the full pouch price", () => {
+    const snapshot = buildRenewalSnapshot({
+      currency_code: "usd",
+      total: 56.07,
+      items: [
+        {
+          title: "Aura Core",
+          quantity: 1,
+          unit_price: 49.99,
+          metadata: { purchase_type: "subscription" },
+        },
+      ],
+      shipping_methods: [{ name: "USPS Ground", amount: 6.08 }],
+    })
+
+    expect(snapshot.items[0].unit_price).toBe(39.99)
+    expect(snapshot.amount).toBe(46.07)
+  })
 })
 
 describe("readRenewalSnapshot", () => {

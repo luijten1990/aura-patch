@@ -1,6 +1,13 @@
 "use client"
 
 import { addLineItemRequest } from "@lib/util/cart-client"
+import { notifyCart } from "@lib/util/cart-events"
+import {
+  bundleAmount,
+  bundleTiers,
+  bundleUnitAmount,
+  BUNDLE_UNIT_PRICE,
+} from "@lib/util/bundle"
 import { useIntersection } from "@lib/hooks/use-in-view"
 import { convertToLocale } from "@lib/util/money"
 import {
@@ -45,6 +52,7 @@ export default function ProductActions({
   const [isAdding, setIsAdding] = useState(false)
   const [addError, setAddError] = useState<string | null>(null)
   const [purchaseType, setPurchaseType] = useState<PurchaseType>("subscription")
+  const [bundleQuantity, setBundleQuantity] = useState(1)
   const addingRef = useRef(false)
   const params = useParams()
   const countryCode = (
@@ -123,8 +131,8 @@ export default function ProductActions({
       params.delete("v_id")
     }
 
-    router.replace(pathname + "?" + params.toString())
-  }, [selectedVariant, isValidVariant, isAdding])
+    window.history.replaceState(null, "", pathname + "?" + params.toString())
+  }, [selectedVariant, isValidVariant, isAdding, pathname, searchParams])
 
   // check if the selected variant is in stock
   const inStock = useMemo(() => {
@@ -153,11 +161,6 @@ export default function ProductActions({
   const actionsRef = useRef<HTMLDivElement>(null)
 
   const inView = useIntersection(actionsRef, "0px")
-  const cartHref = `/${countryCode || "us"}/cart`
-
-  useEffect(() => {
-    router.prefetch(cartHref)
-  }, [cartHref, router])
 
   // add the selected variant to the cart
   const handleAddToCart = async (nextPurchaseType: PurchaseType = purchaseType) => {
@@ -170,15 +173,18 @@ export default function ProductActions({
     setPurchaseType(nextPurchaseType)
     setAddError(null)
     setIsAdding(true)
+    notifyCart({ status: "adding" })
 
     try {
       await addLineItemRequest({
         variantId,
-        quantity: 1,
+        quantity: nextPurchaseType === "subscription" ? 1 : bundleQuantity,
         countryCode: countryCode || "us",
         purchaseType: nextPurchaseType,
       })
-      router.push(cartHref)
+      // The API mutation does not invalidate Next's client router cache.
+      // Refresh it so the cart page cannot reuse a pre-add empty snapshot.
+      router.refresh()
     } catch (error) {
       addingRef.current = false
       const message =
@@ -190,6 +196,9 @@ export default function ProductActions({
           ? "Could not add Aura Patch to the cart. Please try again."
           : message
       )
+      notifyCart({ status: "error", message })
+    } finally {
+      addingRef.current = false
       setIsAdding(false)
     }
   }
@@ -223,14 +232,17 @@ export default function ProductActions({
           product={product}
           variant={selectedVariant}
           purchaseType={purchaseType}
+          bundleQuantity={purchaseType === "one_time" ? bundleQuantity : 1}
         />
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2" role="group" aria-label="Purchase option">
           <button
             type="button"
             disabled={isAdding}
+            aria-pressed={purchaseType === "subscription"}
             onClick={() => {
-              void handleAddToCart("subscription")
+              setPurchaseType("subscription")
+              setBundleQuantity(1)
             }}
             className={`rounded-2xl border px-4 py-3 text-left transition-colors ${
               purchaseType === "subscription"
@@ -257,14 +269,15 @@ export default function ProductActions({
               )}
             </div>
             <p className="mt-1 text-[13px] leading-5 text-aura-forest/65">
-              Every month we charge your card, ship a new box, and buy the
-              label. Cancel anytime from your account.
+              A new pouch each month, billed monthly. Cancel anytime from your account.
             </p>
           </button>
           <button
             type="button"
+            disabled={isAdding}
+            aria-pressed={purchaseType === "one_time"}
             onClick={() => {
-              void handleAddToCart("one_time")
+              setPurchaseType("one_time")
             }}
             className={`rounded-2xl border px-4 py-3 text-left transition-colors ${
               purchaseType === "one_time"
@@ -289,6 +302,67 @@ export default function ProductActions({
             </div>
           </button>
         </div>
+
+        {product.handle === "aura-patch" && selectedVariant?.calculated_price?.currency_code === "usd" && (
+          <div>
+            <h2 className="text-[12px] font-bold uppercase tracking-[0.14em] text-aura-forest">
+              Buy more, save more
+            </h2>
+            <p className="mt-2 text-[13px] leading-5 text-aura-forest/65">
+              One-time pouches. Each pouch is a 30-day supply. Free standard US shipping.
+            </p>
+            <div
+              className="mt-3 flex flex-col gap-2"
+              role="radiogroup"
+              aria-label="Buy more, save more"
+            >
+              {bundleTiers.map((tier) => {
+                const unitPrice =
+                  selectedVariant?.calculated_price?.calculated_amount ||
+                  BUNDLE_UNIT_PRICE
+                const currency =
+                  selectedVariant?.calculated_price?.currency_code || "usd"
+                const selected =
+                  purchaseType === "one_time" && bundleQuantity === tier.quantity
+                const total = bundleAmount(unitPrice, tier.quantity)
+                const perPouch = bundleUnitAmount(unitPrice, tier.quantity)
+                return (
+                  <button
+                    key={tier.quantity}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    disabled={isAdding || Boolean(selectedVariant?.manage_inventory && !selectedVariant?.allow_backorder && (selectedVariant?.inventory_quantity ?? 0) < tier.quantity)}
+                    data-testid={`bundle-option-${tier.quantity}`}
+                    onClick={() => {
+                      setPurchaseType("one_time")
+                      setBundleQuantity(tier.quantity)
+                    }}
+                    className={`grid grid-cols-[1fr_auto] gap-x-4 rounded-2xl border px-4 py-3 text-left transition-colors ${
+                      selected
+                        ? "border-aura-gold bg-aura-gold/15"
+                        : "border-aura-forest/15 bg-white/40"
+                    }`}
+                  >
+                    <span className="text-[14px] font-semibold text-aura-forest">
+                      {tier.quantity} {tier.quantity === 1 ? "pouch" : "pouches"} · {tier.days} days
+                    </span>
+                    <span className="text-[14px] font-semibold text-aura-forest">
+                      {convertToLocale({ amount: total, currency_code: currency })}
+                    </span>
+                    <span className="text-[12px] leading-5 text-aura-forest/65">
+                      {tier.percent ? `${tier.percent}% off` : "Full price"} ·{" "}
+                      {convertToLocale({ amount: perPouch, currency_code: currency })} per pouch
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+            <p className="mt-2 text-[12px] leading-5 text-aura-forest/65">
+              Bundle savings apply automatically and cannot be combined with welcome or subscription discounts.
+            </p>
+          </div>
+        )}
 
         <Button
           onClick={() => {
@@ -335,6 +409,7 @@ export default function ProductActions({
           show={!inView}
           optionsDisabled={!!disabled || isAdding}
           purchaseType={purchaseType}
+          bundleQuantity={purchaseType === "one_time" ? bundleQuantity : 1}
         />
       </div>
     </>

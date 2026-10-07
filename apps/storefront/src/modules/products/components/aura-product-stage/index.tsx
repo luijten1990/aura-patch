@@ -1,22 +1,37 @@
 import { Suspense } from "react"
-import Image from "next/image"
 import { HttpTypes } from "@medusajs/types"
 
 import { auraCore } from "@lib/data/aura-collection"
-import { auraCoreReviewSummary } from "@lib/data/aura-reviews"
+import { AURA_REVIEW_COUNT } from "@lib/data/aura-reviews"
 import CustomerReviews from "@modules/products/components/customer-reviews"
 import FormulaPouchNotes from "@modules/products/components/formula-pouch-notes"
+import ImageGallery from "@modules/products/components/image-gallery"
 import ProductActions from "@modules/products/components/product-actions"
+
+const pouchImages: HttpTypes.StoreProductImage[] = [
+  {
+    id: "aura-patch-front",
+    url: auraCore.image,
+    rank: 0,
+  },
+  {
+    id: "aura-patch-back",
+    url: "/images/aura-patch-back-transparent.png",
+    rank: 1,
+  },
+]
 
 type AuraProductStageProps = {
   product: HttpTypes.StoreProduct
   region: HttpTypes.StoreRegion
+  images?: HttpTypes.StoreProductImage[]
   titleTestId?: string
 }
 
 const AuraProductStage = ({
   product,
   region,
+  images,
   titleTestId = "product-title",
 }: AuraProductStageProps) => {
   return (
@@ -28,19 +43,7 @@ const AuraProductStage = ({
         className="self-start small:sticky"
         style={{ top: "6.5rem" }}
       >
-        <div
-          className="relative w-full overflow-hidden bg-[#f6f0e6]"
-          style={{ height: "min(70vh, 640px)" }}
-        >
-          <Image
-            src={auraCore.image}
-            alt={auraCore.imageAlt}
-            fill
-            priority
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            className="object-contain p-8"
-          />
-        </div>
+        <ImageGallery images={images?.length ? images : pouchImages} />
       </div>
 
       <div className="flex min-w-0 flex-col gap-8">
@@ -53,7 +56,7 @@ const AuraProductStage = ({
               ★★★★★
             </span>
             <span className="underline decoration-aura-gold decoration-2 underline-offset-4">
-              {auraCoreReviewSummary.rating}/5 · {auraCoreReviewSummary.count} reviews
+              5/5 · {AURA_REVIEW_COUNT} reviews
             </span>
           </a>
           <p className="mt-4 text-[11px] uppercase tracking-[0.18em] text-aura-ember">

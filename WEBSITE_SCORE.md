@@ -2,6 +2,10 @@
 
 Aura Patch. No numerical score until real criteria have been assessed. Mark items only with evidence (command output, screenshot path, or blocked prerequisite).
 
+## Why-a-patch advertorial (2026-10-02)
+
+Draft implementation at `/[countryCode]/why-a-patch`. Targeted lint and 14 storefront tests pass. Typecheck has the same 26 existing diagnostics with and without the new page. Desktop/mobile isolated component layout and disclosure checks pass. Full storefront verification and production build remain **blocked** by missing Medusa environment configuration; isolated screenshots do not establish a working purchase flow. Evidence and remaining checks: [advertorial QA notes](artifacts/qa/why-a-patch/notes.md).
+
 Last assessed: 2026-09-22 (full read-only audit; local storefront + Medusa already running). Findings: `AUDIT.md`.
 
 ## Functionality
@@ -77,5 +81,7 @@ Last assessed: 2026-09-22 (full read-only audit; local storefront + Medusa alrea
 - 2026-10-07: `/us/store` price row shows Normal $49.99 and Subscribe $39.99/mo, with the same pair on the product page at 390px. Notes: `artifacts/qa/shop-product/store-benefits-reviews.md`.
 - 2026-10-07: `/us/store` keeps the pouch photo fixed on the left while the right column scrolls. Prices shown: $49.99 one-time and $39.99/mo Subscribe & Save. Notes: `artifacts/qa/shop-product/store-benefits-reviews.md`.
 - 2026-10-07: Aura Core product page puts the same benefit list and reviews in the right column. Restore and Energy benefit blocks remain on `/us/store#formulations`.
+- 2026-10-03: Buy-more pouch prices match $49.99 / $89.98 / $127.47 / $159.97 in `bundle.unit.test.ts`. Storefront tests passed. Product-page browser check blocked: this environment has no Medusa publishable key or backend, so `/us/products/aura-patch` cannot render. Lifestyle illustration caption removed. Sheila Amos stays the only featured review; other pasted reviews were not published.
+- 2026-10-02: Cart/PDP improvements, transparent label, truthful review state, and footer disclaimer. 21 storefront tests pass. Isolated desktop/mobile component checks pass; full live checkout/build blocked by missing Medusa configuration. See `artifacts/qa/cart-product/notes.md`. Unsupported JSON-LD rating removed; product title now H1. Earlier audit checkboxes above are historical, not a fresh full-site score.
 - 2026-09-22: Homepage doctor+drive on existing `localhost:8000/us`. Title, H1, Shop Aura Core, nav verified via accessibility snapshot. Screenshot capture timed out. Notes: `artifacts/qa/homepage/notes.md`. Cart/checkout not driven.
 - 2026-09-22: Full audit. Notes: `artifacts/qa/audit/notes.md`. Screenshots under `artifacts/qa/audit/`. Report: `AUDIT.md`.
