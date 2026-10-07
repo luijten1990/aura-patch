@@ -27,32 +27,46 @@ export default function ProductPrice({
     return <div className="block w-28 h-7 rounded bg-aura-sage animate-pulse" />
   }
 
-  const isSubscribe = purchaseType === "subscription"
-  const displayAmount = isSubscribe
-    ? subscriptionAmount(selectedPrice.calculated_price_number)
-    : selectedPrice.calculated_price_number
-  const displayPrice = convertToLocale({
-    amount: displayAmount,
+  const normalAmount = selectedPrice.calculated_price_number
+  const subscribeNumber = subscriptionAmount(normalAmount)
+  const normalPrice = convertToLocale({
+    amount: normalAmount,
     currency_code: selectedPrice.currency_code,
   })
-
+  const subscribePrice = convertToLocale({
+    amount: subscribeNumber,
+    currency_code: selectedPrice.currency_code,
+  })
   return (
-    <div className="flex flex-col text-aura-forest">
-      <span className="aura-display text-[30px]">
-        {!variant && "From "}
-        <span data-testid="product-price" data-value={displayAmount}>
-          {displayPrice}
-        </span>
-        {isSubscribe && (
-          <span className="ml-1 text-[16px] font-sans font-medium">/mo</span>
-        )}
-      </span>
-      {isSubscribe && (
-        <p className="mt-1 text-[13px] text-aura-forest/60">
-          <span className="line-through">{selectedPrice.calculated_price}</span>
-          {" "}Save {SUBSCRIBE_PERCENT}% with auto-renew
+    <div
+      className="grid grid-cols-2 gap-4 text-aura-forest"
+      data-purchase-type={purchaseType}
+    >
+      <div>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-aura-forest/55">
+          Normal
         </p>
-      )}
+        <p className="aura-display mt-1 text-[30px] leading-none">
+          {!variant && "From "}
+          <span data-testid="product-price" data-value={normalAmount}>
+            {normalPrice}
+          </span>
+        </p>
+      </div>
+      <div>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-aura-forest/55">
+          Subscribe
+        </p>
+        <p className="aura-display mt-1 text-[30px] leading-none">
+          <span data-testid="subscribe-price" data-value={subscribeNumber}>
+            {subscribePrice}
+          </span>
+          <span className="ml-1 text-[16px] font-sans font-medium">/mo</span>
+        </p>
+        <p className="mt-1 text-[12px] text-aura-forest/55">
+          Save {SUBSCRIBE_PERCENT}%
+        </p>
+      </div>
     </div>
   )
 }

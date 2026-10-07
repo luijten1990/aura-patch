@@ -20,4 +20,4 @@ export const isSubscriptionCart = (
   )
 
 export const subscriptionAmount = (amount: number) =>
-  amount * ((100 - SUBSCRIBE_PERCENT) / 100)
+  Math.round(amount * (100 - SUBSCRIBE_PERCENT)) / 100

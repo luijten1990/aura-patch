@@ -1,7 +1,13 @@
 import assert from "node:assert/strict"
 import { describe, it } from "node:test"
 
-import { isSubscriptionCart } from "./subscription.ts"
+import { isSubscriptionCart, subscriptionAmount } from "./subscription.ts"
+
+describe("subscriptionAmount", () => {
+  it("prices a $49.99 pouch at $39.99 on subscribe", () => {
+    assert.equal(subscriptionAmount(49.99), 39.99)
+  })
+})
 
 describe("isSubscriptionCart", () => {
   it("treats a subscribe line item as a subscription cart", () => {
