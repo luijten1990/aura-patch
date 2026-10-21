@@ -68,6 +68,21 @@
     @apply mx-auto w-full max-w-[1320px] px-5 small:px-8;
   }
 
+  .formula-pouch-photo {
+    height: 390px;
+  }
+
+  @media (min-width: 1024px) {
+    .formula-pouch-pin {
+      position: sticky;
+      top: 6.5rem;
+    }
+
+    .formula-pouch-photo {
+      height: min(540px, calc(100vh - 8.5rem));
+    }
+  }
+
   .aura-display {
     font-family: var(--font-hedvig-serif), Iowan Old Style, Baskerville, serif;
     font-weight: 400;

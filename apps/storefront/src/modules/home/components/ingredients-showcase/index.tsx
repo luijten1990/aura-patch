@@ -36,13 +36,20 @@ const IngredientsShowcase = () => (
 
       <div className="mt-14 space-y-6">
         {auraCollection.map((product) => (
-          <article key={product.key} className="overflow-hidden rounded-[1.75rem] border border-aura-cream/15 bg-[#1a4d42]">
+          <article key={product.key} className="rounded-[1.75rem] border border-aura-cream/15 bg-[#1a4d42]">
             <div className="grid small:grid-cols-[0.72fr_1.28fr]">
-              <div className="relative min-h-[390px] overflow-hidden bg-aura-cream small:min-h-[540px]">
-                <Image src={product.image} alt={product.imageAlt} fill className="object-contain p-8" sizes="(max-width: 1023px) 100vw, 38vw" />
-                <span className="absolute left-5 top-5 rounded-full bg-aura-forest/90 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-aura-cream backdrop-blur">
-                  {product.status === "available" ? "Available now" : "Coming soon"}
-                </span>
+              <div>
+                <div
+                  className="formula-pouch-pin"
+                  data-testid={`formula-pouch-${product.key}`}
+                >
+                  <div className="formula-pouch-photo relative overflow-hidden rounded-t-[1.75rem] bg-aura-cream small:rounded-l-[1.75rem] small:rounded-tr-none">
+                    <Image src={product.image} alt={product.imageAlt} fill className="object-contain p-8" sizes="(max-width: 1023px) 100vw, 38vw" />
+                    <span className="absolute left-5 top-5 rounded-full bg-aura-forest/90 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-aura-cream backdrop-blur">
+                      {product.status === "available" ? "Available now" : "Coming soon"}
+                    </span>
+                  </div>
+                </div>
               </div>
               <div className="p-6 small:p-9 medium:p-11">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-aura-gold">{product.categories}</p>
