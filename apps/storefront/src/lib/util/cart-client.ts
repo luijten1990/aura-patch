@@ -41,11 +41,13 @@ export async function addLineItemRequest({
   quantity,
   countryCode,
   purchaseType = "subscription",
+  notify = true,
 }: {
   variantId: string
   quantity: number
   countryCode: string
   purchaseType?: PurchaseType
+  notify?: boolean
 }) {
   const response = await fetch("/api/cart/line-items", {
     method: "POST",
@@ -68,6 +70,8 @@ export async function addLineItemRequest({
       result?.error || "Could not add Aura Patch to the cart. Please try again."
     )
   }
-  notifyCart({ status: "updated", cart: result.cart })
+  if (notify) {
+    notifyCart({ status: "updated", cart: result.cart })
+  }
   return result.cart
 }

@@ -40,13 +40,19 @@ async function PaymentSection({ cart }: { cart: HttpTypes.StoreCart }) {
 export default function CheckoutForm({
   cart,
   customer,
+  step = "address",
 }: {
   cart: HttpTypes.StoreCart | null
   customer: HttpTypes.StoreCustomer | null
+  step?: string
 }) {
   if (!cart) {
     return null
   }
+
+  const showShipping =
+    step === "delivery" || step === "payment" || step === "review"
+  const showPayment = step === "payment" || step === "review"
 
   return (
     <div className="w-full grid grid-cols-1 gap-y-8">
@@ -60,19 +66,27 @@ export default function CheckoutForm({
         <AddressSection cart={cart} customer={customer} />
       </Suspense>
 
-      <Suspense
-        fallback={
-          <div className="py-6 text-[14px] text-aura-forest/55">
-            Loading delivery options…
-          </div>
-        }
-      >
-        <DeliverySection cart={cart} />
-      </Suspense>
+      {showShipping ? (
+        <Suspense
+          fallback={
+            <div className="py-6 text-[14px] text-aura-forest/55">
+              Loading delivery options…
+            </div>
+          }
+        >
+          <DeliverySection cart={cart} />
+        </Suspense>
+      ) : (
+        <Shipping cart={cart} availableShippingMethods={[]} />
+      )}
 
-      <Suspense fallback={null}>
-        <PaymentSection cart={cart} />
-      </Suspense>
+      {showPayment ? (
+        <Suspense fallback={null}>
+          <PaymentSection cart={cart} />
+        </Suspense>
+      ) : (
+        <Payment cart={cart} availablePaymentMethods={[]} />
+      )}
 
       <Review cart={cart} />
     </div>

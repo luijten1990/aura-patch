@@ -173,7 +173,10 @@ export default function ProductActions({
     setPurchaseType(nextPurchaseType)
     setAddError(null)
     setIsAdding(true)
-    notifyCart({ status: "adding" })
+    const goToCheckout = nextPurchaseType === "subscription"
+    if (!goToCheckout) {
+      notifyCart({ status: "adding" })
+    }
 
     try {
       await addLineItemRequest({
@@ -181,12 +184,20 @@ export default function ProductActions({
         quantity: nextPurchaseType === "subscription" ? 1 : bundleQuantity,
         countryCode: countryCode || "us",
         purchaseType: nextPurchaseType,
+        notify: !goToCheckout,
       })
+      if (goToCheckout) {
+        window.location.assign(
+          `/${countryCode || "us"}/checkout?step=address`
+        )
+        return
+      }
       // The API mutation does not invalidate Next's client router cache.
       // Refresh it so the cart page cannot reuse a pre-add empty snapshot.
       router.refresh()
     } catch (error) {
       addingRef.current = false
+      setIsAdding(false)
       const message =
         error instanceof Error && error.message
           ? error.message
@@ -198,8 +209,10 @@ export default function ProductActions({
       )
       notifyCart({ status: "error", message })
     } finally {
-      addingRef.current = false
-      setIsAdding(false)
+      if (!goToCheckout) {
+        addingRef.current = false
+        setIsAdding(false)
+      }
     }
   }
 
@@ -384,7 +397,9 @@ export default function ProductActions({
           data-testid="add-product-button"
         >
           {isAdding
-            ? "Adding to cart..."
+            ? purchaseType === "subscription"
+              ? "Going to checkout…"
+              : "Adding to cart..."
             : !selectedVariant
             ? "Select variant"
             : !inStock || !isValidVariant

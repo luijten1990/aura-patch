@@ -30,7 +30,7 @@ import {
  * @returns The cart object if found, or null if not found.
  */
 const CART_FIELDS =
-  "metadata, email, currency_code, *items, *region, *items.product, *items.variant, *items.thumbnail, *items.metadata, +items.total, +items.subtotal, +items.original_total, *promotions, *shipping_address, *billing_address, *shipping_methods, +shipping_methods.name, +shipping_methods.amount, +shipping_methods.total, *payment_collection, *payment_collection.payment_sessions, +total, +subtotal, +item_subtotal, +shipping_subtotal, +shipping_total, +discount_subtotal, +tax_total"
+  "metadata,email,currency_code,*items,*region,*items.product,*items.variant,*items.thumbnail,*items.metadata,+items.total,+items.subtotal,+items.original_total,*promotions,*shipping_address,*billing_address,*shipping_methods,+shipping_methods.name,+shipping_methods.amount,+shipping_methods.total,*payment_collection,*payment_collection.payment_sessions,+total,+subtotal,+item_subtotal,+shipping_subtotal,+shipping_total,+discount_subtotal,+tax_total"
 
 const revalidateByTag = async (tag: string) => {
   const cacheTag = await getCacheTag(tag)
@@ -164,11 +164,15 @@ export async function addToCart({
             purchase_type: purchaseType,
           },
         },
-        { fields: CART_FIELDS },
+        { fields: ADD_TO_CART_FIELDS },
         headers
       )
+      const cart =
+        purchaseType === "subscription"
+          ? await attachSubscription(updatedCart, headers)
+          : updatedCart
       await revalidateByTag("carts")
-      return updatedCart
+      return cart
     } catch (error) {
       // Retry only a missing cart, never an ambiguous timeout or validation error.
       if ((error as { status?: number })?.status !== 404) throw error
@@ -198,7 +202,7 @@ export async function addToCart({
             purchase_type: purchaseType,
           },
         },
-        { fields: CART_FIELDS },
+        { fields: ADD_TO_CART_FIELDS },
         headers
       )
       updatedCart = result.cart
@@ -212,7 +216,7 @@ export async function addToCart({
             purchase_type: purchaseType,
           },
         },
-        { fields: CART_FIELDS },
+        { fields: ADD_TO_CART_FIELDS },
         headers
       )
       updatedCart = result.cart
@@ -225,8 +229,71 @@ export async function addToCart({
     throw new Error(message)
   }
 
+  if (purchaseType === "subscription") {
+    updatedCart = await attachSubscription(updatedCart, headers)
+  }
+
   await revalidateByTag("carts")
   return updatedCart
+}
+
+async function attachSubscription(
+  cart: HttpTypes.StoreCart,
+  headers: Awaited<ReturnType<typeof getAuthHeaders>>
+) {
+  const { metadata, promo_codes, hasPromo } = purchaseTypePayload(
+    cart,
+    "subscription"
+  )
+  const metaReady =
+    cart.metadata?.subscription_interval === SUBSCRIPTION_INTERVAL &&
+    Number(cart.metadata?.subscription_period) > 0
+  let next = cart
+
+  if (!metaReady || !hasPromo) {
+    try {
+      const result = await sdk.store.cart.update(
+        cart.id,
+        { metadata, promo_codes },
+        { fields: ADD_TO_CART_FIELDS },
+        headers
+      )
+      next = result?.cart || cart
+    } catch {
+      // Checkout still applies Subscribe & Save if this update does not land.
+    }
+  }
+
+  const mismatched = (cart.items || []).filter(
+    (item) =>
+      item.id &&
+      item.metadata?.purchase_type &&
+      item.metadata.purchase_type !== "subscription"
+  )
+
+  if (mismatched.length) {
+    await Promise.all(
+      mismatched.map((item) =>
+        sdk.store.cart
+          .updateLineItem(
+            cart.id,
+            item.id,
+            {
+              quantity: item.quantity,
+              metadata: {
+                ...(item.metadata || {}),
+                purchase_type: "subscription",
+              },
+            },
+            { fields: ADD_TO_CART_FIELDS },
+            headers
+          )
+          .catch(() => undefined)
+      )
+    )
+  }
+
+  return next
 }
 
 function purchaseTypePayload(

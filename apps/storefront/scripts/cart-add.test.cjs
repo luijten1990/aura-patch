@@ -29,7 +29,16 @@ function action({ cartId = "cart_existing", fail, existing = null } = {}) {
           calls.push(["create", ...args])
           return { cart: { id: "cart_new", region_id: "region", items: [] } }
         },
-        update: async () => ({}),
+        update: async (...args) => {
+          calls.push(["cart-update", ...args])
+          return {
+            cart: {
+              ...confirmed,
+              metadata: args[1]?.metadata,
+              promotions: (args[1]?.promo_codes || []).map((code) => ({ code })),
+            },
+          }
+        },
       },
     },
   }
@@ -52,7 +61,12 @@ function action({ cartId = "cart_existing", fail, existing = null } = {}) {
     },
     "./regions": { getRegion: async () => ({ id: "region" }) },
     "./locale-actions": { getLocale: async () => "en" },
-    "@lib/util/subscription": {},
+    "@lib/util/subscription": {
+      SUBSCRIBE_CODE: "SUBSCRIBE20",
+      SUBSCRIPTION_INTERVAL: "monthly",
+      SUBSCRIPTION_PERIOD: 1,
+      isSubscriptionCart: () => false,
+    },
     "@lib/util/bundle": {
       bundleCodeForQuantity: () => null,
       isBundleCode: () => false,
@@ -96,8 +110,22 @@ test("existing cart returns the confirmed mutation response without a second car
 
 test("subscription selection is preserved in the mutation", async () => {
   const fixture = action()
-  await fixture.add({ ...input, purchaseType: "subscription" })
+  const cart = await fixture.add({ ...input, purchaseType: "subscription" })
   assert.equal(fixture.calls[0][2].metadata.purchase_type, "subscription")
+  assert.equal(
+    fixture.calls[0][3].fields,
+    "id,region_id,metadata,*items.id,*items.variant_id,*items.quantity,*items.metadata,*promotions",
+  )
+  const sync = fixture.calls.find((call) => call[0] === "cart-update")
+  assert.equal(sync[2].metadata.subscription_interval, "monthly")
+  assert.equal(sync[2].metadata.subscription_period, 1)
+  assert.deepEqual(sync[2].promo_codes, ["SUBSCRIBE20"])
+  assert.equal(sync[3].fields, fixture.calls[0][3].fields)
+  assert.equal(cart.metadata.subscription_interval, "monthly")
+  assert.equal(
+    fixture.calls.filter((call) => call[0] === "add").length,
+    1,
+  )
 })
 
 test("a timeout is surfaced without retrying a possibly completed add", async () => {

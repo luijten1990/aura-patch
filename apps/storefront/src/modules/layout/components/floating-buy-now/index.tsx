@@ -1,7 +1,7 @@
 "use client"
 
 import { addLineItemRequest } from "@lib/util/cart-client"
-import { useParams, usePathname, useRouter } from "next/navigation"
+import { useParams, usePathname } from "next/navigation"
 import { useRef, useState } from "react"
 
 export default function FloatingBuyNow({
@@ -15,7 +15,6 @@ export default function FloatingBuyNow({
 }) {
   const pathname = usePathname()
   const { countryCode } = useParams()
-  const router = useRouter()
   const [status, setStatus] = useState<"idle" | "adding" | "error">("idle")
   const addingRef = useRef(false)
 
@@ -43,8 +42,9 @@ export default function FloatingBuyNow({
         quantity: 1,
         countryCode: countryCode as string,
         purchaseType: "subscription",
+        notify: false,
       })
-      router.push(`/${countryCode}/checkout?step=address`)
+      window.location.assign(`/${countryCode || "us"}/checkout?step=address`)
     } catch {
       addingRef.current = false
       setStatus("error")

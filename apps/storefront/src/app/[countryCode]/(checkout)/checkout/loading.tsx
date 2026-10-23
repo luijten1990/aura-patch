@@ -6,7 +6,7 @@ export default function CheckoutLoading() {
         Checkout
       </h1>
       <p className="mt-10 text-[14px] text-aura-forest/55">
-        Loading your shipping details…
+        Opening checkout…
       </p>
     </div>
   )

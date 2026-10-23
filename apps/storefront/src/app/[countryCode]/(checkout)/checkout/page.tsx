@@ -11,7 +11,14 @@ export const metadata: Metadata = {
   title: "Checkout",
 }
 
-export default async function Checkout() {
+export default async function Checkout({
+  searchParams,
+}: {
+  searchParams: Promise<{ step?: string | string[] }>
+}) {
+  const params = await searchParams
+  const stepValue = Array.isArray(params.step) ? params.step[0] : params.step
+  const step = stepValue || "address"
   const [initialCart, customer] = await Promise.all([
     retrieveCart(),
     retrieveCustomer(),
@@ -32,7 +39,7 @@ export default async function Checkout() {
       <CheckoutCartProvider cart={cart}>
         <div className="mt-10 grid grid-cols-1 gap-10 small:grid-cols-[minmax(0,1fr)_380px] small:gap-12">
           <PaymentWrapper cart={cart}>
-            <CheckoutForm cart={cart} customer={customer} />
+            <CheckoutForm cart={cart} customer={customer} step={step} />
           </PaymentWrapper>
           <CheckoutSummary />
         </div>

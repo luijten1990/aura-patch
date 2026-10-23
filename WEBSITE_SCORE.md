@@ -78,6 +78,7 @@ Last assessed: 2026-09-22 (full read-only audit; local storefront + Medusa alrea
 
 ## Evidence
 
+- 2026-10-23: Subscribe & save opens the checkout address form directly. Warm local click-to-address was 1047 ms, total $39.99, and shipping quotes waited until delivery. One-time add still opens the cart drawer. Notes: `artifacts/qa/shop-product/faster-subscribe-checkout.md`.
 - 2026-10-21: Homepage formulations keep each pouch on screen while its benefits scroll. Notes: `artifacts/qa/shop-product/sticky-formula-pouches.md`.
 - 2026-10-07: Review cards use American names in place of Customer. Josh Miller’s review reads “I want more of them.” Notes: `artifacts/qa/shop-product/review-names.md`.
 - 2026-10-07: `/us/store` price row shows Normal $49.99 and Subscribe $39.99/mo, with the same pair on the product page at 390px. Notes: `artifacts/qa/shop-product/store-benefits-reviews.md`.

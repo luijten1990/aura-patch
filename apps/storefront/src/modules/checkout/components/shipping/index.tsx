@@ -232,6 +232,10 @@ const Shipping: React.FC<ShippingProps> = ({
   const hasPickupOptions = !!_pickupMethods?.length
 
   useEffect(() => {
+    if (!isOpen) {
+      return
+    }
+
     const knownPrices: Record<string, number> = {}
     for (const option of _shippingMethods || []) {
       if (typeof option.amount === "number" && option.amount > 0) {
@@ -273,7 +277,7 @@ const Shipping: React.FC<ShippingProps> = ({
     if (_pickupMethods?.find((m) => m.id === shippingMethodId)) {
       setShowPickupOptions(PICKUP_OPTION_ON)
     }
-  }, [availableShippingMethods])
+  }, [availableShippingMethods, isOpen])
 
   const selectedMethod = _shippingMethods?.find((option) => option.id === shippingMethodId)
   const selectedRateReady = selectedMethod

@@ -1,7 +1,7 @@
 "use client"
 
 import { addLineItemRequest } from "@lib/util/cart-client"
-import { useParams, useRouter } from "next/navigation"
+import { useParams } from "next/navigation"
 import { useRef, useState } from "react"
 
 export default function BuyNowButton({
@@ -12,7 +12,6 @@ export default function BuyNowButton({
   disabled?: boolean
 }) {
   const { countryCode } = useParams()
-  const router = useRouter()
   const [status, setStatus] = useState<"idle" | "adding" | "error">("idle")
   const addingRef = useRef(false)
 
@@ -27,8 +26,9 @@ export default function BuyNowButton({
         quantity: 1,
         countryCode: countryCode as string,
         purchaseType: "subscription",
+        notify: false,
       })
-      router.push(`/${countryCode}/checkout?step=address`)
+      window.location.assign(`/${countryCode || "us"}/checkout?step=address`)
     } catch {
       addingRef.current = false
       setStatus("error")
