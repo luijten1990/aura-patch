@@ -78,6 +78,7 @@ Last assessed: 2026-09-22 (full read-only audit; local storefront + Medusa alrea
 
 ## Evidence
 
+- 2026-10-23: Renewal snapshots store the Subscribe & Save price. A new local subscription saved €39.99 plus €10 shipping (amount 49.99). The earlier zero snapshot was rebuilt to the same amounts on force renew. The charge still stops with no saved Stripe card. Notes: `artifacts/qa/shop-product/renewal-snapshot.md`.
 - 2026-10-23: Cart titles use Hedvig, and the remaining cart text, prices, quantity control, and promotion line use Manrope. No Inter left on `/us/cart` or the cart drawer.
 - 2026-10-23: Subscribe & save opens the checkout address form directly. Warm local click-to-address was 1047 ms, total $39.99, and shipping quotes waited until delivery. One-time add still opens the cart drawer. Notes: `artifacts/qa/shop-product/faster-subscribe-checkout.md`.
 - 2026-10-21: Homepage formulations keep each pouch on screen while its benefits scroll. Notes: `artifacts/qa/shop-product/sticky-formula-pouches.md`.
