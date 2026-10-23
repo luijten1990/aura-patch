@@ -34,14 +34,106 @@ export type SubscriptionRenewalSnapshot = {
   shipping_methods: SubscriptionRenewalShippingMethod[]
 }
 
+export const RENEWAL_ORDER_FIELDS = [
+  "id",
+  "customer_id",
+  "email",
+  "currency_code",
+  "region_id",
+  "sales_channel_id",
+  "total",
+  "shipping_address.*",
+  "billing_address.*",
+  "items.title",
+  "items.subtitle",
+  "items.thumbnail",
+  "items.variant_id",
+  "items.product_id",
+  "items.quantity",
+  "items.unit_price",
+  "items.raw_unit_price",
+  "items.metadata",
+  "shipping_methods.name",
+  "shipping_methods.amount",
+  "shipping_methods.raw_amount",
+  "shipping_methods.is_tax_inclusive",
+  "shipping_methods.shipping_option_id",
+  "shipping_methods.data",
+]
+
 const asRecord = (value: unknown) =>
   value && typeof value === "object" ? value as Record<string, unknown> : undefined
 
 const asString = (value: unknown) =>
   typeof value === "string" && value ? value : undefined
 
-const asNumber = (value: unknown) =>
-  typeof value === "number" && Number.isFinite(value) ? value : 0
+const asFinite = (value: unknown): number | undefined => {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value
+  }
+  if (typeof value === "string" && value.trim()) {
+    const parsed = Number(value)
+    if (Number.isFinite(parsed)) {
+      return parsed
+    }
+  }
+  return undefined
+}
+
+// Medusa query results hand back BigNumber instances or { value, precision }
+// objects. Reading them as plain numbers stores 0 and a later renewal would
+// try to charge nothing.
+const asNumber = (value: unknown): number => {
+  const direct = asFinite(value)
+  if (direct !== undefined) {
+    return direct
+  }
+  if (!value || typeof value !== "object") {
+    return 0
+  }
+
+  const record = value as Record<string, unknown>
+  const numeric = asFinite(record.numeric) ?? asFinite(record.numeric_)
+  if (numeric !== undefined) {
+    return numeric
+  }
+
+  const raw = asRecord(record.raw) || asRecord(record.raw_)
+  const rawValue = raw ? asFinite(raw.value) : undefined
+  if (rawValue !== undefined) {
+    return rawValue
+  }
+
+  const plainValue = asFinite(record.value)
+  if (plainValue !== undefined) {
+    return plainValue
+  }
+
+  if (
+    typeof record.valueOf === "function" &&
+    record.valueOf !== Object.prototype.valueOf
+  ) {
+    const primitive = asFinite(record.valueOf())
+    if (primitive !== undefined) {
+      return primitive
+    }
+  }
+
+  return 0
+}
+
+const firstMoney = (...values: unknown[]) => {
+  for (const value of values) {
+    if (value === undefined || value === null || value === "") {
+      continue
+    }
+    const parsed = asNumber(value)
+    if (parsed !== 0) {
+      return parsed
+    }
+  }
+  return 0
+}
 
 const sanitizeAddress = (value: unknown) => {
   const address = asRecord(value)
@@ -69,8 +161,8 @@ export const buildRenewalSnapshot = (
     .map((item) => asRecord(item))
     .filter((item): item is Record<string, unknown> => Boolean(item))
     .map((item) => {
-      const quantity = asNumber(item.quantity) || 1
-      const listUnit = asNumber(item.unit_price)
+      const quantity = asNumber(item.quantity) || asNumber(item.raw_quantity) || 1
+      const listUnit = firstMoney(item.unit_price, item.raw_unit_price)
       const metadata = asRecord(item.metadata)
       const isSubscription = metadata?.purchase_type === "subscription"
       const unitPrice =
@@ -95,7 +187,7 @@ export const buildRenewalSnapshot = (
     .filter((method): method is Record<string, unknown> => Boolean(method))
     .map((method) => ({
       name: asString(method.name) || "Shipping",
-      amount: asNumber(method.amount),
+      amount: firstMoney(method.amount, method.raw_amount),
       is_tax_inclusive: Boolean(method.is_tax_inclusive),
       shipping_option_id: asString(method.shipping_option_id),
       data: asRecord(method.data),
@@ -110,7 +202,7 @@ export const buildRenewalSnapshot = (
     0
   )
   const subscribeTotal = Math.round((itemTotal + shippingTotal) * 100) / 100
-  const recordedTotal = asNumber(order.total)
+  const recordedTotal = firstMoney(order.total, order.raw_total)
 
   return {
     customer_id: asString(order.customer_id),
@@ -140,4 +232,11 @@ export const readRenewalSnapshot = (
   }
 
   return record
+}
+
+export const renewalSnapshotMissingPrices = (
+  snapshot: SubscriptionRenewalSnapshot
+) => {
+  const hasItemPrice = snapshot.items.some((item) => item.unit_price > 0)
+  return snapshot.amount <= 0 || !hasItemPrice
 }

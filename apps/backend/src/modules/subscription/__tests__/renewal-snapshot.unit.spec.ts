@@ -1,4 +1,9 @@
-import { buildRenewalSnapshot, readRenewalSnapshot } from "../renewal-snapshot"
+import { BigNumber } from "@medusajs/utils"
+import {
+  buildRenewalSnapshot,
+  readRenewalSnapshot,
+  renewalSnapshotMissingPrices,
+} from "../renewal-snapshot"
 
 describe("buildRenewalSnapshot", () => {
   it("copies order money, items, and shipping without leftover address ids", () => {
@@ -59,6 +64,63 @@ describe("buildRenewalSnapshot", () => {
 
     expect(snapshot.items[0].unit_price).toBe(39.99)
     expect(snapshot.amount).toBe(46.07)
+  })
+
+  it("reads Medusa BigNumber, raw money objects, and numeric strings", () => {
+    const fromBigNumber = buildRenewalSnapshot({
+      currency_code: "eur",
+      total: new BigNumber("49.992"),
+      items: [
+        {
+          title: "Aura Core",
+          quantity: new BigNumber("1"),
+          unit_price: new BigNumber({ value: "49.99", precision: 20 }),
+          metadata: { purchase_type: "subscription" },
+        },
+      ],
+      shipping_methods: [
+        {
+          name: "Standard Shipping",
+          amount: new BigNumber({ value: "10", precision: 20 }),
+        },
+      ],
+    })
+
+    expect(fromBigNumber.items[0].quantity).toBe(1)
+    expect(fromBigNumber.items[0].unit_price).toBe(39.99)
+    expect(fromBigNumber.shipping_methods[0].amount).toBe(10)
+    expect(fromBigNumber.amount).toBe(49.99)
+
+    const fromRaw = buildRenewalSnapshot({
+      currency_code: "eur",
+      total: { value: "49.992", precision: 20 },
+      items: [
+        {
+          title: "Aura Core",
+          quantity: { value: "1", precision: 20 },
+          unit_price: null,
+          raw_unit_price: { value: "49.99", precision: 20 },
+          metadata: { purchase_type: "subscription" },
+        },
+      ],
+      shipping_methods: [
+        {
+          name: "Standard Shipping",
+          amount: "10",
+        },
+      ],
+    })
+
+    expect(fromRaw.items[0].unit_price).toBe(39.99)
+    expect(fromRaw.shipping_methods[0].amount).toBe(10)
+    expect(fromRaw.amount).toBe(49.99)
+    expect(renewalSnapshotMissingPrices(fromRaw)).toBe(false)
+    expect(renewalSnapshotMissingPrices({
+      currency_code: "eur",
+      amount: 0,
+      items: [{ quantity: 1, unit_price: 0 }],
+      shipping_methods: [{ name: "Standard Shipping", amount: 0 }],
+    })).toBe(true)
   })
 })
 
