@@ -1,6 +1,6 @@
 "use client"
 
-import { Table, Text, clx } from "@modules/common/components/ui"
+import { Table, clx } from "@modules/common/components/ui"
 import { setCartPurchaseTypeRequest, updateLineItemRequest } from "@lib/util/cart-client"
 import { HttpTypes } from "@medusajs/types"
 import { useRouter } from "next/navigation"
@@ -79,12 +79,12 @@ const Item = ({ item, type = "full", currencyCode, isSubscription }: ItemProps) 
       </Table.Cell>
 
       <Table.Cell className="min-w-0 !p-0 text-left align-top small:p-4">
-        <Text
-          className="text-[16px] font-semibold leading-6 text-aura-forest"
+        <p
+          className="font-sans text-[16px] font-semibold leading-6 text-aura-forest"
           data-testid="product-title"
         >
           {item.product_title}
-        </Text>
+        </p>
         <div className="mt-1 text-[12px] text-aura-forest/55">
           {isSubscription || item.metadata?.purchase_type === "subscription" ? (
             <p className="mb-1 text-aura-gold">Subscribe & Save · 20% off · renews monthly</p>
@@ -136,7 +136,7 @@ const Item = ({ item, type = "full", currencyCode, isSubscription }: ItemProps) 
                 const nextQuantity = parseInt(event.target.value, 10)
                 void changeQuantity(nextQuantity)
               }}
-              className="h-10 w-16 rounded-full border-aura-forest/20 bg-transparent px-3 text-aura-forest"
+              className="!h-10 !w-16 !rounded-full !border !border-aura-forest/20 !bg-transparent !p-0 px-3 font-sans text-[14px] text-aura-forest"
               data-testid="product-select-button"
             >
               {/* TODO: Update this with the v2 way of managing inventory */}
@@ -175,7 +175,7 @@ const Item = ({ item, type = "full", currencyCode, isSubscription }: ItemProps) 
         >
           {type === "preview" && (
             <span className="flex gap-x-1 ">
-              <Text className="text-ui-fg-muted">{item.quantity}x </Text>
+              <span className="font-sans text-aura-forest/55">{item.quantity}x </span>
               <LineItemUnitPrice
                 item={item}
                 style="tight"

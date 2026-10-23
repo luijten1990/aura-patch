@@ -72,7 +72,13 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({
         variant === "aura" ? "bg-transparent" : "bg-white",
       )}
     >
-      <div className="txt-medium">
+      <div
+        className={
+          variant === "aura"
+            ? "font-sans text-[14px] font-normal text-aura-forest"
+            : "txt-medium"
+        }
+      >
         <form action={(a) => addPromotionCode(a)} className="w-full mb-5">
           <Label className="flex gap-x-1 my-2 items-center">
             <button
@@ -125,9 +131,15 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({
         {promotions.length > 0 && (
           <div className="w-full flex items-center">
             <div className="flex flex-col w-full">
-              <Heading className="txt-medium mb-2">
-                Promotion(s) applied:
-              </Heading>
+              {variant === "aura" ? (
+                <p className="mb-2 font-sans text-[13px] font-normal leading-5 text-aura-forest/70">
+                  Promotion(s) applied:
+                </p>
+              ) : (
+                <Heading className="txt-medium mb-2">
+                  Promotion(s) applied:
+                </Heading>
+              )}
 
               {promotions.map((promotion) => {
                 return (
@@ -136,10 +148,22 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({
                     className="flex items-center justify-between w-full max-w-full mb-2"
                     data-testid="discount-row"
                   >
-                    <Text className="flex gap-x-1 items-baseline txt-small-plus w-4/5 pr-1">
+                    <Text
+                      className={clx(
+                        "flex w-4/5 items-baseline gap-x-1 pr-1",
+                        variant === "aura"
+                          ? "font-sans text-[13px] font-normal text-aura-forest"
+                          : "txt-small-plus"
+                      )}
+                    >
                       <span className="truncate" data-testid="discount-code">
                         <Badge
                           color={promotion.is_automatic ? "green" : "grey"}
+                          className={
+                            variant === "aura"
+                              ? "!bg-aura-gold/20 font-sans !text-[12px] !font-medium !text-aura-forest"
+                              : undefined
+                          }
                         >
                           {promotion.code === SUBSCRIBE_CODE
                             ? "Subscribe & Save 20%"

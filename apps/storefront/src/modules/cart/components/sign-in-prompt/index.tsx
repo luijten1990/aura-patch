@@ -1,17 +1,14 @@
-import { Button, Heading, Text } from "@modules/common/components/ui"
+import { Button, Text } from "@modules/common/components/ui"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
 const SignInPrompt = () => {
   return (
     <div className="flex flex-col gap-5 rounded-[1.5rem] border border-aura-forest/15 px-6 py-6 small:flex-row small:items-center small:justify-between small:px-8">
       <div>
-        <Heading
-          level="h2"
-          className="font-sans text-[28px] leading-tight small:text-[32px]"
-        >
+        <h2 className="aura-display text-[28px] font-normal leading-tight small:text-[32px]">
           Already have an account?
-        </Heading>
-        <Text className="mt-2 text-[14px] text-aura-forest/65">
+        </h2>
+        <Text className="mt-2 font-sans text-[14px] font-normal text-aura-forest/65">
           Sign in for a better experience.
         </Text>
       </div>

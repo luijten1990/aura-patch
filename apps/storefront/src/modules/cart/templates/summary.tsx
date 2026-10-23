@@ -1,7 +1,7 @@
 "use client"
 
 import { withCartMoney } from "@lib/util/cart-money"
-import { Button, Heading } from "@modules/common/components/ui"
+import { Button } from "@modules/common/components/ui"
 
 import CartTotals from "@modules/common/components/cart-totals"
 import Divider from "@modules/common/components/divider"
@@ -28,12 +28,9 @@ const Summary = ({ cart }: SummaryProps) => {
 
   return (
     <div className="flex flex-col gap-y-5">
-      <Heading
-        level="h2"
-        className="font-sans text-[38px] font-normal leading-none"
-      >
+      <h2 className="aura-display text-[38px] font-normal leading-none">
         Order summary
-      </Heading>
+      </h2>
       <DiscountCode cart={cart} variant="aura" />
       <Divider className="border-aura-forest/15" />
       <CartTotals totals={withCartMoney(cart)} variant="aura" />

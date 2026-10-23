@@ -1,7 +1,7 @@
 import { cartCurrencyCode } from "@lib/util/cart-money"
 import repeat from "@lib/util/repeat"
 import { HttpTypes } from "@medusajs/types"
-import { Heading, Table } from "@modules/common/components/ui"
+import { Table } from "@modules/common/components/ui"
 
 import Item from "@modules/cart/components/item"
 import SkeletonLineItem from "@modules/skeletons/components/skeleton-line-item"
@@ -15,9 +15,9 @@ const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
   return (
     <div>
       <div className="flex items-end justify-between border-b border-aura-forest/15 pb-5">
-        <Heading className="font-sans text-[44px] font-normal leading-none small:text-[58px]">
+        <h1 className="aura-display text-[44px] font-normal leading-none small:text-[58px]">
           Your cart
-        </Heading>
+        </h1>
         <span className="pb-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-aura-forest/55">
           {items?.length ?? 0} {items?.length === 1 ? "item" : "items"}
         </span>
