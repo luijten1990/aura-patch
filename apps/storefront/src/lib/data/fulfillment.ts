@@ -61,7 +61,21 @@ export const calculatePriceForShippingOption = async (
     })
 }
 
-export const listCheckoutCarrierQuotes = async (cartId: string) => {
+export const listCheckoutCarrierQuotes = async (
+  cartId: string,
+  shippingAddress?: {
+    address_1?: string
+    address_2?: string
+    city?: string
+    province?: string
+    postal_code?: string
+    country_code?: string
+    first_name?: string
+    last_name?: string
+    company?: string
+    phone?: string
+  }
+) => {
   const headers = {
     ...(await getAuthHeaders()),
   }
@@ -71,7 +85,10 @@ export const listCheckoutCarrierQuotes = async (cartId: string) => {
       quotes: Record<string, { carrier: string; service: string; label: string; amount?: number }>
     }>("/store/easypost/checkout-quotes", {
       method: "POST",
-      body: { cart_id: cartId },
+      body: {
+        cart_id: cartId,
+        ...(shippingAddress ? { shipping_address: shippingAddress } : {}),
+      },
       headers,
       cache: "no-store",
     })

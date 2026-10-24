@@ -7,6 +7,7 @@ import Divider from "@modules/common/components/divider"
 import { Heading, Text, Button } from "@modules/common/components/ui"
 import { usePathname, useRouter } from "next/navigation"
 import { FormEvent, useEffect, useState } from "react"
+import { prefetchCheckoutQuotes } from "@lib/util/checkout-quotes"
 import { useCheckoutCart } from "../checkout-cart-provider"
 import { useCheckoutStep } from "../checkout-step"
 import BillingAddress from "../billing_address"
@@ -72,6 +73,7 @@ const Addresses = ({
     const form = new FormData(event.currentTarget)
     const selectedCountry = String(form.get("shipping_address.country_code") || checkoutCountry).toLowerCase()
     const staysHere = selectedCountry === checkoutCountry
+    void prefetchCheckoutQuotes(readAddress(form, "shipping_address"))
     if (staysHere) {
       setStep("delivery")
     }

@@ -78,6 +78,7 @@ Last assessed: 2026-09-22 (full read-only audit; local storefront + Medusa alrea
 
 ## Evidence
 
+- 2026-10-24: Shipping quotes start while the address form is open. The quote request fired at 425 ms, Continue to delivery did not start a second one, and the delivery section was visible in 29 ms. Live EasyPost was not called because this environment has no key. Notes: `artifacts/qa/shop-product/faster-shipping-quotes.md`.
 - 2026-10-24: Continue to delivery opens the delivery step without reloading checkout. Local click showed that step in 6 ms, the URL stayed on `?step=address`, and the one-pouch total stayed $39.99. Notes: `artifacts/qa/shop-product/faster-checkout-load.md`.
 - 2026-10-23: Cart titles use Hedvig, and the remaining cart text, prices, quantity control, and promotion line use Manrope. No Inter left on `/us/cart` or the cart drawer.
 - 2026-10-23: Subscribe & save opens the checkout address form directly. Warm local click-to-address was 1047 ms, total $39.99, and shipping quotes waited until delivery. One-time add still opens the cart drawer. Notes: `artifacts/qa/shop-product/faster-subscribe-checkout.md`.

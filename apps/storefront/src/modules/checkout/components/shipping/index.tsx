@@ -12,6 +12,7 @@ import { useEffect, useState } from "react"
 import { useCheckoutCart } from "../checkout-cart-provider"
 import { useCheckoutStep } from "../checkout-step"
 import CarrierMark from "./carrier-mark"
+import { prefetchCheckoutQuotes } from "@lib/util/checkout-quotes"
 import {
   shippingOptionCatalogId,
   type QuotedShippingCarrier,
@@ -234,6 +235,10 @@ const Shipping: React.FC<ShippingProps> = ({
   const hasPickupOptions = !!_pickupMethods?.length
 
   const addressLine = cart.shipping_address?.address_1 || ""
+  const quoteCity = cart.shipping_address?.city || ""
+  const quoteProvince = cart.shipping_address?.province || ""
+  const postalCode = cart.shipping_address?.postal_code || ""
+  const shippingCountryCode = cart.shipping_address?.country_code || ""
 
   useEffect(() => {
     if (!isOpen || !addressLine) {
@@ -249,9 +254,18 @@ const Shipping: React.FC<ShippingProps> = ({
     setDeliveryLoaded(false)
     setIsLoadingPrices(true)
 
+    const quotesPromise =
+      prefetchCheckoutQuotes({
+        address_1: addressLine,
+        city: quoteCity,
+        province: quoteProvince,
+        postal_code: postalCode,
+        country_code: shippingCountryCode,
+      }) || listCheckoutCarrierQuotes(cartId)
+
     Promise.all([
       listCartShippingMethods(cartId),
-      listCheckoutCarrierQuotes(cartId),
+      quotesPromise,
     ]).then(([options, quotes]) => {
       if (cancelled) {
         return
@@ -309,7 +323,7 @@ const Shipping: React.FC<ShippingProps> = ({
     return () => {
       cancelled = true
     }
-  }, [addressLine, initialCart.id, isOpen, cart.id])
+  }, [addressLine, quoteCity, quoteProvince, postalCode, shippingCountryCode, initialCart.id, isOpen, cart.id])
 
   const selectedMethod = _shippingMethods?.find((option) => option.id === shippingMethodId)
   const selectedRateReady = selectedMethod

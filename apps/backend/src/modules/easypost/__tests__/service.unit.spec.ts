@@ -237,4 +237,26 @@ describe("EasyPostFulfillmentService", () => {
       global.fetch = originalFetch
     }
   })
+
+  it("loads every checkout quote from one shipment and reuses the cache", async () => {
+    const originalFetch = global.fetch
+    let calls = 0
+    global.fetch = (async () => {
+      calls += 1
+      return Response.json({ id: "shp_once", rates })
+    }) as typeof fetch
+
+    const service = new EasyPostFulfillmentService({}, options)
+    try {
+      const quotes = await service.describeCheckoutRates(destination, { easypost_live: true })
+      const again = await service.describeCheckoutRates(destination, { easypost_live: true })
+      expect(calls).toBe(1)
+      expect(again).toEqual(quotes)
+      expect(quotes["easypost-usps"]?.amount).toBe(6.07)
+      expect(quotes["easypost-express"]?.amount).toBeGreaterThan(0)
+      expect(Object.keys(quotes).length).toBeGreaterThan(1)
+    } finally {
+      global.fetch = originalFetch
+    }
+  })
 })

@@ -1,3 +1,4 @@
+import { prefetchCheckoutQuotes } from "@lib/util/checkout-quotes"
 import { HttpTypes } from "@medusajs/types"
 import { Container } from "@modules/common/components/ui"
 import Checkbox from "@modules/common/components/checkbox"
@@ -76,6 +77,33 @@ const ShippingAddress = ({
       }))
     }
   }
+
+  const quoteStreet = formData["shipping_address.address_1"]
+  const quoteCity = formData["shipping_address.city"]
+  const quoteProvince = formData["shipping_address.province"]
+  const quotePostal = formData["shipping_address.postal_code"]
+  const quoteCountry = formData["shipping_address.country_code"]
+  const quoteFirstName = formData["shipping_address.first_name"]
+  const quoteLastName = formData["shipping_address.last_name"]
+  const quoteCompany = formData["shipping_address.company"]
+  const quotePhone = formData["shipping_address.phone"]
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void prefetchCheckoutQuotes({
+        address_1: quoteStreet,
+        city: quoteCity,
+        province: quoteProvince,
+        postal_code: quotePostal,
+        country_code: quoteCountry,
+        first_name: quoteFirstName,
+        last_name: quoteLastName,
+        company: quoteCompany,
+        phone: quotePhone,
+      })
+    }, 400)
+    return () => window.clearTimeout(timer)
+  }, [quoteStreet, quoteCity, quoteProvince, quotePostal, quoteCountry, quoteFirstName, quoteLastName, quoteCompany, quotePhone])
 
   useEffect(() => {
     // Ensure cart is not null and has a shipping_address before setting form data
