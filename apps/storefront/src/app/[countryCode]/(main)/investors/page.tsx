@@ -35,9 +35,17 @@ export default function InvestorsPage() {
             </a>
           </div>
         </div>
-        <div className="relative mx-auto aspect-[4/5] w-full max-w-[520px] overflow-hidden rounded-[2rem] bg-aura-sage/50">
-          <Image src="/images/ambassador-create.webp" alt="Aura Patch branded pouch in a premium lifestyle setting" fill priority className="object-cover" sizes="(max-width: 1024px) 90vw, 520px" />
-          <div className="absolute inset-0 bg-gradient-to-t from-aura-forest/55 via-transparent to-transparent" />
+        <div className="relative mx-auto aspect-[3/2] w-full overflow-hidden rounded-[2rem] bg-aura-sage/50">
+          <Image
+            src="/images/aura-investors-lifestyle.webp"
+            alt="Aura Core daily wellness pouch with patches, ginger, and greens"
+            fill
+            priority
+            quality={90}
+            className="object-cover object-center"
+            sizes="(max-width: 1024px) 92vw, 640px"
+          />
+          <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-aura-forest/80 via-aura-forest/35 to-transparent" />
           <p className="absolute bottom-7 left-7 right-7 aura-display text-[34px] leading-none text-aura-cream">Wellness designed for modern life.</p>
         </div>
       </section>

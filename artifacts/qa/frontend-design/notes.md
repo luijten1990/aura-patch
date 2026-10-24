@@ -23,3 +23,15 @@ Checked in Chrome on the local storefront:
 - 375: homepage hero and product front and back. The back control switches the picture. “Open full-size label” is present.
 
 The pouch is not clipped on the hero or the product gallery. The photo’s cream field sits on the page cream without a hard box.
+
+## Investors hero
+
+Date: 2026-10-24
+
+Page: `/us/investors`
+
+| Path | Problem | Fix |
+| --- | --- | --- |
+| `public/images/ambassador-create.webp` | The investor hero reused an ambassador portrait in a 4/5 crop. It was not the new pouch. | Replaced on this page only with `public/images/aura-investors-lifestyle.webp`, the supplied 1536×1024 lifestyle photo. The frame is 3/2 so the pouch, patch sheet, and second pouch stay in view. `quality={90}`. Ambassadors still uses the older file. |
+
+Checked at 1280, 768, and 375. The caption sits on a short bottom gradient. The zipper, mandala, and “30 PATCHES” stay visible.
