@@ -66,9 +66,9 @@ export const auraReviews: AuraReview[] = [
   }, 0),
   withPhoto({
     name: "Josh Miller",
-    title: "I want more of them",
+    title: "They work",
     quote:
-      "I want more of them. Peel, apply, and one pouch covers the month. I am ready for the next one.",
+      "A friend recommended these to wear in airports during my travels to boost my immune system, they work!",
   }, 5),
 ]
 
