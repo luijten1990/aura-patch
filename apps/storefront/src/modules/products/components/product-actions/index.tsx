@@ -187,9 +187,7 @@ export default function ProductActions({
         notify: !goToCheckout,
       })
       if (goToCheckout) {
-        window.location.assign(
-          `/${countryCode || "us"}/checkout?step=address`
-        )
+        window.location.assign(`/${countryCode || "us"}/checkout?step=address`)
         return
       }
       // The API mutation does not invalidate Next's client router cache.

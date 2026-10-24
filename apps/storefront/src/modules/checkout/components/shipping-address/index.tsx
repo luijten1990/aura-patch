@@ -1,3 +1,4 @@
+import { prefetchCheckoutQuotes } from "@lib/util/checkout-quotes"
 import { HttpTypes } from "@medusajs/types"
 import { Container } from "@modules/common/components/ui"
 import Checkbox from "@modules/common/components/checkbox"
@@ -13,12 +14,14 @@ const ShippingAddress = ({
   checked,
   onChange,
   regions,
+  defaultCountry = "",
 }: {
   customer: HttpTypes.StoreCustomer | null
   cart: HttpTypes.StoreCart | null
   checked: boolean
   onChange: () => void
   regions?: HttpTypes.StoreRegion[] | null
+  defaultCountry?: string
 }) => {
   const [formData, setFormData] = useState<Record<string, string>>({
     "shipping_address.first_name": cart?.shipping_address?.first_name || "",
@@ -27,7 +30,8 @@ const ShippingAddress = ({
     "shipping_address.company": cart?.shipping_address?.company || "",
     "shipping_address.postal_code": cart?.shipping_address?.postal_code || "",
     "shipping_address.city": cart?.shipping_address?.city || "",
-    "shipping_address.country_code": cart?.shipping_address?.country_code || "",
+    "shipping_address.country_code":
+      cart?.shipping_address?.country_code || defaultCountry,
     "shipping_address.province": cart?.shipping_address?.province || "",
     "shipping_address.phone": cart?.shipping_address?.phone || "",
     email: cart?.email || "",
@@ -73,6 +77,33 @@ const ShippingAddress = ({
       }))
     }
   }
+
+  const quoteStreet = formData["shipping_address.address_1"]
+  const quoteCity = formData["shipping_address.city"]
+  const quoteProvince = formData["shipping_address.province"]
+  const quotePostal = formData["shipping_address.postal_code"]
+  const quoteCountry = formData["shipping_address.country_code"]
+  const quoteFirstName = formData["shipping_address.first_name"]
+  const quoteLastName = formData["shipping_address.last_name"]
+  const quoteCompany = formData["shipping_address.company"]
+  const quotePhone = formData["shipping_address.phone"]
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void prefetchCheckoutQuotes({
+        address_1: quoteStreet,
+        city: quoteCity,
+        province: quoteProvince,
+        postal_code: quotePostal,
+        country_code: quoteCountry,
+        first_name: quoteFirstName,
+        last_name: quoteLastName,
+        company: quoteCompany,
+        phone: quotePhone,
+      })
+    }, 400)
+    return () => window.clearTimeout(timer)
+  }, [quoteStreet, quoteCity, quoteProvince, quotePostal, quoteCountry, quoteFirstName, quoteLastName, quoteCompany, quotePhone])
 
   useEffect(() => {
     // Ensure cart is not null and has a shipping_address before setting form data

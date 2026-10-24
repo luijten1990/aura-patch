@@ -9,6 +9,7 @@ import type {
   ValidateFulfillmentDataContext,
 } from "@medusajs/framework/types"
 import {
+  EASYPOST_CHECKOUT_OPTION_IDS,
   EASYPOST_RATE_OPTIONS,
   LEGACY_EASYPOST_OPTION_ID,
   formatCarrierDisplayName,
@@ -176,6 +177,43 @@ export class EasyPostFulfillmentService extends AbstractFulfillmentProviderServi
         is_calculated_price_tax_inclusive: false,
       }
     }
+  }
+
+  async describeCheckoutRates(
+    destination: Address | undefined,
+    data?: Record<string, unknown>
+  ) {
+    const origin = this.originAddress(data)
+    if (!this.hasAddress(origin) || !this.hasAddress(destination)) {
+      return {}
+    }
+
+    let rates: EasyPostRate[]
+    try {
+      rates = await this.quoteRates(origin as Address, destination as Address)
+    } catch {
+      return {}
+    }
+
+    const quotes: Record<string, { carrier: string; service: string; label: string; amount: number }> = {}
+    for (const optionId of EASYPOST_CHECKOUT_OPTION_IDS) {
+      try {
+        const rate = this.pickRate(rates, destination as Address, optionId)
+        const amount = this.customerCharge(rate)
+        if (!(amount > 0)) {
+          continue
+        }
+        quotes[optionId] = {
+          carrier: rate.carrier || "",
+          service: rate.service || "",
+          label: formatCarrierDisplayName(rate.carrier, rate.service),
+          amount,
+        }
+      } catch {
+        // This lane has no rate for the option.
+      }
+    }
+    return quotes
   }
 
   async describeCheckoutRate(

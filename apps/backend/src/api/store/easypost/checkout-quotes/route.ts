@@ -1,10 +1,10 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { EasyPostFulfillmentService } from "../../../../modules/easypost/service"
-import { EASYPOST_CHECKOUT_OPTION_IDS } from "../../../../modules/easypost/rate-options"
 
 type CartAddress = {
   address_1?: string
+  address_2?: string
   city?: string
   province?: string
   postal_code?: string
@@ -15,8 +15,36 @@ type CartAddress = {
   phone?: string
 }
 
+function quoteAddress(value: unknown): CartAddress | null {
+  if (!value || typeof value !== "object") {
+    return null
+  }
+  const source = value as Record<string, unknown>
+  const address: CartAddress = {
+    address_1: text(source.address_1, 120),
+    address_2: text(source.address_2, 120),
+    city: text(source.city, 80),
+    province: text(source.province, 40),
+    postal_code: text(source.postal_code, 16),
+    country_code: text(source.country_code, 2).toLowerCase(),
+    first_name: text(source.first_name, 40),
+    last_name: text(source.last_name, 40),
+    company: text(source.company, 80),
+    phone: text(source.phone, 32),
+  }
+  if (!address.address_1 || !address.city || !address.postal_code || address.country_code.length !== 2) {
+    return null
+  }
+  return address
+}
+
+function text(value: unknown, max: number) {
+  return String(value || "").trim().slice(0, max)
+}
+
 export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
-  const cartId = String((req.body as { cart_id?: string } | undefined)?.cart_id || "")
+  const body = (req.body || {}) as { cart_id?: string; shipping_address?: unknown }
+  const cartId = String(body.cart_id || "")
   if (!cartId) {
     res.status(400).json({ message: "cart_id is required" })
     return
@@ -53,25 +81,9 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
     return
   }
 
-  const shippingAddress = (cart as { shipping_address?: CartAddress }).shipping_address
-  const quotes: Record<string, { carrier: string; service: string; label: string }> = {}
-
-  await Promise.all(
-    EASYPOST_CHECKOUT_OPTION_IDS.map(async (optionId) => {
-      const described = await easypost.describeCheckoutRate(
-        { id: optionId },
-        { easypost_live: true },
-        { shipping_address: shippingAddress } as never
-      )
-      if (described?.label && described.amount > 0) {
-        quotes[optionId] = {
-          carrier: described.carrier,
-          service: described.service,
-          label: described.label,
-        }
-      }
-    })
-  )
+  const provided = quoteAddress(body.shipping_address)
+  const shippingAddress = provided || (cart as { shipping_address?: CartAddress }).shipping_address
+  const quotes = await easypost.describeCheckoutRates(shippingAddress, { easypost_live: true })
 
   res.json({ quotes })
 }

@@ -15,6 +15,7 @@ export default function FloatingBuyNow({
 }) {
   const pathname = usePathname()
   const { countryCode } = useParams()
+  const checkoutPath = `/${countryCode || "us"}/checkout?step=address`
   const [status, setStatus] = useState<"idle" | "adding" | "error">("idle")
   const addingRef = useRef(false)
 
@@ -44,7 +45,7 @@ export default function FloatingBuyNow({
         purchaseType: "subscription",
         notify: false,
       })
-      window.location.assign(`/${countryCode || "us"}/checkout?step=address`)
+      window.location.assign(checkoutPath)
     } catch {
       addingRef.current = false
       setStatus("error")

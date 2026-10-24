@@ -5,11 +5,29 @@ import { CheckCircleSolid } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import Divider from "@modules/common/components/divider"
 import { Heading, Text, Button } from "@modules/common/components/ui"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { FormEvent, useState } from "react"
+import { usePathname, useRouter } from "next/navigation"
+import { FormEvent, useEffect, useState } from "react"
+import { prefetchCheckoutQuotes } from "@lib/util/checkout-quotes"
+import { useCheckoutCart } from "../checkout-cart-provider"
+import { useCheckoutStep } from "../checkout-step"
 import BillingAddress from "../billing_address"
 import ErrorMessage from "../error-message"
 import ShippingAddress from "../shipping-address"
+
+function readAddress(form: FormData, prefix: string): HttpTypes.StoreCartAddress {
+  return {
+    first_name: String(form.get(`${prefix}.first_name`) || ""),
+    last_name: String(form.get(`${prefix}.last_name`) || ""),
+    address_1: String(form.get(`${prefix}.address_1`) || ""),
+    address_2: "",
+    company: String(form.get(`${prefix}.company`) || ""),
+    postal_code: String(form.get(`${prefix}.postal_code`) || ""),
+    city: String(form.get(`${prefix}.city`) || ""),
+    country_code: String(form.get(`${prefix}.country_code`) || "").toLowerCase(),
+    province: String(form.get(`${prefix}.province`) || ""),
+    phone: String(form.get(`${prefix}.phone`) || ""),
+  } as HttpTypes.StoreCartAddress
+}
 
 const Addresses = ({
   cart,
@@ -20,36 +38,49 @@ const Addresses = ({
   customer: HttpTypes.StoreCustomer | null
   regions?: HttpTypes.StoreRegion[] | null
 }) => {
-  const searchParams = useSearchParams()
+  const { cart: liveCart, setCart } = useCheckoutCart(cart || undefined)
+  const currentCart = liveCart || cart
+  const { step, setStep } = useCheckoutStep()
   const router = useRouter()
   const pathname = usePathname()
 
-  const isOpen =
-    searchParams.get("step") === "address" ||
-    !cart?.shipping_address?.address_1
+  const isOpen = step === "address"
+  const [message, setMessage] = useState<string | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
+
+  useEffect(() => {
+    if (step !== "address" && !currentCart?.shipping_address?.address_1 && !isSaving) {
+      setStep("address")
+    }
+  }, [currentCart?.shipping_address?.address_1, isSaving, setStep, step])
 
   const { state: sameAsBilling, toggle: toggleSameAsBilling } = useToggleState(
-    cart?.shipping_address && cart?.billing_address
-      ? compareAddresses(cart?.shipping_address, cart?.billing_address)
+    currentCart?.shipping_address && currentCart?.billing_address
+      ? compareAddresses(currentCart?.shipping_address, currentCart?.billing_address)
       : true
   )
 
   const handleEdit = () => {
-    router.push(pathname + "?step=address")
+    setStep("address")
   }
 
   const checkoutCountry = pathname.split("/").filter(Boolean)[0] || "us"
-  const [message, setMessage] = useState<string | null>(null)
-  const [isSaving, setIsSaving] = useState(false)
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setMessage(null)
     setIsSaving(true)
+    const form = new FormData(event.currentTarget)
+    const selectedCountry = String(form.get("shipping_address.country_code") || checkoutCountry).toLowerCase()
+    const staysHere = selectedCountry === checkoutCountry
+    void prefetchCheckoutQuotes(readAddress(form, "shipping_address"))
+    if (staysHere) {
+      setStep("delivery")
+    }
     try {
       const response = await fetch("/api/cart/addresses", {
         method: "POST",
-        body: new FormData(event.currentTarget),
+        body: form,
       })
       const result = (await response.json().catch(() => null)) as
         | { ok: true; countryCode?: string }
@@ -57,6 +88,9 @@ const Addresses = ({
         | null
 
       if (!response.ok || !result?.ok) {
+        if (staysHere) {
+          setStep("address")
+        }
         setMessage(
           result && "error" in result && result.error
             ? result.error
@@ -65,13 +99,32 @@ const Addresses = ({
         return
       }
 
-      const nextCountry =
+      const nextCountry = (
         "countryCode" in result && result.countryCode
           ? result.countryCode
           : checkoutCountry
-      router.push(`/${nextCountry}/checkout?step=delivery`)
-      router.refresh()
+      ).toLowerCase()
+      const shippingAddress = readAddress(form, "shipping_address")
+      const sameAsBilling = form.get("same_as_billing") === "on"
+      if (currentCart) {
+        setCart({
+          ...currentCart,
+          email: String(form.get("email") || currentCart.email || ""),
+          shipping_address: shippingAddress,
+          billing_address: sameAsBilling
+            ? shippingAddress
+            : readAddress(form, "billing_address"),
+        })
+      }
+      if (nextCountry !== checkoutCountry) {
+        router.push(`/${nextCountry}/checkout?step=delivery`)
+        return
+      }
+      setStep("delivery")
     } catch (error) {
+      if (staysHere) {
+        setStep("address")
+      }
       setMessage(
         error instanceof Error && error.message
           ? error.message
@@ -92,7 +145,7 @@ const Addresses = ({
           Shipping address
           {!isOpen && <CheckCircleSolid />}
         </Heading>
-        {!isOpen && cart?.shipping_address && (
+        {!isOpen && currentCart?.shipping_address && (
           <Text>
             <button
               onClick={handleEdit}
@@ -117,8 +170,9 @@ const Addresses = ({
               customer={customer}
               checked={sameAsBilling}
               onChange={toggleSameAsBilling}
-              cart={cart}
+              cart={currentCart}
               regions={regions}
+              defaultCountry={checkoutCountry}
             />
 
             {!sameAsBilling && (
@@ -130,7 +184,7 @@ const Addresses = ({
                   Billing address
                 </Heading>
 
-                <BillingAddress cart={cart} regions={regions} />
+                <BillingAddress cart={currentCart} regions={regions} />
               </div>
             )}
             <Button
@@ -148,7 +202,7 @@ const Addresses = ({
       ) : (
         <div>
           <div className="text-small-regular">
-            {cart && cart.shipping_address ? (
+            {currentCart && currentCart.shipping_address ? (
               <div className="flex items-start gap-x-8">
                 <div className="flex items-start gap-x-1 w-full">
                   <div
@@ -159,19 +213,19 @@ const Addresses = ({
                       Shipping Address
                     </Text>
                     <Text className="text-[14px] leading-6 text-aura-forest/70">
-                      {cart.shipping_address.first_name}{" "}
-                      {cart.shipping_address.last_name}
+                      {currentCart.shipping_address.first_name}{" "}
+                      {currentCart.shipping_address.last_name}
                     </Text>
                     <Text className="text-[14px] leading-6 text-aura-forest/70">
-                      {cart.shipping_address.address_1}{" "}
-                      {cart.shipping_address.address_2}
+                      {currentCart.shipping_address.address_1}{" "}
+                      {currentCart.shipping_address.address_2}
                     </Text>
                     <Text className="text-[14px] leading-6 text-aura-forest/70">
-                      {cart.shipping_address.postal_code},{" "}
-                      {cart.shipping_address.city}
+                      {currentCart.shipping_address.postal_code},{" "}
+                      {currentCart.shipping_address.city}
                     </Text>
                     <Text className="text-[14px] leading-6 text-aura-forest/70">
-                      {cart.shipping_address.country_code?.toUpperCase()}
+                      {currentCart.shipping_address.country_code?.toUpperCase()}
                     </Text>
                   </div>
 
@@ -183,10 +237,10 @@ const Addresses = ({
                       Contact
                     </Text>
                     <Text className="text-[14px] leading-6 text-aura-forest/70">
-                      {cart.shipping_address.phone}
+                      {currentCart.shipping_address.phone}
                     </Text>
                     <Text className="text-[14px] leading-6 text-aura-forest/70">
-                      {cart.email}
+                      {currentCart.email}
                     </Text>
                   </div>
 
@@ -205,19 +259,19 @@ const Addresses = ({
                     ) : (
                       <>
                         <Text className="text-[14px] leading-6 text-aura-forest/70">
-                          {cart.billing_address?.first_name}{" "}
-                          {cart.billing_address?.last_name}
+                          {currentCart.billing_address?.first_name}{" "}
+                          {currentCart.billing_address?.last_name}
                         </Text>
                         <Text className="text-[14px] leading-6 text-aura-forest/70">
-                          {cart.billing_address?.address_1}{" "}
-                          {cart.billing_address?.address_2}
+                          {currentCart.billing_address?.address_1}{" "}
+                          {currentCart.billing_address?.address_2}
                         </Text>
                         <Text className="text-[14px] leading-6 text-aura-forest/70">
-                          {cart.billing_address?.postal_code},{" "}
-                          {cart.billing_address?.city}
+                          {currentCart.billing_address?.postal_code},{" "}
+                          {currentCart.billing_address?.city}
                         </Text>
                         <Text className="text-[14px] leading-6 text-aura-forest/70">
-                          {cart.billing_address?.country_code?.toUpperCase()}
+                          {currentCart.billing_address?.country_code?.toUpperCase()}
                         </Text>
                       </>
                     )}

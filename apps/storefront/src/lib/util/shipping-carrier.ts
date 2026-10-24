@@ -4,6 +4,7 @@ export type QuotedShippingCarrier = {
   carrier: string
   service?: string
   label: string
+  amount?: number
 }
 
 export function shippingOptionCatalogId(option: {

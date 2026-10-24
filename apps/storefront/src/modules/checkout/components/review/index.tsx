@@ -4,16 +4,17 @@ import { Heading, Text, clx } from "@modules/common/components/ui"
 
 import PaymentButton from "../payment-button"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import { useSearchParams } from "next/navigation"
 import { HttpTypes } from "@medusajs/types"
 import { isSubscriptionCart } from "@lib/util/subscription"
 import { useCheckoutCart } from "../checkout-cart-provider"
+import { useCheckoutStep } from "../checkout-step"
 
 const Review = ({ cart: _cart }: { cart: HttpTypes.StoreCart }) => {
-  const { cart } = useCheckoutCart(_cart)
-  const searchParams = useSearchParams()
+  const { cart: liveCart } = useCheckoutCart(_cart)
+  const cart = liveCart || _cart
+  const { step } = useCheckoutStep()
 
-  const isOpen = searchParams.get("step") === "review"
+  const isOpen = step === "review"
 
   const paidByGiftcard = !!(
     (cart as unknown as Record<string, unknown>)?.gift_cards && ((cart as unknown as Record<string, unknown>)?.gift_cards as unknown[])?.length > 0 && cart?.total === 0

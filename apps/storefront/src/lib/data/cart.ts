@@ -32,6 +32,19 @@ import {
 const CART_FIELDS =
   "metadata,email,currency_code,*items,*region,*items.product,*items.variant,*items.thumbnail,*items.metadata,+items.total,+items.subtotal,+items.original_total,*promotions,*shipping_address,*billing_address,*shipping_methods,+shipping_methods.name,+shipping_methods.amount,+shipping_methods.total,*payment_collection,*payment_collection.payment_sessions,+total,+subtotal,+item_subtotal,+shipping_subtotal,+shipping_total,+discount_subtotal,+tax_total"
 
+// Checkout paints from this smaller cart. Line items already carry the product
+// title, and the full product graph is what makes the checkout retrieve slow.
+const CHECKOUT_CART_FIELDS =
+  "id,email,currency_code,region_id,metadata,*region,*region.countries,*items,items.variant.title,*items.metadata,+items.total,+items.subtotal,+items.original_total,*promotions,*shipping_address,*billing_address,*shipping_methods,+shipping_methods.name,+shipping_methods.amount,+shipping_methods.total,+total,+subtotal,+item_subtotal,+shipping_subtotal,+shipping_total,+discount_subtotal,+tax_total,*payment_collection,*payment_collection.payment_sessions"
+
+export async function retrieveCheckoutCart() {
+  const cart = await retrieveCart(undefined, CHECKOUT_CART_FIELDS)
+  if (!cart) {
+    return null
+  }
+  return ensureCheckoutPurchaseType(cart, CHECKOUT_CART_FIELDS)
+}
+
 const revalidateByTag = async (tag: string) => {
   const cacheTag = await getCacheTag(tag)
   if (!cacheTag) {
@@ -125,7 +138,7 @@ export async function updateCart(data: HttpTypes.StoreUpdateCart) {
   }
 
   return sdk.store.cart
-    .update(cartId, data, {}, headers)
+    .update(cartId, data, { fields: "id" }, headers)
     .then(async ({ cart }: { cart: HttpTypes.StoreCart }) => {
       await revalidateByTag("carts")
       return cart
@@ -382,7 +395,10 @@ async function syncCartPurchaseType(purchaseType: PurchaseType) {
   await revalidateByTag("carts")
 }
 
-export async function ensureCheckoutPurchaseType(cart: HttpTypes.StoreCart) {
+export async function ensureCheckoutPurchaseType(
+  cart: HttpTypes.StoreCart,
+  fields?: string
+) {
   const purchaseType: PurchaseType = isSubscriptionCart(cart)
     ? "subscription"
     : "one_time"
@@ -400,7 +416,7 @@ export async function ensureCheckoutPurchaseType(cart: HttpTypes.StoreCart) {
   }
 
   await syncCartPurchaseType(purchaseType)
-  return (await retrieveCart(cart.id)) || cart
+  return (await retrieveCart(cart.id, fields)) || cart
 }
 
 export async function setCartPurchaseType(purchaseType: PurchaseType) {
