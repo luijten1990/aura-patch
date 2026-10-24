@@ -1,9 +1,5 @@
 "use client"
 
-import Back from "@modules/common/icons/back"
-import FastDelivery from "@modules/common/icons/fast-delivery"
-import Refresh from "@modules/common/icons/refresh"
-
 import Accordion from "./accordion"
 import { HttpTypes } from "@medusajs/types"
 
@@ -12,108 +8,55 @@ type ProductTabsProps = {
 }
 
 const ProductTabs = ({ product }: ProductTabsProps) => {
-  const tabs = [
-    {
-      label: "Product Information",
-      component: <ProductInfoTab product={product} />,
-    },
-    {
-      label: "Shipping & Returns",
-      component: <ShippingInfoTab />,
-    },
-  ]
+  const facts = [
+    product.material ? ["Material", product.material] : null,
+    product.origin_country ? ["Country of origin", product.origin_country] : null,
+    product.type?.value ? ["Type", product.type.value] : null,
+    product.weight ? ["Weight", `${product.weight} g`] : null,
+    product.length && product.width && product.height
+      ? [
+          "Dimensions",
+          `${product.length}L x ${product.width}W x ${product.height}H`,
+        ]
+      : null,
+  ].filter((fact): fact is [string, string] => Boolean(fact))
 
   return (
     <div className="w-full">
       <Accordion type="multiple">
-        {tabs.map((tab, i) => (
+        {facts.length > 0 && (
           <Accordion.Item
-            key={i}
-            title={tab.label}
+            title="Product Information"
             headingSize="medium"
-            value={tab.label}
+            value="Product Information"
           >
-            {tab.component}
+            <div className="grid grid-cols-2 gap-x-8 gap-y-4 py-8 text-small-regular">
+              {facts.map(([label, value]) => (
+                <div key={label}>
+                  <span className="font-semibold">{label}</span>
+                  <p>{value}</p>
+                </div>
+              ))}
+            </div>
           </Accordion.Item>
-        ))}
+        )}
+        <Accordion.Item
+          title="Shipping & Returns"
+          headingSize="medium"
+          value="Shipping & Returns"
+        >
+          <div className="flex flex-col gap-y-4 py-8 text-small-regular">
+            <p className="max-w-sm">
+              Shipping and tax are calculated at checkout for the address you
+              enter.
+            </p>
+            <p className="max-w-sm">
+              Return and refund terms shown at checkout and on the terms page
+              apply to the order.
+            </p>
+          </div>
+        </Accordion.Item>
       </Accordion>
-    </div>
-  )
-}
-
-const ProductInfoTab = ({ product }: ProductTabsProps) => {
-  return (
-    <div className="text-small-regular py-8">
-      <div className="grid grid-cols-2 gap-x-8">
-        <div className="flex flex-col gap-y-4">
-          <div>
-            <span className="font-semibold">Material</span>
-            <p>{product.material ? product.material : "-"}</p>
-          </div>
-          <div>
-            <span className="font-semibold">Country of origin</span>
-            <p>{product.origin_country ? product.origin_country : "-"}</p>
-          </div>
-          <div>
-            <span className="font-semibold">Type</span>
-            <p>{product.type ? product.type.value : "-"}</p>
-          </div>
-        </div>
-        <div className="flex flex-col gap-y-4">
-          <div>
-            <span className="font-semibold">Weight</span>
-            <p>{product.weight ? `${product.weight} g` : "-"}</p>
-          </div>
-          <div>
-            <span className="font-semibold">Dimensions</span>
-            <p>
-              {product.length && product.width && product.height
-                ? `${product.length}L x ${product.width}W x ${product.height}H`
-                : "-"}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-const ShippingInfoTab = () => {
-  return (
-    <div className="text-small-regular py-8">
-      <div className="grid grid-cols-1 gap-y-8">
-        <div className="flex items-start gap-x-2">
-          <FastDelivery />
-          <div>
-            <span className="font-semibold">Fast delivery</span>
-            <p className="max-w-sm">
-              Your package will arrive in 3-5 business days at your pick up
-              location or in the comfort of your home.
-            </p>
-          </div>
-        </div>
-        <div className="flex items-start gap-x-2">
-          <Refresh />
-          <div>
-            <span className="font-semibold">Simple exchanges</span>
-            <p className="max-w-sm">
-              Is the fit not quite right? No worries - we&apos;ll exchange your
-              product for a new one.
-            </p>
-          </div>
-        </div>
-        <div className="flex items-start gap-x-2">
-          <Back />
-          <div>
-            <span className="font-semibold">Easy returns</span>
-            <p className="max-w-sm">
-              Just return your product and we&apos;ll refund your money. No
-              questions asked – we&apos;ll do our best to make sure your return
-              is hassle-free.
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   )
 }

@@ -9,7 +9,7 @@ import Divider from "@modules/common/components/divider"
 import MedusaRadio from "@modules/common/components/radio"
 import { Button, clx, Heading, Text } from "@modules/common/components/ui"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useCheckoutCart } from "../checkout-cart-provider"
 import CarrierMark from "./carrier-mark"
 import {
@@ -203,30 +203,43 @@ const Shipping: React.FC<ShippingProps> = ({
 
   const shippingCountry = cart.shipping_address?.country_code?.toLowerCase()
   const isUsShipping = shippingCountry === "us"
-  const _shippingMethods = availableShippingMethods?.filter(
-    (sm) => {
-      const fulfillmentType = (
-        sm as unknown as {
-          service_zone?: { fulfillment_set?: { type?: string } }
-        }
-      ).service_zone?.fulfillment_set?.type
-      if (fulfillmentType === "pickup") {
-        return false
-      }
-      const name = (sm.name || "").toLowerCase()
-      const isFreeStandard =
-        /free standard|standard shipping \(5/.test(name) ||
-        (sm.price_type !== "calculated" && sm.amount === 0)
-      if (isFreeStandard && !isUsShipping) {
-        return false
-      }
-      return true
-    }
-  )?.slice()
-    .sort((a, b) => shippingMethodRank(a) - shippingMethodRank(b))
+  const _shippingMethods = useMemo(
+    () =>
+      availableShippingMethods
+        ?.filter((sm) => {
+          const fulfillmentType = (
+            sm as unknown as {
+              service_zone?: { fulfillment_set?: { type?: string } }
+            }
+          ).service_zone?.fulfillment_set?.type
+          if (fulfillmentType === "pickup") {
+            return false
+          }
+          const name = (sm.name || "").toLowerCase()
+          const isFreeStandard =
+            /free standard|standard shipping \(5/.test(name) ||
+            (sm.price_type !== "calculated" && sm.amount === 0)
+          if (isFreeStandard && !isUsShipping) {
+            return false
+          }
+          return true
+        })
+        ?.slice()
+        .sort((a, b) => shippingMethodRank(a) - shippingMethodRank(b)),
+    [availableShippingMethods, isUsShipping]
+  )
 
-  const _pickupMethods = availableShippingMethods?.filter(
-    (sm) => (sm as unknown as { service_zone?: { fulfillment_set?: { type?: string; location?: { address: HttpTypes.StoreCartAddress } } } }).service_zone?.fulfillment_set?.type === "pickup"
+  const _pickupMethods = useMemo(
+    () =>
+      availableShippingMethods?.filter(
+        (sm) =>
+          (
+            sm as unknown as {
+              service_zone?: { fulfillment_set?: { type?: string } }
+            }
+          ).service_zone?.fulfillment_set?.type === "pickup"
+      ),
+    [availableShippingMethods]
   )
 
   const hasPickupOptions = !!_pickupMethods?.length
@@ -277,7 +290,14 @@ const Shipping: React.FC<ShippingProps> = ({
     if (_pickupMethods?.find((m) => m.id === shippingMethodId)) {
       setShowPickupOptions(PICKUP_OPTION_ON)
     }
-  }, [availableShippingMethods, isOpen])
+  }, [
+    _pickupMethods,
+    _shippingMethods,
+    cart.id,
+    initialCart.id,
+    isOpen,
+    shippingMethodId,
+  ])
 
   const selectedMethod = _shippingMethods?.find((option) => option.id === shippingMethodId)
   const selectedRateReady = selectedMethod

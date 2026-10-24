@@ -2,6 +2,8 @@ import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { getProductByHandle } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
+import { getBaseURL } from "@lib/util/env"
+import { auraCollection } from "@lib/data/aura-collection"
 import ProductTemplate from "@modules/products/templates"
 
 export const dynamic = "force-dynamic"
@@ -27,12 +29,21 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       }
     }
 
+    const core = auraCollection.find((formula) => formula.key === "core")
+    const description =
+      product.handle === "aura-patch" && core
+        ? core.description
+        : product.description || product.title
+
     return {
-      title: `${product.title} | Aura Patch`,
-      description: `${product.title}`,
+      title: { absolute: `${product.title} | Aura Patch` },
+      description,
+      alternates: {
+        canonical: `${getBaseURL()}/${params.countryCode}/products/${params.handle}`,
+      },
       openGraph: {
         title: `${product.title} | Aura Patch`,
-        description: `${product.title}`,
+        description,
         images: ["/images/aura-core-pouch-front.jpeg"],
       },
     }
