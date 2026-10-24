@@ -19,6 +19,55 @@ const benefits = [
   ["04", "Simple Routine", "One elegant daily step, created for modern life and effortless consistency."],
 ]
 
+const BenefitIllustration = ({ number }: { number: string }) => (
+  <svg
+    viewBox="0 0 120 100"
+    className="h-[100px] w-[120px] text-aura-forest"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.7"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <circle cx="60" cy="50" r="40" className="fill-aura-cream/60" stroke="none" />
+    {number === "01" && (
+      <>
+        <circle cx="56" cy="46" r="19" />
+        <path d="M56 16v-5m0 70v-5M26 46h-5m70 0h-5M35 25l-4-4m50 50-4-4M35 67l-4 4m50-50-4 4" className="stroke-aura-gold" />
+        <path d="M56 34v12l8 5" />
+        <path d="M78 37a29 29 0 0 1-20 38m0 0 5-7m-5 7 9 2" className="stroke-aura-gold" />
+      </>
+    )}
+    {number === "02" && (
+      <>
+        <path d="M34 23h39a9 9 0 0 1 9 9v32L61 85H34a9 9 0 0 1-9-9V32a9 9 0 0 1 9-9Z" />
+        <path d="M61 85V73a9 9 0 0 1 9-9h12" className="stroke-aura-gold" />
+        <circle cx="53" cy="49" r="15" className="stroke-aura-gold" />
+        <path d="m47 49 4 4 8-9M91 22v10m-5-5h10" />
+      </>
+    )}
+    {number === "03" && (
+      <>
+        <rect x="26" y="32" width="54" height="49" rx="8" />
+        <path d="M42 32v-8a11 11 0 0 1 22 0v8M27 44h52" />
+        <circle cx="53" cy="61" r="10" className="stroke-aura-gold" />
+        <path d="M53 55v12m-6-6h12" className="stroke-aura-gold" />
+        <rect x="76" y="53" width="20" height="29" rx="5" className="fill-aura-mint stroke-aura-gold" transform="rotate(12 86 67)" />
+      </>
+    )}
+    {number === "04" && (
+      <>
+        <rect x="28" y="25" width="64" height="56" rx="8" />
+        <path d="M28 41h64M44 18v14m32-14v14" />
+        <circle cx="60" cy="61" r="13" className="stroke-aura-gold" />
+        <path d="m54 61 4 4 9-9" className="stroke-aura-gold" />
+      </>
+    )}
+  </svg>
+)
+
 const faqs = [
   ["How do I use Aura Patch?", "Remove one patch from its protective backing and apply it to clean, dry skin according to the product instructions."],
   ["Where should I apply it?", "Choose a clean, dry, relatively hair-free area of healthy, unbroken skin. Avoid lotions or oils where the patch will be placed, as they can affect adhesion."],
@@ -75,12 +124,12 @@ const Hero = ({ product }: HeroProps) => {
         <div className="aura-shell">
           <p className="aura-eyebrow">Wellness, reimagined</p>
           <h2 className="aura-display mt-5 max-w-[1000px] text-[44px] leading-none small:text-[60px]">A simpler path to daily wellness.</h2>
-          <div className="mt-12 grid gap-5 small:grid-cols-4">
+          <div className="mt-10 grid gap-5 xsmall:grid-cols-2 medium:grid-cols-4">
             {benefits.map(([number, title, copy]) => (
               <article key={title} className="aura-feature-card">
-                <span className="text-xs tracking-[0.2em] text-aura-gold">{number}</span>
-                <h3 className="aura-display mt-12 text-[34px] leading-tight">{title}</h3>
-                <p className="mt-8 text-[16px] leading-7 text-aura-forest/75">{copy}</p>
+                <div className="mb-6"><BenefitIllustration number={number} /></div>
+                <h3 className="aura-display text-[32px] leading-tight xsmall:min-h-[80px]">{title}</h3>
+                <p className="mt-4 text-[16px] leading-7 text-aura-forest/75">{copy}</p>
               </article>
             ))}
           </div>
