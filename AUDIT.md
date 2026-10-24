@@ -1,5 +1,83 @@
 # Aura Patch website audit
 
+## 2026-10-25 (Asia/Bangkok)
+
+Local storefront `http://localhost:8000` and Medusa `http://localhost:9000/health` both returned 200. The Next dev server was restarted onto current `main` before the second pass. No application code was changed.
+
+### Critical
+
+**Shop Aura Core has nowhere to land in this database**
+
+- Location: `GET /us/products/aura-patch`; hero link in `apps/storefront/src/modules/home/components/hero/index.tsx`; catalog from `GET /store/products`.
+- Problem: The product page renders “Page not found.” The store API returns only Medusa Sweatshirt, T-Shirt, Sweatpants, and Shorts. `/us/store` is HTTP 200 and lists those apparel products. There is no `aura-patch` handle.
+- Why it matters: Homepage → Shop Aura Core → Subscribe & Save cannot be completed. The shop shows the wrong products.
+- Recommended solution: Seed or restore the Aura Core product (handle `aura-patch`, 30-day pouch, one-time and subscription prices) on this database. `apps/backend/src/migration-scripts/initial-data-seed.ts` still creates the Medusa apparel catalog only. Do not invent a price in the storefront.
+- Verified: browser and curl. `docs/architecture.md` expects a seeded Aura Core catalog.
+
+**An older Next process crashed `/us/store` before restart**
+
+- Location: `apps/storefront/src/modules/products/components/thumbnail/index.tsx` (`quality={50}`) and `apps/storefront/next.config.js` (`images.qualities`).
+- Problem: The process that was already running threw `Invalid quality prop (50)` and the browser showed “This page is catching up.” Current `main` already lists `50` in `images.qualities`. After restart, `/us/store` is HTTP 200 and that error is gone.
+- Why it matters: A stale dev server looks like a broken shop.
+- Recommended solution: Restart Next after `next.config.js` changes. Keep every `quality` value inside `images.qualities`.
+- Verified: `/tmp/storefront.log` before restart; curl 200 after restart.
+
+### High
+
+**Product tabs still use clothing-starter copy**
+
+- Location: `apps/storefront/src/modules/products/components/product-tabs/index.tsx`.
+- Problem: Copy still says “Is the fit not quite right?” and offers an exchange for fit.
+- Why it matters: That is not a pouch policy. It will show on the real product page once Aura Core is in the catalog.
+- Recommended solution: Replace with the existing peel/apply, wear up to 12 hours, 30-day pouch facts. Hide empty Material and Dimensions fields.
+- Verified: code. The live PDP could not be opened because the product is missing.
+
+**Account password change is still a stub**
+
+- Location: `apps/storefront/src/modules/account/components/profile-password/index.tsx`.
+- Problem: Submit logs `Password update is not implemented`.
+- Why it matters: Subscribe copy tells people they can manage the account. Password change does nothing.
+- Recommended solution: Hide the control until Medusa customer password update is wired, or implement it.
+- Verified: code. Sign-in page itself rendered on desktop and at 390px.
+
+**Sitemap still omits the product URL**
+
+- Location: `apps/storefront/src/app/sitemap.ts` and `apps/storefront/src/app/robots.ts`.
+- Problem: Sitemap has home, store, and marketing URLs, not `/us/products/aura-patch`. Robots disallows `/cart/`, `/checkout/`, and `/account/` without the country prefix.
+- Why it matters: The product URL is the page that should be indexed. Country-prefixed cart and checkout can still be crawled.
+- Recommended solution: Add the product URL. Disallow `/*/cart`, `/*/checkout`, and `/*/account`.
+- Verified: code.
+
+### Medium
+
+**Shop falls through to whatever product is first**
+
+- Location: `apps/storefront/src/modules/store/templates/index.tsx`.
+- Problem: If `aura-patch` is missing, the page titles itself “The Aura Collection” and renders the Medusa apparel grid underneath the static formula chooser.
+- Why it matters: A catalog miss looks like a real apparel store instead of an empty or blocked Aura shop.
+- Recommended solution: If the Aura handle is missing, show a clear unavailable state and do not list unrelated products.
+- Verified: curl HTML contains “Sweatshirt” and does not contain “Subscribe”.
+
+### Low
+
+**Mobile cart close control is present in code**
+
+- Location: `apps/storefront/src/modules/layout/components/cart-dropdown/index.tsx` (`aria-label="Close cart"`).
+- Problem: An early mobile screenshot looked like the close control was missing. The button is in the header of the drawer.
+- Why it matters: Avoid “fixing” a control that already exists.
+- Recommended solution: None until a fresh 390px pass shows it clipped.
+- Verified: code. Empty cart drawer opened on desktop.
+
+### Not audited this pass
+
+Subscribe & Save, one-time add to cart, and checkout. Those need an Aura Core variant in the database. No payment was attempted.
+
+Homepage, account sign-in, and the empty cart drawer rendered. Keyboard focus was visible on the homepage “Compare formulas” control.
+
+---
+
+## 2026-09-22
+
 Date: 2026-09-22  
 Scope: local storefront `http://localhost:8000` (also `http://[::1]:8000`) with Medusa at `http://localhost:9000`. Application code was not changed.
 
