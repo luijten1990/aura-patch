@@ -156,8 +156,8 @@ const Hero = ({ product }: HeroProps) => {
           </ol>
           <div className="relative min-h-[480px] overflow-hidden rounded-[2rem] small:min-h-[580px]">
             <Image
-              src="/images/aura-patch-how-it-works.webp"
-              alt="Woman applying an Aura Patch to her upper arm"
+              src="/images/aura-patch-how-it-works-current.webp"
+              alt="Woman applying the gold AURA patch beside the current teal Daily Wellness Patch pouch"
               fill
               className="object-cover object-center"
               sizes="(max-width: 1024px) 100vw, 48vw"
