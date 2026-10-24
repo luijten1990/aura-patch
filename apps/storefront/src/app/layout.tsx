@@ -4,17 +4,17 @@ import localFont from "next/font/local"
 import "styles/globals.css"
 
 const hedvigLettersSerif = localFont({
-  src: "./fonts/hedvig-letters-serif.ttf",
+  src: "./fonts/hedvig-letters-serif.woff2",
   variable: "--font-hedvig-serif",
   display: "swap",
 })
 
 const manrope = localFont({
   src: [
-    { path: "./fonts/manrope-400.ttf", weight: "400", style: "normal" },
-    { path: "./fonts/manrope-500.ttf", weight: "500", style: "normal" },
-    { path: "./fonts/manrope-600.ttf", weight: "600", style: "normal" },
-    { path: "./fonts/manrope-700.ttf", weight: "700", style: "normal" },
+    { path: "./fonts/manrope-400.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/manrope-500.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/manrope-600.woff2", weight: "600", style: "normal" },
+    { path: "./fonts/manrope-700.woff2", weight: "700", style: "normal" },
   ],
   variable: "--font-manrope",
   display: "swap",

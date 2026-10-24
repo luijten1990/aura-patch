@@ -65,3 +65,16 @@ Checked in Chrome on the product page:
 No Aura pouch was generated. The patch in the photos is a plain nude circle with no logo.
 
 Josh Miller was sharing `review-outdoors.webp` with Lauren Hayes. His card now uses `review-sidewalk.webp`, a separate photo of a man with a small patch on his upper arm. Lauren still uses the outdoor portrait.
+
+## Lighter fonts and product photos
+
+Date: 2026-10-25
+
+| Path | Where | Problem | Fix |
+| --- | --- | --- | --- |
+| `src/app/fonts/*.woff2` | Every page | Five full font files were about 244KB on the first load. | Latin subset WOFF2. One page downloads about 70KB. Headlines stay Hedvig, buttons stay Manrope 500. |
+| `public/images/aura-everyday-desk.webp` | Product page, “A simple step in your daily routine.” | A 2.6MB PNG was zoomed with a 308% width crop, so the browser asked for a 1600px image. | Square crop of the woman at the laptop, 499×499 WebP. `object-cover`, `quality={85}`, `sizes` capped at 480px. |
+| `public/images/aura-core-pouch-back-label.webp` | Product gallery back and the full-size label link | The back file was 265KB and the first optimized copy was 157KB. | Same studio back, 1080×1359 WebP at quality 80 (136KB). Gallery uses `quality={85}` for the back. Label text stayed readable at 1280. |
+| `public/images/reviews/review-living-room.webp` | Katie Brennan’s review | Katie shared Sheila Amos’s kitchen photo. | Separate sofa portrait, patch on the upper arm. Sheila still uses the kitchen photo. |
+
+Checked in Chrome on the local storefront: homepage headline at 1280, product desk photo at 1280 and 390, pouch back at 1280, Katie’s card at 1280 and 390. Katie’s image URL is not Sheila’s.

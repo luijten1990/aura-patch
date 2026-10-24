@@ -15,6 +15,7 @@ const photos = [
   ["/images/reviews/review-window.webp", "Woman by a window wearing a small patch on her arm"],
   ["/images/reviews/review-portrait.webp", "Man wearing a small patch on his shoulder"],
   ["/images/reviews/review-sidewalk.webp", "Man on a sidewalk wearing a small patch on his upper arm"],
+  ["/images/reviews/review-living-room.webp", "Woman on a sofa wearing a small patch on her upper arm"],
 ] as const
 
 const withPhoto = (
@@ -63,7 +64,7 @@ export const auraReviews: AuraReview[] = [
     name: "Katie Brennan",
     title: "One daily step",
     quote: "I like having the routine in one patch. Peel, apply, go.",
-  }, 0),
+  }, 6),
   withPhoto({
     name: "Josh Miller",
     title: "They work",

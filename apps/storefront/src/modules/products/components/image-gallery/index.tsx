@@ -28,7 +28,7 @@ export default function ImageGallery({
           alt={label(images.indexOf(selected))}
           fill
           priority={selected.id === images[0]?.id}
-          quality={90}
+          quality={selected.id === "aura-patch-back" ? 85 : 90}
           sizes="(max-width: 1024px) 92vw, 600px"
           className="object-contain"
         />

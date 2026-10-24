@@ -41,7 +41,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
           },
           {
             id: "aura-patch-back",
-            url: "/images/aura-core-pouch-back.webp",
+            url: "/images/aura-core-pouch-back-label.webp",
             rank: 1,
           },
         ]
@@ -64,12 +64,12 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
           <figure className="max-w-[480px]">
             <div className="relative aspect-square overflow-hidden">
               <Image
-                src="/images/aura-lifestyle-collage.png"
+                src="/images/aura-everyday-desk.webp"
                 alt="Illustration of a woman wearing a patch while sitting at her laptop"
-                width={1536}
-                height={1024}
-                sizes="(max-width: 768px) 300vw, 1440px"
-                className="absolute bottom-0 left-0 h-auto !w-[308%] !max-w-none"
+                fill
+                quality={85}
+                sizes="(max-width: 768px) 90vw, 480px"
+                className="object-cover object-center"
               />
             </div>
           </figure>

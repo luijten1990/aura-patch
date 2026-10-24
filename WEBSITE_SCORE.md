@@ -78,6 +78,7 @@ Last assessed: 2026-09-22 (full read-only audit; local storefront + Medusa alrea
 
 ## Evidence
 
+- 2026-10-25: Fonts, the everyday desk photo, the pouch back, and Katie Brennan’s portrait were lightened. A local page loads about 70KB of fonts instead of 244KB. The desk crop is `aura-everyday-desk.webp`. The back label is `aura-core-pouch-back-label.webp` and still shows the ingredient list. Katie uses `review-living-room.webp`; Sheila still uses the kitchen photo. Notes: `artifacts/qa/frontend-design/notes.md`.
 - 2026-10-25: The header shipping control shows a US flag beside United States. The flag image loaded from the flag icon set at 200×150. Screenshot: `artifacts/qa/frontend-design/header-country-flag.png`.
 - 2026-10-25: Josh Miller’s review is the airport note supplied for his card. Local `/us/products/aura-patch` includes “wear in airports during my travels” and no longer includes “I want more of them.”
 - 2026-10-25: Amandeep Singh’s review is the flu-season note supplied for his card. Local `/us/products/aura-patch` includes “I have not been getting sick!” and no longer includes the old monthly-pouch line.
