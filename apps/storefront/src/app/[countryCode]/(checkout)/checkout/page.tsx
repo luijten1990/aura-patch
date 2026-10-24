@@ -1,5 +1,6 @@
-import { ensureCheckoutPurchaseType, retrieveCart } from "@lib/data/cart"
+import { retrieveCheckoutCart } from "@lib/data/cart"
 import { retrieveCustomer } from "@lib/data/customer"
+import { listRegions } from "@lib/data/regions"
 import { CheckoutCartProvider } from "@modules/checkout/components/checkout-cart-provider"
 import PaymentWrapper from "@modules/checkout/components/payment-wrapper"
 import CheckoutForm from "@modules/checkout/templates/checkout-form"
@@ -19,16 +20,15 @@ export default async function Checkout({
   const params = await searchParams
   const stepValue = Array.isArray(params.step) ? params.step[0] : params.step
   const step = stepValue || "address"
-  const [initialCart, customer] = await Promise.all([
-    retrieveCart(),
+  const [cart, customer, regions] = await Promise.all([
+    retrieveCheckoutCart(),
     retrieveCustomer(),
+    listRegions().catch(() => []),
   ])
 
-  if (!initialCart) {
+  if (!cart) {
     return notFound()
   }
-
-  const cart = await ensureCheckoutPurchaseType(initialCart)
 
   return (
     <div className="content-container py-12 small:py-20">
@@ -39,7 +39,12 @@ export default async function Checkout({
       <CheckoutCartProvider cart={cart}>
         <div className="mt-10 grid grid-cols-1 gap-10 small:grid-cols-[minmax(0,1fr)_380px] small:gap-12">
           <PaymentWrapper cart={cart}>
-            <CheckoutForm cart={cart} customer={customer} step={step} />
+            <CheckoutForm
+              cart={cart}
+              customer={customer}
+              regions={regions}
+              step={step}
+            />
           </PaymentWrapper>
           <CheckoutSummary />
         </div>

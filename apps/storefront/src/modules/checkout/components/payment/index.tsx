@@ -2,6 +2,7 @@
 import { RadioGroup } from "@headlessui/react"
 import { isPaypal, isStripeLike, paymentInfoMap } from "@lib/constants"
 import { initiatePaymentSession } from "@lib/data/cart"
+import { listCartPaymentMethods } from "@lib/data/payment"
 import { CheckCircleSolid, CreditCard } from "@medusajs/icons"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import PaymentContainer, {
@@ -16,9 +17,9 @@ import {
   clx,
 } from "@modules/common/components/ui"
 import { HttpTypes } from "@medusajs/types"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useCheckoutCart } from "../checkout-cart-provider"
+import { useCheckoutStep } from "../checkout-step"
 
 const Payment = ({
   cart: _cart,
@@ -27,7 +28,10 @@ const Payment = ({
   cart: HttpTypes.StoreCart
   availablePaymentMethods: { id: string }[]
 }) => {
-  const { cart } = useCheckoutCart(_cart)
+  const { cart: liveCart, setCart } = useCheckoutCart(_cart)
+  const cart = liveCart || _cart
+  const { step, setStep } = useCheckoutStep()
+  const [methods, setMethods] = useState(availablePaymentMethods)
   const activeSession = cart.payment_collection?.payment_sessions?.find(
     (paymentSession) => paymentSession.status === "pending"
   )
@@ -39,24 +43,41 @@ const Payment = ({
     activeSession?.provider_id ?? ""
   )
 
-  const searchParams = useSearchParams()
-  const router = useRouter()
-  const pathname = usePathname()
+  const isOpen = step === "payment"
 
-  const isOpen = searchParams.get("step") === "payment"
+  useEffect(() => {
+    if (methods.length) {
+      return
+    }
+    const regionId = cart.region?.id || cart.region_id || ""
+    if (!regionId) {
+      return
+    }
+    let cancelled = false
+    listCartPaymentMethods(regionId).then((result) => {
+      if (!cancelled && result?.length) {
+        setMethods(result)
+      }
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [cart.region?.id, cart.region_id, methods.length])
 
   const setPaymentMethod = async (method: string) => {
     setError(null)
     setSelectedPaymentMethod(method)
     if (isStripeLike(method) || isPaypal(method)) {
       try {
-        await initiatePaymentSession(cart, {
+        const session = await initiatePaymentSession(cart, {
           provider_id: method,
         })
-        // The payment session is created server-side. Refresh the cart so the
-        // PaymentWrapper receives its client secret and can mount Stripe's
-        // Payment Element instead of leaving the checkout on its skeleton.
-        router.refresh()
+        if (session?.payment_collection && cart) {
+          setCart({
+            ...cart,
+            payment_collection: session.payment_collection,
+          })
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err))
       }
@@ -70,20 +91,8 @@ const Payment = ({
   const paymentReady =
     (activeSession && (cart?.shipping_methods?.length ?? 0) !== 0) || paidByGiftcard
 
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams)
-      params.set(name, value)
-
-      return params.toString()
-    },
-    [searchParams]
-  )
-
   const handleEdit = () => {
-    router.push(pathname + "?" + createQueryString("step", "payment"), {
-      scroll: false,
-    })
+    setStep("payment")
   }
 
   const handleSubmit = async () => {
@@ -96,18 +105,20 @@ const Payment = ({
         activeSession?.provider_id === selectedPaymentMethod
 
       if (!checkActiveSession) {
-        await initiatePaymentSession(cart, {
+        const session = await initiatePaymentSession(cart, {
           provider_id: selectedPaymentMethod,
         })
+        if (session?.payment_collection && cart) {
+          setCart({
+            ...cart,
+            payment_collection: session.payment_collection,
+          })
+        }
       }
 
       if (!shouldInputPaymentDetails || isPaypal(selectedPaymentMethod)) {
-        return router.push(
-          pathname + "?" + createQueryString("step", "review"),
-          {
-            scroll: false,
-          }
-        )
+        setStep("review")
+        return
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))
@@ -164,13 +175,18 @@ const Payment = ({
           }
           aria-hidden={!isOpen}
         >
-          {!paidByGiftcard && availablePaymentMethods?.length && (
+          {isOpen && !paidByGiftcard && !methods.length && (
+            <p className="text-[14px] leading-6 text-aura-forest/55">
+              Loading payment options…
+            </p>
+          )}
+          {!paidByGiftcard && methods.length > 0 && (
             <>
               <RadioGroup
                 value={selectedPaymentMethod}
                 onChange={(value: string) => setPaymentMethod(value)}
               >
-                {availablePaymentMethods.map((paymentMethod) => (
+                {methods.map((paymentMethod) => (
                   <div key={paymentMethod.id}>
                     {isStripeLike(paymentMethod.id) ? (
                       <StripePaymentContainer

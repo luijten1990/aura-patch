@@ -68,7 +68,7 @@ export const listCheckoutCarrierQuotes = async (cartId: string) => {
 
   return sdk.client
     .fetch<{
-      quotes: Record<string, { carrier: string; service: string; label: string }>
+      quotes: Record<string, { carrier: string; service: string; label: string; amount?: number }>
     }>("/store/easypost/checkout-quotes", {
       method: "POST",
       body: { cart_id: cartId },
@@ -77,6 +77,6 @@ export const listCheckoutCarrierQuotes = async (cartId: string) => {
     })
     .then((result) => result.quotes || {})
     .catch(() => {
-      return {} as Record<string, { carrier: string; service: string; label: string }>
+      return {} as Record<string, { carrier: string; service: string; label: string; amount?: number }>
     })
 }

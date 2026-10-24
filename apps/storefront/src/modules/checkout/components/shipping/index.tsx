@@ -1,6 +1,6 @@
 "use client"
 import { Radio, RadioGroup } from "@headlessui/react"
-import { calculatePriceForShippingOption, listCheckoutCarrierQuotes } from "@lib/data/fulfillment"
+import { calculatePriceForShippingOption, listCartShippingMethods, listCheckoutCarrierQuotes } from "@lib/data/fulfillment"
 import { convertToLocale } from "@lib/util/money"
 import { CheckCircleSolid, Loader } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
@@ -8,9 +8,9 @@ import ErrorMessage from "@modules/checkout/components/error-message"
 import Divider from "@modules/common/components/divider"
 import MedusaRadio from "@modules/common/components/radio"
 import { Button, clx, Heading, Text } from "@modules/common/components/ui"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useCheckoutCart } from "../checkout-cart-provider"
+import { useCheckoutStep } from "../checkout-step"
 import CarrierMark from "./carrier-mark"
 import {
   shippingOptionCatalogId,
@@ -178,7 +178,8 @@ const Shipping: React.FC<ShippingProps> = ({
   cart: initialCart,
   availableShippingMethods,
 }) => {
-  const { cart, setCart } = useCheckoutCart(initialCart)
+  const { cart: liveCart, setCart } = useCheckoutCart(initialCart)
+  const cart = liveCart || initialCart
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingPrices, setIsLoadingPrices] = useState(false)
 
@@ -194,16 +195,17 @@ const Shipping: React.FC<ShippingProps> = ({
   const [shippingMethodId, setShippingMethodId] = useState<string | null>(
     cart.shipping_methods?.at(-1)?.shipping_option_id || null
   )
+  const [shippingOptions, setShippingOptions] = useState(availableShippingMethods)
+  const [deliveryLoaded, setDeliveryLoaded] = useState(
+    Boolean(availableShippingMethods?.length)
+  )
 
-  const searchParams = useSearchParams()
-  const router = useRouter()
-  const pathname = usePathname()
-
-  const isOpen = searchParams.get("step") === "delivery"
+  const { step, setStep } = useCheckoutStep()
+  const isOpen = step === "delivery"
 
   const shippingCountry = cart.shipping_address?.country_code?.toLowerCase()
   const isUsShipping = shippingCountry === "us"
-  const _shippingMethods = availableShippingMethods?.filter(
+  const _shippingMethods = shippingOptions?.filter(
     (sm) => {
       const fulfillmentType = (
         sm as unknown as {
@@ -225,59 +227,89 @@ const Shipping: React.FC<ShippingProps> = ({
   )?.slice()
     .sort((a, b) => shippingMethodRank(a) - shippingMethodRank(b))
 
-  const _pickupMethods = availableShippingMethods?.filter(
+  const _pickupMethods = shippingOptions?.filter(
     (sm) => (sm as unknown as { service_zone?: { fulfillment_set?: { type?: string; location?: { address: HttpTypes.StoreCartAddress } } } }).service_zone?.fulfillment_set?.type === "pickup"
   )
 
   const hasPickupOptions = !!_pickupMethods?.length
 
+  const addressLine = cart.shipping_address?.address_1 || ""
+
   useEffect(() => {
-    if (!isOpen) {
+    if (!isOpen || !addressLine) {
       return
     }
 
-    const knownPrices: Record<string, number> = {}
-    for (const option of _shippingMethods || []) {
-      if (typeof option.amount === "number" && option.amount > 0) {
-        knownPrices[option.id] = option.amount
-      }
-    }
-
     const cartId = cart.id || initialCart.id
-    const promises = (_shippingMethods || [])
-      .filter((sm) => sm.price_type === "calculated" && !knownPrices[sm.id])
-      .map((sm) => calculatePriceForShippingOption(sm.id, cartId, { easypost_live: true }))
-
-    if (cartId) {
-      void listCheckoutCarrierQuotes(cartId).then((quotes) => {
-        setCarrierQuotes(quotes)
-      })
+    if (!cartId) {
+      return
     }
 
-    if (!promises.length) {
-      setCalculatedPricesMap(knownPrices)
-      setIsLoadingPrices(false)
-    } else {
-      setIsLoadingPrices(true)
-      Promise.allSettled(promises).then((res) => {
-        const pricesMap: Record<string, number> = { ...knownPrices }
-        res
-          .filter((r) => r.status === "fulfilled")
-          .forEach((p) => {
-            if (p.value?.id && typeof p.value.amount === "number" && p.value.amount > 0) {
-              pricesMap[p.value.id] = p.value.amount
+    let cancelled = false
+    setDeliveryLoaded(false)
+    setIsLoadingPrices(true)
+
+    Promise.all([
+      listCartShippingMethods(cartId),
+      listCheckoutCarrierQuotes(cartId),
+    ]).then(([options, quotes]) => {
+      if (cancelled) {
+        return
+      }
+
+      const nextOptions = options || []
+      setShippingOptions(nextOptions)
+      setCarrierQuotes(quotes)
+      setDeliveryLoaded(true)
+
+      const prices: Record<string, number> = {}
+      for (const option of nextOptions) {
+        const quote = quotes[shippingOptionCatalogId(option)]
+        if (typeof quote?.amount === "number" && quote.amount > 0) {
+          prices[option.id] = quote.amount
+        } else if (typeof option.amount === "number" && option.amount > 0) {
+          prices[option.id] = option.amount
+        }
+      }
+
+      const missing = nextOptions.filter(
+        (option) => option.price_type === "calculated" && !prices[option.id]
+      )
+      if (!missing.length) {
+        setCalculatedPricesMap(prices)
+        setIsLoadingPrices(false)
+        return
+      }
+
+      Promise.allSettled(
+        missing.map((option) =>
+          calculatePriceForShippingOption(option.id, cartId, { easypost_live: true })
+        )
+      ).then((results) => {
+        if (cancelled) {
+          return
+        }
+        const pricesMap = { ...prices }
+        results
+          .filter((result) => result.status === "fulfilled")
+          .forEach((result) => {
+            if (
+              result.value?.id &&
+              typeof result.value.amount === "number" &&
+              result.value.amount > 0
+            ) {
+              pricesMap[result.value.id] = result.value.amount
             }
           })
-
         setCalculatedPricesMap(pricesMap)
         setIsLoadingPrices(false)
       })
-    }
+    })
 
-    if (_pickupMethods?.find((m) => m.id === shippingMethodId)) {
-      setShowPickupOptions(PICKUP_OPTION_ON)
+    return () => {
+      cancelled = true
     }
-  }, [availableShippingMethods, isOpen])
+  }, [addressLine, initialCart.id, isOpen, cart.id])
 
   const selectedMethod = _shippingMethods?.find((option) => option.id === shippingMethodId)
   const selectedRateReady = selectedMethod
@@ -308,11 +340,11 @@ const Shipping: React.FC<ShippingProps> = ({
   }, [isLoadingPrices, calculatedPricesMap, shippingMethodId, _shippingMethods])
 
   const handleEdit = () => {
-    router.push(pathname + "?step=delivery", { scroll: false })
+    setStep("delivery")
   }
 
   const handleSubmit = () => {
-    router.push(pathname + "?step=payment", { scroll: false })
+    setStep("payment")
   }
 
   const handleSetShippingMethod = async (
@@ -358,9 +390,30 @@ const Shipping: React.FC<ShippingProps> = ({
         return
       }
 
-      if (result.cart) {
-        setCart(result.cart)
+      if (!cart) {
+        return
       }
+      const option = (shippingOptions || []).find((item) => item.id === id)
+      const priced =
+        option?.price_type === "calculated"
+          ? calculatedPricesMap[id]
+          : option?.amount
+      const amount = typeof priced === "number" ? priced : 0
+      const previousShipping = cart.shipping_total ?? cart.shipping_subtotal ?? 0
+      setCart({
+        ...cart,
+        shipping_methods: [
+          {
+            shipping_option_id: id,
+            name: option?.name || "Shipping",
+            amount,
+            total: amount,
+          },
+        ] as HttpTypes.StoreCart["shipping_methods"],
+        shipping_subtotal: amount,
+        shipping_total: amount,
+        total: Math.round(((cart.total ?? 0) - previousShipping + amount) * 100) / 100,
+      } as HttpTypes.StoreCart)
     } catch (err) {
       setShippingMethodId(currentId)
       setError(err instanceof Error ? err.message : "Unable to save that shipping option.")
@@ -467,7 +520,12 @@ const Shipping: React.FC<ShippingProps> = ({
                     }
                   }}
                 >
-                  {!_shippingMethods?.length && (
+                  {!deliveryLoaded && (
+                    <span className="text-[14px] leading-6 text-aura-forest/55">
+                      Finding delivery options…
+                    </span>
+                  )}
+                  {deliveryLoaded && !_shippingMethods?.length && (
                     <span className="text-[14px] leading-6 text-aura-forest/55">
                       No shipping methods are available for this address. For
                       international orders, confirm the destination country is

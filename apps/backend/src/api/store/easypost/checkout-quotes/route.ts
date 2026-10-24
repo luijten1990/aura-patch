@@ -54,7 +54,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
   }
 
   const shippingAddress = (cart as { shipping_address?: CartAddress }).shipping_address
-  const quotes: Record<string, { carrier: string; service: string; label: string }> = {}
+  const quotes: Record<string, { carrier: string; service: string; label: string; amount: number }> = {}
 
   await Promise.all(
     EASYPOST_CHECKOUT_OPTION_IDS.map(async (optionId) => {
@@ -68,6 +68,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
           carrier: described.carrier,
           service: described.service,
           label: described.label,
+          amount: described.amount,
         }
       }
     })
