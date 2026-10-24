@@ -14,7 +14,7 @@ type ItemProps = {
 const Item = ({ item, currencyCode }: ItemProps) => {
   const thumbnail =
     item.product_handle === "aura-patch"
-      ? "/images/aura-core-front.webp"
+      ? "/images/aura-core-pouch-front.webp"
       : item.thumbnail
 
   return (
@@ -27,6 +27,7 @@ const Item = ({ item, currencyCode }: ItemProps) => {
           <Thumbnail
             thumbnail={thumbnail}
             size="square"
+            fit={item.product_handle === "aura-patch" ? "contain" : "cover"}
             className="!rounded-[1.25rem] !border !border-aura-forest/10 !bg-[#f5efe4] !p-0 !shadow-none"
           />
         </div>

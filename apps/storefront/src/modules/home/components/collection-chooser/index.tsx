@@ -46,7 +46,8 @@ const CollectionChooser = ({ corePrice }: CollectionChooserProps) => (
                 src={formula.image}
                 alt={formula.imageAlt}
                 fill
-                className="object-contain p-7 transition-transform duration-700 hover:scale-[1.02]"
+                quality={90}
+                className="object-contain transition-transform duration-700 hover:scale-[1.02]"
                 sizes="(max-width: 1024px) 100vw, 33vw"
               />
             </div>

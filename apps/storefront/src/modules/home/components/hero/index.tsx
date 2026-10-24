@@ -54,11 +54,12 @@ const Hero = ({ product }: HeroProps) => {
             <LocalizedClientLink href={productHref} className="group relative block">
               <div className="relative aspect-[4/5] min-h-[420px] w-full overflow-hidden bg-aura-cream">
                 <Image
-                  src="/images/aura-core-front.webp"
+                  src="/images/aura-core-pouch-front.webp"
                   alt="Aura Core 30-day daily wellness pouch with gold mandala"
                   fill
                   priority
-                  className="object-contain p-7 transition-transform duration-700 group-hover:scale-[1.015]"
+                  quality={90}
+                  className="object-contain transition-transform duration-700 group-hover:scale-[1.015]"
                   sizes="(max-width: 1024px) 90vw, 540px"
                 />
               </div>

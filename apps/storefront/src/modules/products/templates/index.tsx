@@ -36,12 +36,12 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
       ? [
           {
             id: "aura-patch-front",
-            url: "/images/aura-core-front.webp",
+            url: "/images/aura-core-pouch-front.webp",
             rank: 0,
           },
           {
             id: "aura-patch-back",
-            url: "/images/aura-patch-back-transparent.png",
+            url: "/images/aura-core-pouch-back.webp",
             rank: 1,
           },
         ]

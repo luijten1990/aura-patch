@@ -39,7 +39,7 @@ export const auraCollection: AuraFormula[] = [
     bestFor: "Everyday ritual",
     status: "available",
     href: "/products/aura-patch",
-    image: "/images/aura-core-front.webp",
+    image: "/images/aura-core-pouch-front.webp",
     imageAlt: "Aura Core 30-day daily wellness pouch with gold mandala",
     cardTone: "bg-[#dce8e4]",
     categories: "Daily · Balance · Vitality",

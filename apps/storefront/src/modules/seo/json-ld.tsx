@@ -12,7 +12,7 @@ export function ProductJsonLd() {
       "A 30-day transdermal wellness patch with 19 ingredients. Peel, apply, go.",
     brand: { "@type": "Brand", name: "Aura Patch" },
     category: "Health & Wellness > Dietary Supplements > Transdermal Patches",
-    image: "https://www.getaurapatch.com/images/aura-core-front.jpeg",
+    image: "https://www.getaurapatch.com/images/aura-core-pouch-front.jpeg",
     url: "https://www.getaurapatch.com/us/products/aura-patch",
     sku: "AURA-PATCH-30",
     offers: {

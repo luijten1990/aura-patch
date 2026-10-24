@@ -33,7 +33,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       openGraph: {
         title: `${product.title} | Aura Patch`,
         description: `${product.title}`,
-        images: ["/images/aura-core-front.jpeg"],
+        images: ["/images/aura-core-pouch-front.jpeg"],
       },
     }
   } catch {

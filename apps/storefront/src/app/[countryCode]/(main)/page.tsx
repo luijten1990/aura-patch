@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     title: "The Aura Collection — Core, Restore, Energy",
     description:
       "Next-generation daily wellness. Core, Restore, and Energy — three patches designed for all-day support. Start with Core.",
-    images: ["/images/aura-core-front.jpeg"],
+    images: ["/images/aura-core-pouch-front.jpeg"],
     type: "website",
     siteName: "Aura Patch",
   },

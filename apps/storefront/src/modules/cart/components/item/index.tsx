@@ -53,7 +53,7 @@ const Item = ({ item, type = "full", currencyCode, isSubscription }: ItemProps) 
   const maxQuantity = item.variant?.manage_inventory ? 10 : maxQtyFromInventory
   const thumbnail =
     item.product_handle === "aura-patch"
-      ? "/images/aura-core-front.webp"
+      ? "/images/aura-core-pouch-front.webp"
       : item.thumbnail
 
   return (
@@ -73,6 +73,7 @@ const Item = ({ item, type = "full", currencyCode, isSubscription }: ItemProps) 
             thumbnail={thumbnail}
             images={item.variant?.product?.images}
             size="square"
+            fit={item.product_handle === "aura-patch" ? "contain" : "cover"}
             className="!rounded-[1.25rem] !border !border-aura-forest/10 !bg-[#f5efe4] !p-0 !shadow-none"
           />
         </LocalizedClientLink>

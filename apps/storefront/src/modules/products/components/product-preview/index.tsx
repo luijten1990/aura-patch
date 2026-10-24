@@ -43,10 +43,11 @@ export default async function ProductPreview({
         {product.handle === "aura-patch" ? (
           <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-aura-cream">
             <Image
-              src="/images/aura-core-front.webp"
+              src="/images/aura-core-pouch-front.webp"
               alt="Aura Core 30-day pouch"
               fill
-              className="object-contain p-5 transition-transform duration-700 group-hover:scale-[1.025] small:p-7"
+              quality={90}
+              className="object-contain transition-transform duration-700 group-hover:scale-[1.025]"
               sizes="(max-width: 768px) 90vw, 430px"
             />
           </div>
