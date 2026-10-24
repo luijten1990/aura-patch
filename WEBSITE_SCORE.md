@@ -78,6 +78,7 @@ Last assessed: 2026-09-22 (full read-only audit; local storefront + Medusa alrea
 
 ## Evidence
 
+- 2026-10-25: Hillary Ivy’s review quote is the teacher note she supplied. Local `/us/products/aura-patch` includes “they really work!” and no longer includes the old long-day line.
 - 2026-10-24: Josh Miller’s review photo is `review-sidewalk.webp`. Lauren Hayes still uses `review-outdoors.webp`. Checked on `/us/products/aura-patch`.
 - 2026-10-24: `/us/investors` downloads the October 2026 deck. Local PDF is 13 pages, 254,813 bytes, with $49.99 one-time and $39.99 monthly on slide 6. Notes: `artifacts/qa/investors/deck.md`.
 - 2026-10-24: `/us/investors` hero uses the supplied lifestyle photo of the new Core pouch. Checked at 1280, 768, and 375. Notes: `artifacts/qa/frontend-design/notes.md`.
