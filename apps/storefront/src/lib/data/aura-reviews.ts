@@ -55,9 +55,9 @@ export const auraReviews: AuraReview[] = [
   }, 3),
   withPhoto({
     name: "Amandeep Singh",
-    title: "Easy monthly pouch",
+    title: "I was sceptical",
     quote:
-      "I have been using the 30-day pouch. Peel, apply, and wear it for up to 12 hours. It is an easy part of the month.",
+      "I struggle with a low immune system and always sniffle and cough during flu season, ever since I started wearing these I have not been getting sick! I was sceptical, but they really work!",
   }, 4),
   withPhoto({
     name: "Katie Brennan",
