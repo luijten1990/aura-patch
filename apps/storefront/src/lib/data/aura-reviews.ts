@@ -49,9 +49,9 @@ export const auraReviews: AuraReview[] = [
   }, 2),
   withPhoto({
     name: "Hillary Ivy",
-    title: "Part of a long day",
+    title: "They really work",
     quote:
-      "I wear Aura on long days. Peel, apply, and it stays in place while I get on with the day.",
+      "I work as a teacher and I am prone to always getting sick, nowadays so many diseases are going round. However ever since I started wearing these I have not had a cold or sore throat, they really work!",
   }, 3),
   withPhoto({
     name: "Amandeep Singh",
