@@ -9,11 +9,11 @@ export type AuraReview = {
 }
 
 const photos = [
-  ["/images/reviews/wear-shoulder.webp", "Person wearing an Aura patch on the shoulder"],
-  ["/images/reviews/wear-day.webp", "Person wearing an Aura patch outdoors"],
-  ["/images/reviews/wear-desk.webp", "Person wearing an Aura patch while at a desk"],
-  ["/images/reviews/wear-rest.webp", "Person resting while wearing an Aura patch"],
-  ["/images/reviews/wear-close.webp", "Close view of an Aura patch worn on the shoulder"],
+  ["/images/reviews/review-kitchen.webp", "Woman in a kitchen wearing a small patch on her shoulder"],
+  ["/images/reviews/review-outdoors.webp", "Woman outdoors wearing a small patch on her upper arm"],
+  ["/images/reviews/review-desk.webp", "Man at a desk wearing a small patch on his wrist"],
+  ["/images/reviews/review-window.webp", "Woman by a window wearing a small patch on her arm"],
+  ["/images/reviews/review-portrait.webp", "Man wearing a small patch on his shoulder"],
 ] as const
 
 const withPhoto = (
