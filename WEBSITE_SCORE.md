@@ -78,6 +78,7 @@ Last assessed: 2026-09-22 (full read-only audit; local storefront + Medusa alrea
 
 ## Evidence
 
+- 2026-10-24: Review cards on `/us/products/aura-patch` use new square portraits at 112px. Checked at 1280, 768, and 375. Faces stay in frame and a small plain patch is visible. Notes: `artifacts/qa/frontend-design/notes.md`.
 - 2026-10-23: Cart titles use Hedvig, and the remaining cart text, prices, quantity control, and promotion line use Manrope. No Inter left on `/us/cart` or the cart drawer.
 - 2026-10-23: Subscribe & save opens the checkout address form directly. Warm local click-to-address was 1047 ms, total $39.99, and shipping quotes waited until delivery. One-time add still opens the cart drawer. Notes: `artifacts/qa/shop-product/faster-subscribe-checkout.md`.
 - 2026-10-21: Homepage formulations keep each pouch on screen while its benefits scroll. Notes: `artifacts/qa/shop-product/sticky-formula-pouches.md`.

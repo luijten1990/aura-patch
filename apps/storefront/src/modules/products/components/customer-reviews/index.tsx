@@ -27,15 +27,16 @@ const CustomerReviews = ({ featured = true }: { featured?: boolean }) => (
         {auraReviews.map((review) => (
           <article
             key={`${review.name}-${review.title}`}
-            className="grid grid-cols-[88px_1fr] gap-4 border border-aura-forest/15 bg-white/40 p-4"
+            className="grid grid-cols-[112px_1fr] gap-4 border border-aura-forest/15 bg-white/40 p-4"
           >
-            <div className="relative h-[88px] w-[88px] overflow-hidden">
+            <div className="relative h-[112px] w-[112px] overflow-hidden">
               <Image
                 src={review.photo}
                 alt={review.photoAlt}
                 fill
-                sizes="88px"
-                className="object-cover"
+                quality={85}
+                sizes="112px"
+                className="object-cover object-center"
               />
             </div>
             <div className="min-w-0">
