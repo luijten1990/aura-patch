@@ -78,6 +78,7 @@ Last assessed: 2026-09-22 (full read-only audit; local storefront + Medusa alrea
 
 ## Evidence
 
+- 2026-10-24: Josh Miller’s review photo is `review-sidewalk.webp`. Lauren Hayes still uses `review-outdoors.webp`. Checked on `/us/products/aura-patch`.
 - 2026-10-24: `/us/investors` downloads the October 2026 deck. Local PDF is 13 pages, 254,813 bytes, with $49.99 one-time and $39.99 monthly on slide 6. Notes: `artifacts/qa/investors/deck.md`.
 - 2026-10-24: `/us/investors` hero uses the supplied lifestyle photo of the new Core pouch. Checked at 1280, 768, and 375. Notes: `artifacts/qa/frontend-design/notes.md`.
 - 2026-10-24: Core packaging uses the supplied studio front and back. Homepage hero, collection card, and product front/back were checked at 1280 and 375; the product front was also checked at 768. The back label shows lot AP261001 and expiry 11/2029. Notes: `artifacts/qa/frontend-design/notes.md`.

@@ -63,3 +63,5 @@ Checked in Chrome on the product page:
 - 375×812: photos stay 112px, text wraps, no overflow.
 
 No Aura pouch was generated. The patch in the photos is a plain nude circle with no logo.
+
+Josh Miller was sharing `review-outdoors.webp` with Lauren Hayes. His card now uses `review-sidewalk.webp`, a separate photo of a man with a small patch on his upper arm. Lauren still uses the outdoor portrait.

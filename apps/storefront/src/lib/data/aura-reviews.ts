@@ -14,6 +14,7 @@ const photos = [
   ["/images/reviews/review-desk.webp", "Man at a desk wearing a small patch on his wrist"],
   ["/images/reviews/review-window.webp", "Woman by a window wearing a small patch on her arm"],
   ["/images/reviews/review-portrait.webp", "Man wearing a small patch on his shoulder"],
+  ["/images/reviews/review-sidewalk.webp", "Man on a sidewalk wearing a small patch on his upper arm"],
 ] as const
 
 const withPhoto = (
@@ -68,7 +69,7 @@ export const auraReviews: AuraReview[] = [
     title: "I want more of them",
     quote:
       "I want more of them. Peel, apply, and one pouch covers the month. I am ready for the next one.",
-  }, 1),
+  }, 5),
 ]
 
 export const AURA_REVIEW_COUNT = auraReviews.length
