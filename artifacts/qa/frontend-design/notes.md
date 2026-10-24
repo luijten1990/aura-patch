@@ -8,11 +8,11 @@ Page: `/us/products/aura-patch` customer reviews, which uses the same review lis
 
 | Path | Problem | Fix |
 | --- | --- | --- |
-| `public/images/reviews/wear-shoulder.webp` | Wide stock crop squeezed into an 88px square. The face and patch fell out of the frame. | Replaced with a 960px square portrait. A woman in a kitchen, small plain patch on the shoulder. |
-| `public/images/reviews/wear-day.webp` | Same tight crop. Outdoor shot read as a blurry arm. | Square portrait outdoors, patch on the upper arm. |
-| `public/images/reviews/wear-desk.webp` | Desk photo lost the person at thumbnail size. | Square portrait at a desk, patch on the wrist. |
-| `public/images/reviews/wear-rest.webp` | Resting shot was a dark crop. | Square portrait by a window, patch on the arm. |
-| `public/images/reviews/wear-close.webp` | Macro of a shoulder, not a person. | Square portrait, patch on the shoulder. |
+| `public/images/reviews/review-kitchen.webp` | Wide stock crop squeezed into an 88px square. The face and patch fell out of the frame. The old URL was cached. | New filename. 960px square portrait, patch on the shoulder. |
+| `public/images/reviews/review-outdoors.webp` | Same tight crop. Outdoor shot read as a blurry arm. | New filename. Square portrait outdoors, patch on the upper arm. |
+| `public/images/reviews/review-desk.webp` | Desk photo lost the person at thumbnail size. | New filename. Square portrait at a desk, patch on the wrist. |
+| `public/images/reviews/review-window.webp` | Resting shot was a dark crop. | New filename. Square portrait by a window, patch on the arm. |
+| `public/images/reviews/review-portrait.webp` | Macro of a shoulder, not a person. | New filename. Square portrait, patch on the shoulder. |
 
 The review thumbnail is 112px, `object-cover` centered, `sizes="112px"`, `quality={85}`. Source files are 960×960 WebP.
 
