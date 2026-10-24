@@ -55,9 +55,9 @@ export const auraReviews: AuraReview[] = [
   }, 3),
   withPhoto({
     name: "Amandeep Singh",
-    title: "I was sceptical",
+    title: "I was skeptical",
     quote:
-      "I struggle with a low immune system and always sniffle and cough during flu season, ever since I started wearing these I have not been getting sick! I was sceptical, but they really work!",
+      "I struggle with a low immune system and always sniffle and cough during flu season, ever since I started wearing these I have not been getting sick! I was skeptical, but they really work!",
   }, 4),
   withPhoto({
     name: "Katie Brennan",
