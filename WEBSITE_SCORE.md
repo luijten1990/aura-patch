@@ -6,7 +6,7 @@ Aura Patch. No numerical score until real criteria have been assessed. Mark item
 
 Draft implementation at `/[countryCode]/why-a-patch`. Targeted lint and 14 storefront tests pass. Typecheck has the same 26 existing diagnostics with and without the new page. Desktop/mobile isolated component layout and disclosure checks pass. Full storefront verification and production build remain **blocked** by missing Medusa environment configuration; isolated screenshots do not establish a working purchase flow. Evidence and remaining checks: [advertorial QA notes](artifacts/qa/why-a-patch/notes.md).
 
-Last assessed: 2026-09-22 (full read-only audit; local storefront + Medusa already running). Findings: `AUDIT.md`.
+Last assessed: 2026-10-25 (Asia/Bangkok). Local `/us` and Medusa health returned 200. `/us/store` is 200 after a Next restart and lists Medusa apparel because `aura-patch` is not in this database. `/us/products/aura-patch` is the not-found page. Cart and checkout were not driven. Findings: `AUDIT.md`.
 
 ## Functionality
 
