@@ -83,6 +83,6 @@ Checked in Chrome on the local storefront: homepage headline at 1280, product de
 
 Date: 2026-10-25
 
-The seven review thumbs were stock-style portraits with no pouch. They are now phone-style shots of the teal Aura pouch: kitchen counter, car, table with patches, bathroom mirror, open pouch, hallway, and the ingredient panel on a bed. The patches are round cream discs, about 40 mm wide, with AURA and the flower of life. They sit six to a sticker sheet, five sheets in the pouch. The table photo shows one sheet. The open pouch shows the stack of sheets. Alts in `aura-reviews.ts` match those scenes. Thumbs stay 112px, `object-cover`, `quality={85}`.
+The seven review thumbs were stock-style portraits with no pouch. They are now phone-style shots of the teal Aura pouch: kitchen counter, car, table with patches, bathroom mirror, open pouch, hallway, and the ingredient panel on a bed. The patches are round cream discs, about 40 mm wide, with AURA and the flower of life, six to a sticker sheet. The table photo shows one sheet beside the pouch. The open-pouch photo was removed. Alts in `aura-reviews.ts` match those scenes. Thumbs stay 112px, `object-cover`, `quality={85}`.
 
 The local catalog has no `aura-patch` product, so `/us` does not render the review list. The image files were checked by loading them from `http://localhost:8000/images/reviews/` inside the same card layout.

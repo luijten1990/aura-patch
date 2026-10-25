@@ -13,7 +13,6 @@ const photos = [
   ["/images/reviews/review-outdoors.webp", "Hand holding an Aura pouch in a car"],
   ["/images/reviews/review-desk.webp", "Aura pouch on a wood table beside a sticker sheet of six round AURA patches"],
   ["/images/reviews/review-window.webp", "Bathroom mirror photo of a woman holding an Aura pouch"],
-  ["/images/reviews/review-portrait.webp", "Hand holding an open Aura pouch filled with sticker sheets of six round AURA patches"],
   ["/images/reviews/review-sidewalk.webp", "Woman holding a closed Aura pouch in a hallway"],
   ["/images/reviews/review-living-room.webp", "Back of an Aura pouch on a bedspread, showing the ingredient panel"],
 ] as const
@@ -59,18 +58,18 @@ export const auraReviews: AuraReview[] = [
     title: "I was skeptical",
     quote:
       "I struggle with a low immune system and always sniffle and cough during flu season, ever since I started wearing these I have not been getting sick! I was skeptical, but they really work!",
-  }, 4),
+  }, 2),
   withPhoto({
     name: "Katie Brennan",
     title: "One daily step",
     quote: "I like having the routine in one patch. Peel, apply, go.",
-  }, 6),
+  }, 5),
   withPhoto({
     name: "Josh Miller",
     title: "They work",
     quote:
       "A friend recommended these to wear in airports during my travels to boost my immune system, they work!",
-  }, 5),
+  }, 4),
 ]
 
 export const AURA_REVIEW_COUNT = auraReviews.length
