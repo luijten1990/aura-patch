@@ -109,7 +109,7 @@ export default function WhyAPatchPage() {
             <p className="aura-eyebrow">Reason 01</p>
             <h2 className="aura-display">Make room for one simple step.</h2>
             <p>
-            With Aura Core, the routine is easy to describe: peel one round patch from the sheet of six,
+              With Aura Core, the routine is easy to describe: remove a patch from its backing,
               apply it to clean, dry skin as directed, and continue with your day.
               No scoop to measure. No drink to prepare.
             </p>
@@ -118,7 +118,7 @@ export default function WhyAPatchPage() {
               The aim is a routine that fits your life, rather than another task to organise.
             </p>
             <ol className={styles.steps} aria-label="How to use Aura Core">
-              <li><strong>Peel</strong><span>Peel one round patch from the sheet of six.</span></li>
+              <li><strong>Peel</strong><span>Remove the protective backing.</span></li>
               <li><strong>Apply</strong><span>Place on clean, dry skin as directed.</span></li>
               <li><strong>Go</strong><span>Carry on with your day.</span></li>
             </ol>
@@ -161,7 +161,7 @@ export default function WhyAPatchPage() {
             <p className="aura-eyebrow">Reason 04</p>
             <h2 className="aura-display">A month of your ritual, in one pouch.</h2>
             <p>
-              Core comes as a 30-day pouch: five sheets of six round patches, about 40 mm across. Keep it with your morning
+              Core comes as a 30-day pouch, with one patch for each day. Keep it with your morning
               essentials, or pack it when you travel. The same peel-and-apply step goes with you.
             </p>
             <p>

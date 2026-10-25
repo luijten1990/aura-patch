@@ -44,7 +44,7 @@ export function FAQJsonLd() {
         name: "How do I use Aura Patch?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Peel one round patch from the sheet and apply it to clean, dry skin according to the product instructions.",
+          text: "Remove one patch from its protective backing and apply it to clean, dry skin according to the product instructions.",
         },
       },
       {
@@ -68,7 +68,7 @@ export function FAQJsonLd() {
         name: "How many patches are included?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Each pouch holds five sheets of six round patches, about 40 mm across. That is 30 patches, one for each day.",
+          text: "Each pouch is designed as a 30-day supply, with one patch for each day of your routine.",
         },
       },
       {

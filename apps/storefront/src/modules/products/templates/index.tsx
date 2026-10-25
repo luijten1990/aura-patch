@@ -64,8 +64,8 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
           <figure className="max-w-[480px]">
             <div className="relative aspect-square overflow-hidden">
               <Image
-                src="/images/aura-patch-sheet.webp"
-                alt="Aura pouch beside a sticker sheet of six round patches"
+                src="/images/aura-everyday-desk.webp"
+                alt="Illustration of a woman wearing a patch while sitting at her laptop"
                 fill
                 quality={85}
                 sizes="(max-width: 768px) 90vw, 480px"
