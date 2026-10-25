@@ -11,9 +11,9 @@ export type AuraReview = {
 const photos = [
   ["/images/reviews/review-kitchen.webp", "Aura pouch on a kitchen counter next to a cereal bowl and mail"],
   ["/images/reviews/review-outdoors.webp", "Hand holding an Aura pouch in a car"],
-  ["/images/reviews/review-desk.webp", "Aura pouch on a wood table beside four white patches and a house key"],
+  ["/images/reviews/review-desk.webp", "Aura pouch on a wood table beside round cream patches printed with AURA and the flower of life"],
   ["/images/reviews/review-window.webp", "Bathroom mirror photo of a woman holding an Aura pouch"],
-  ["/images/reviews/review-portrait.webp", "Hand holding an open Aura pouch with white patches inside"],
+  ["/images/reviews/review-portrait.webp", "Hand holding an open Aura pouch with a stack of round AURA patches inside"],
   ["/images/reviews/review-sidewalk.webp", "Woman holding a closed Aura pouch in a hallway"],
   ["/images/reviews/review-living-room.webp", "Back of an Aura pouch on a bedspread, showing the ingredient panel"],
 ] as const
