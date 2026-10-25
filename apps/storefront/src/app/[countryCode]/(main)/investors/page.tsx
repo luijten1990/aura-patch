@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 const highlights = [
   ["5+ years", "Founder-led development"],
   ["19 ingredients", "Flagship daily-wellness formula"],
-  ["30 patches", "A considered monthly ritual"],
+  ["30 patches", "Five sheets of six"],
   ["$500K-$1.5M", "Strategic seed capital sought"],
 ]
 

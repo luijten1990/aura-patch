@@ -72,7 +72,7 @@ export const auraCollection: AuraFormula[] = [
     benefits: [
       {
         title: "A patch for the whole day",
-        body: "Peel, apply, and wear it for up to 12 hours. The pouch holds 30 patches, one for each day of the ritual.",
+        body: "Peel, apply, and wear it for up to 12 hours. The pouch holds five sheets of six round patches, about 40 mm across. That is 30 patches, one for each day.",
       },
       {
         title: "Daily wellness, balance, and vitality",

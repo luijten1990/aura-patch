@@ -69,11 +69,11 @@ const BenefitIllustration = ({ number }: { number: string }) => (
 )
 
 const faqs = [
-  ["How do I use Aura Patch?", "Remove one patch from its protective backing and apply it to clean, dry skin according to the product instructions."],
+  ["How do I use Aura Patch?", "Peel one round patch from the sheet and apply it to clean, dry skin according to the product instructions."],
   ["Where should I apply it?", "Choose a clean, dry, relatively hair-free area of healthy, unbroken skin. Avoid lotions or oils where the patch will be placed, as they can affect adhesion."],
   ["How long can I wear it?", "Aura is designed for comfortable wear for up to 12 hours. Always follow the directions on your product packaging and remove the patch sooner if irritation occurs."],
-  ["How many patches are included?", "Each pouch is designed as a 30-day supply, with one patch for each day of your routine."],
-  ["Can I take Aura Patch with me?", "Yes. The lightweight pouch and individually protected patches make it easy to keep your routine with you."],
+  ["How many patches are included?", "Each pouch holds five sheets of six round patches, about 40 mm across. That is 30 patches, one for each day."],
+  ["Can I take Aura Patch with me?", "Yes. The pouch holds five sheets, so it is easy to keep your routine with you."],
 ]
 
 const Hero = ({ product }: HeroProps) => {
@@ -146,7 +146,7 @@ const Hero = ({ product }: HeroProps) => {
         </div>
         <div className="mt-16 grid gap-12 small:grid-cols-[1.05fr_0.95fr] small:items-stretch">
           <ol className="grid gap-5">
-            {[["01", "Peel", "Remove one patch from its protective backing."], ["02", "Apply", "Adhere to clean, dry skin as directed."], ["03", "Go", "Continue with your day and your routine."]].map(([number, title, copy]) => (
+            {[["01", "Peel", "Peel one round patch from the sheet of six."], ["02", "Apply", "Adhere to clean, dry skin as directed."], ["03", "Go", "Continue with your day and your routine."]].map(([number, title, copy]) => (
               <li key={number} className="grid gap-5 rounded-[1.5rem] bg-aura-mint px-7 py-8 xsmall:grid-cols-[42px_150px_1fr] xsmall:items-baseline small:px-8 small:py-10">
                 <span className="text-sm text-aura-gold">{number}</span>
                 <h3 className="aura-display text-[42px] leading-none">{title}</h3>
@@ -154,12 +154,13 @@ const Hero = ({ product }: HeroProps) => {
               </li>
             ))}
           </ol>
-          <div className="relative min-h-[480px] overflow-hidden rounded-[2rem] small:min-h-[580px]">
+          <div className="relative min-h-[480px] overflow-hidden rounded-[2rem] bg-aura-cream small:min-h-[580px]">
             <Image
-              src="/images/aura-patch-how-it-works-current.webp"
-              alt="Woman applying the gold AURA patch beside the current teal Daily Wellness Patch pouch"
+              src="/images/aura-patch-sheet.webp"
+              alt="Aura pouch beside a sticker sheet of six round patches, each about 40 mm across"
               fill
-              className="object-cover object-center"
+              quality={85}
+              className="object-contain object-center"
               sizes="(max-width: 1024px) 100vw, 48vw"
             />
           </div>
@@ -256,7 +257,7 @@ const Hero = ({ product }: HeroProps) => {
         <div className="mt-14 grid gap-5 small:grid-cols-2 medium:grid-cols-4">
           {[
             ["01", "Prepare", "Choose healthy, relatively hair-free skin. Clean and dry the area completely, without lotion or oil."],
-            ["02", "Place", "Peel away the backing and position the patch directly on the prepared area."],
+            ["02", "Place", "Peel one round patch from the sheet and position it on the prepared area."],
             ["03", "Press", "Apply firm, even pressure across the patch to help the medical-grade adhesive make secure contact."],
             ["04", "Wear", "Continue with your day for up to 12 hours, following the package directions. Remove gently after use."],
           ].map(([number, title, copy]) => (
