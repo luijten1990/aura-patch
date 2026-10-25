@@ -9,13 +9,13 @@ export type AuraReview = {
 }
 
 const photos = [
-  ["/images/reviews/review-kitchen.webp", "Woman in a kitchen wearing a small patch on her shoulder"],
-  ["/images/reviews/review-outdoors.webp", "Woman outdoors wearing a small patch on her upper arm"],
-  ["/images/reviews/review-desk.webp", "Man at a desk wearing a small patch on his wrist"],
-  ["/images/reviews/review-window.webp", "Woman by a window wearing a small patch on her arm"],
-  ["/images/reviews/review-portrait.webp", "Man wearing a small patch on his shoulder"],
-  ["/images/reviews/review-sidewalk.webp", "Man on a sidewalk wearing a small patch on his upper arm"],
-  ["/images/reviews/review-living-room.webp", "Woman on a sofa wearing a small patch on her upper arm"],
+  ["/images/reviews/review-kitchen.webp", "Aura pouch on a kitchen counter next to a cereal bowl and mail"],
+  ["/images/reviews/review-outdoors.webp", "Hand holding an Aura pouch in a car"],
+  ["/images/reviews/review-desk.webp", "Aura pouch on a wood table beside four white patches and a house key"],
+  ["/images/reviews/review-window.webp", "Bathroom mirror photo of a woman holding an Aura pouch"],
+  ["/images/reviews/review-portrait.webp", "Hand holding an open Aura pouch with white patches inside"],
+  ["/images/reviews/review-sidewalk.webp", "Woman holding a closed Aura pouch in a hallway"],
+  ["/images/reviews/review-living-room.webp", "Back of an Aura pouch on a bedspread, showing the ingredient panel"],
 ] as const
 
 const withPhoto = (
