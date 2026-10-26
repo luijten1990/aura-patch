@@ -37,8 +37,8 @@ export default function InvestorsPage() {
         </div>
         <div className="relative mx-auto aspect-[3/2] w-full overflow-hidden rounded-[2rem] bg-aura-sage/50">
           <Image
-            src="/images/aura-investors-lifestyle.webp"
-            alt="Aura Core daily wellness pouch with patches, ginger, and greens"
+            src="/images/aura-investors-teal-patches.webp"
+            alt="Aura daily wellness pouch with six teal patches, ivory AURA lettering, gold mandalas, ginger, and greens"
             fill
             priority
             quality={90}
