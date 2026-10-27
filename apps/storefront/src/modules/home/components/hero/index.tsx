@@ -16,7 +16,7 @@ const benefits = [
   ["01", "All-day support", "Designed for a slow, considered release of ingredients while you wear it — up to 12 hours of daily support."],
   ["02", "Easy to Use", "Peel, apply, and continue with your day. No pills, powders, or complicated routines."],
   ["03", "Portable Wellness", "Take your daily ritual wherever the day takes you, with one discreet patch."],
-  ["04", "Simple Routine", "One elegant daily step, created for modern life and effortless consistency."],
+  ["04", "Simple Routine", "One simple step, created for modern life and effortless consistency."],
 ]
 
 const BenefitIllustration = ({ number }: { number: string }) => (
@@ -70,7 +70,8 @@ const BenefitIllustration = ({ number }: { number: string }) => (
 
 const faqs = [
   ["How do I use Aura Patch?", "Remove one patch from its protective backing and apply it to clean, dry skin according to the product instructions."],
-  ["Where should I apply it?", "Choose a clean, dry, relatively hair-free area of healthy, unbroken skin. Avoid lotions or oils where the patch will be placed, as they can affect adhesion."],
+  ["Where should I apply it?", "Choose a clean, dry, relatively hair-free area of healthy, unbroken skin, such as your upper arm or stomach. Avoid lotions or oils where the patch will be placed, as they can affect adhesion."],
+  ["Can you shower with it?", "Showering with the patch on is not ideal. Apply it after you shower, once you have dried off."],
   ["How long can I wear it?", "Aura is designed for comfortable wear for up to 12 hours. Always follow the directions on your product packaging and remove the patch sooner if irritation occurs."],
   ["How many patches are included?", "Each pouch is designed as a 30-day supply, with one patch for each day of your routine."],
   ["Can I take Aura Patch with me?", "Yes. The lightweight pouch and individually protected patches make it easy to keep your routine with you."],

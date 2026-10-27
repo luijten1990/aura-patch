@@ -52,7 +52,15 @@ export function FAQJsonLd() {
         name: "Where should I apply it?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Choose a clean, dry, relatively hair-free area of healthy, unbroken skin. Avoid lotions or oils where the patch will be placed, as they can affect adhesion.",
+          text: "Choose a clean, dry, relatively hair-free area of healthy, unbroken skin, such as your upper arm or stomach. Avoid lotions or oils where the patch will be placed, as they can affect adhesion.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Can you shower with it?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Showering with the patch on is not ideal. Apply it after you shower, once you have dried off.",
         },
       },
       {
