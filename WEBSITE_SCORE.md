@@ -6,7 +6,7 @@ Aura Patch. No numerical score until real criteria have been assessed. Mark item
 
 Draft implementation at `/[countryCode]/why-a-patch`. Targeted lint and 14 storefront tests pass. Typecheck has the same 26 existing diagnostics with and without the new page. Desktop/mobile isolated component layout and disclosure checks pass. Full storefront verification and production build remain **blocked** by missing Medusa environment configuration; isolated screenshots do not establish a working purchase flow. Evidence and remaining checks: [advertorial QA notes](artifacts/qa/why-a-patch/notes.md).
 
-Last assessed: 2026-09-22 (full read-only audit; local storefront + Medusa already running). Findings: `AUDIT.md`.
+Last assessed: 2026-10-25 (Asia/Bangkok), after the catalog fix. `/us/products/aura-patch` renders Aura Core at $49.99 one-time and $39.99/mo subscribe. One-time cart line reads “One-time purchase”. Subscribe opens checkout with “Subscribe & Save · 20% off · renews monthly” and was stopped at the address step. `/us/store` no longer lists Medusa apparel. Sitemap includes the product URL. Password change stays off the profile page.
 
 ## Functionality
 

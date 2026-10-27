@@ -74,16 +74,18 @@ const ShippingAddress = ({
     }
   }
 
+  const customerEmail = customer?.email
+
   useEffect(() => {
     // Ensure cart is not null and has a shipping_address before setting form data
     if (cart && cart.shipping_address) {
       setFormAddress(cart?.shipping_address, cart?.email)
     }
 
-    if (cart && !cart.email && customer?.email) {
-      setFormAddress(undefined, customer.email)
+    if (cart && !cart.email && customerEmail) {
+      setFormAddress(undefined, customerEmail)
     }
-  }, [cart]) // Add cart as a dependency
+  }, [cart, customerEmail])
 
   const handleChange = (
     e: React.ChangeEvent<
