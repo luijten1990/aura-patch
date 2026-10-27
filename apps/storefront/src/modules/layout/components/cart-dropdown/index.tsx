@@ -136,7 +136,7 @@ export default function CartDropdown({
                           className="text-base font-semibold"
                         >
                           {item.product_handle === "aura-patch"
-                            ? "Aura Core"
+                            ? "Aura Patch"
                             : item.title}
                         </LocalizedClientLink>
                         <p className="mt-1 text-sm">

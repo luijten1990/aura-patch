@@ -1,7 +1,7 @@
 export type AuraFormula = {
   key: "core" | "restore" | "energy"
-  name: "Aura Core" | "Aura Restore" | "Aura Energy"
-  shortName: "Core" | "Restore" | "Energy"
+  name: "Aura Patch" | "Aura Restore" | "Aura Energy"
+  shortName: "Aura Patch" | "Restore" | "Energy"
   tagline: string
   use: string
   bestFor: string
@@ -27,25 +27,25 @@ export type AuraBenefit = {
 export const AURA_COLLECTION_EYEBROW = "The Aura Collection"
 export const AURA_COLLECTION_LINE = "Three formulas. One Aura."
 export const AURA_COLLECTION_SUPPORT =
-  "Core, Restore, and Energy — three next-generation daily patches. A slow, considered release of ingredients for all-day support, and a different formula for different moments in the day."
+  "Aura Patch, Restore, and Energy — three next-generation daily patches. A slow, considered release of ingredients for all-day support, and a different formula for different moments in the day."
 
 export const auraCollection: AuraFormula[] = [
   {
     key: "core",
-    name: "Aura Core",
-    shortName: "Core",
+    name: "Aura Patch",
+    shortName: "Aura Patch",
     tagline: "Your daily defense.",
     use: "Daily defense",
     bestFor: "Worn every day",
     status: "available",
     href: "/products/aura-patch",
     image: "/images/aura-core-pouch-front.webp",
-    imageAlt: "Aura Core 30-day daily wellness pouch with gold mandala",
+    imageAlt: "Aura Patch 30-day daily wellness pouch with gold mandala",
     cardTone: "bg-[#dce8e4]",
     categories: "Daily · Immune support · Vitality",
     subtitle: "Daily immune-support patch",
     description:
-      "Aura Core is your daily defense. Wear one patch every day. Vitamin C, zinc, and vitamin A are included for their established roles in normal immune function. Peel, apply, go. Wear for up to 12 hours. A 30-day pouch.",
+      "Aura Patch is your daily defense. Wear one patch every day. Vitamin C, zinc, and vitamin A are included for their established roles in normal immune function. Peel, apply, go. Wear for up to 12 hours. A 30-day pouch.",
     accent: "ember",
     traits: ["Daily defense", "Immune support", "Vitality"],
     ingredients: [
@@ -76,7 +76,7 @@ export const auraCollection: AuraFormula[] = [
       },
       {
         title: "Your daily defense",
-        body: "Aura Core is meant to be worn every day. Vitamin C, zinc, and vitamin A are in the blend for their established roles in normal immune function. It is not a treatment or cure for any infection or disease.",
+        body: "Aura Patch is meant to be worn every day. Vitamin C, zinc, and vitamin A are in the blend for their established roles in normal immune function. It is not a treatment or cure for any infection or disease.",
       },
       {
         title: "Three probiotic cultures, named",

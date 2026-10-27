@@ -75,10 +75,10 @@ const CustomerReviews = ({ featured = true }: { featured?: boolean }) => (
       </p>
     )}
     <p className="mt-4 text-[13px] leading-6 text-aura-forest/60">
-      Have experience with Aura Core?{" "}
+      Have experience with Aura Patch?{" "}
       <a
         className="underline underline-offset-4"
-        href="mailto:support@getaurapatch.com?subject=Aura%20Core%20feedback"
+        href="mailto:support@getaurapatch.com?subject=Aura%20Patch%20feedback"
       >
         Share your feedback with Aura.
       </a>

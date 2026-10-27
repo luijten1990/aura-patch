@@ -21,7 +21,7 @@ npm run storefront:dev
 Ready when:
 
 - `http://localhost:9000/health` (or Medusa's documented health) responds, and
-- `http://localhost:8000/us` returns HTML containing `AURA` and `Shop Aura Core`.
+- `http://localhost:8000/us` returns HTML containing `AURA` and `Shop Aura Patch`.
 
 Teardown: stop the processes **this run started**. Do not `pkill node` or kill by process name.
 
@@ -32,7 +32,7 @@ If Postgres or `.env` files are missing, stop and write a blocked doctor report.
 Read-only. Run before driving if anything looks off.
 
 1. `curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/us` is `200`.
-2. HTML includes `Shop Aura Core` or the current hero CTA.
+2. HTML includes `Shop Aura Patch` or the current hero CTA.
 3. `curl -s -o /dev/null -w "%{http_code}" http://localhost:9000/health` is `200` (or `/store/products` with the publishable key succeeds).
 4. Confirm this agent started the servers, or the user confirmed it is safe to share an already-running local instance. Do not drive a production URL as if it were disposable.
 
@@ -44,7 +44,7 @@ Use Cursor browser tools (snapshot, click, fill). Prefer `data-testid` and acces
 
 - Nav store link: `data-testid="nav-store-link"`
 - Shop: link named `Shop` → `/us/store`
-- Hero CTA: link named `Shop Aura Core`
+- Hero CTA: link named `Shop Aura Patch`
 - Subscribe option: `data-testid="subscribe-option"`
 - One-time option: `data-testid="one-time-option"`
 - Add to cart: `data-testid="add-product-button"`

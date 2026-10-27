@@ -76,7 +76,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
           <div>
             <p className="aura-eyebrow">Made for everyday moments</p>
             <h2 id="everyday-aura-title" className="mt-4 font-sans text-[32px] leading-tight small:text-[40px]">A simple step in your daily routine.</h2>
-            <p className="mt-5 max-w-lg text-base leading-7 text-aura-forest/75">Peel, apply as directed, and carry on with your day. Discover the thinking behind Aura Core’s wearable format.</p>
+            <p className="mt-5 max-w-lg text-base leading-7 text-aura-forest/75">Peel, apply as directed, and carry on with your day. Discover the thinking behind Aura Patch’s wearable format.</p>
             <a href={`/${countryCode}/why-a-patch`} className="aura-button-outline mt-6">Why a patch?</a>
           </div>
         </section>

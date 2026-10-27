@@ -69,8 +69,8 @@ const BenefitIllustration = ({ number }: { number: string }) => (
 )
 
 const faqs = [
-  ["What is Aura Core for?", "Aura Core is your daily defense. Wear it every day. Vitamin C, zinc, and vitamin A are included for their established roles in normal immune function. It does not treat or cure any infection or disease."],
-  ["How do I use Aura Patch?", "Remove one patch from its protective backing and apply it to clean, dry skin according to the product instructions. Aura Core is meant to be worn daily."],
+  ["What is Aura Patch for?", "Aura Patch is your daily defense. Wear it every day. Vitamin C, zinc, and vitamin A are included for their established roles in normal immune function. It does not treat or cure any infection or disease."],
+  ["How do I use Aura Patch?", "Remove one patch from its protective backing and apply it to clean, dry skin according to the product instructions. Aura Patch is meant to be worn daily."],
   ["Where should I apply it?", "Choose a clean, dry, relatively hair-free area of healthy, unbroken skin, such as your upper arm or stomach. Avoid lotions or oils where the patch will be placed, as they can affect adhesion."],
   ["Can you shower with it?", "Showering with the patch on is not ideal. Apply it after you shower, once you have dried off."],
   ["How long can I wear it?", "Aura is designed for comfortable wear for up to 12 hours. Always follow the directions on your product packaging and remove the patch sooner if irritation occurs."],
@@ -94,10 +94,10 @@ const Hero = ({ product }: HeroProps) => {
             Next-generation<br />daily wellness.
           </h1>
           <p className="mt-7 max-w-[540px] text-[16px] leading-7 text-aura-forest/80">
-            Aura Core is your daily defense: one patch, worn every day, with vitamin C, zinc, and vitamin A for their roles in normal immune function. Peel, apply, go. Wear for up to 12 hours. A 30-day pouch.
+            Aura Patch is your daily defense: one patch, worn every day, with vitamin C, zinc, and vitamin A for their roles in normal immune function. Peel, apply, go. Wear for up to 12 hours. A 30-day pouch.
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
-            <LocalizedClientLink href={productHref} className="aura-button">Shop Aura Core</LocalizedClientLink>
+            <LocalizedClientLink href={productHref} className="aura-button">Shop Aura Patch</LocalizedClientLink>
             <a href="#collection" className="aura-button-outline">Compare formulas</a>
           </div>
         </div>
@@ -106,7 +106,7 @@ const Hero = ({ product }: HeroProps) => {
               <div className="relative aspect-[4/5] min-h-[420px] w-full overflow-hidden bg-aura-cream">
                 <Image
                   src="/images/aura-core-pouch-front.webp"
-                  alt="Aura Core 30-day daily wellness pouch with gold mandala"
+                  alt="Aura Patch 30-day daily wellness pouch with gold mandala"
                   fill
                   priority
                   quality={90}
@@ -115,7 +115,7 @@ const Hero = ({ product }: HeroProps) => {
                 />
               </div>
               <div className="mt-2 flex items-baseline justify-between gap-5 border-t border-aura-forest/20 pt-4 text-[14px]">
-                <span>{product?.title || "Aura Core — 30-day supply"}</span>
+                <span>{product?.title || "Aura Patch — 30-day supply"}</span>
                 {price && <span className="font-semibold">{price.calculated_price}</span>}
               </div>
             </LocalizedClientLink>
@@ -267,7 +267,7 @@ const Hero = ({ product }: HeroProps) => {
             <p className="aura-eyebrow">Contact Aura</p>
             <h2 className="aura-display mt-6 text-[46px] leading-none small:text-[62px]">We’d love to hear from you.</h2>
             <p className="mt-6 max-w-[430px] text-[15px] leading-7 text-aura-forest/70">Questions about Aura, your order, wholesale, partnerships, or investing? Send us a note and we’ll point it to the right place.</p>
-            <LocalizedClientLink href={productHref} className="mt-8 inline-flex text-[11px] font-bold uppercase tracking-[0.16em] text-aura-forest underline decoration-aura-gold decoration-2 underline-offset-8">Explore Aura Core</LocalizedClientLink>
+            <LocalizedClientLink href={productHref} className="mt-8 inline-flex text-[11px] font-bold uppercase tracking-[0.16em] text-aura-forest underline decoration-aura-gold decoration-2 underline-offset-8">Explore Aura Patch</LocalizedClientLink>
           </div>
           <div className="flex flex-col gap-6">
             <ContactForm />
