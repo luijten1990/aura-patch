@@ -69,7 +69,8 @@ const BenefitIllustration = ({ number }: { number: string }) => (
 )
 
 const faqs = [
-  ["How do I use Aura Patch?", "Remove one patch from its protective backing and apply it to clean, dry skin according to the product instructions."],
+  ["What is Aura Core for?", "Aura Core is your daily defense. Wear it every day. Vitamin C, zinc, and vitamin A are included for their established roles in normal immune function. It does not treat or cure any infection or disease."],
+  ["How do I use Aura Patch?", "Remove one patch from its protective backing and apply it to clean, dry skin according to the product instructions. Aura Core is meant to be worn daily."],
   ["Where should I apply it?", "Choose a clean, dry, relatively hair-free area of healthy, unbroken skin, such as your upper arm or stomach. Avoid lotions or oils where the patch will be placed, as they can affect adhesion."],
   ["Can you shower with it?", "Showering with the patch on is not ideal. Apply it after you shower, once you have dried off."],
   ["How long can I wear it?", "Aura is designed for comfortable wear for up to 12 hours. Always follow the directions on your product packaging and remove the patch sooner if irritation occurs."],
@@ -93,7 +94,7 @@ const Hero = ({ product }: HeroProps) => {
             Next-generation<br />daily wellness.
           </h1>
           <p className="mt-7 max-w-[540px] text-[16px] leading-7 text-aura-forest/80">
-            Core, Restore, and Energy — three daily patches, designed for a slow, considered release of ingredients and all-day support. Peel, apply, go. Wear for up to 12 hours. A 30-day pouch.
+            Aura Core is your daily defense: one patch, worn every day, with vitamin C, zinc, and vitamin A for their roles in normal immune function. Peel, apply, go. Wear for up to 12 hours. A 30-day pouch.
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
             <LocalizedClientLink href={productHref} className="aura-button">Shop Aura Core</LocalizedClientLink>

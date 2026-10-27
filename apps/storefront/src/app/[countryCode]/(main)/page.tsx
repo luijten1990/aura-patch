@@ -8,7 +8,7 @@ export const revalidate = 300
 export const metadata: Metadata = {
   title: "Aura Core — Daily Wellness Patch",
   description:
-    "Aura Core is the everyday Aura ritual: 19 ingredients in one daily patch. Peel, apply, go. 30-day pouch.",
+    "Aura Core is your daily defense. Wear one patch every day. Vitamin C, zinc, and vitamin A support normal immune function. Peel, apply, go. 30-day pouch.",
   openGraph: {
     title: "The Aura Collection — Core, Restore, Energy",
     description:
