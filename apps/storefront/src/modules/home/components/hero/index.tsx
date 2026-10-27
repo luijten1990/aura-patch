@@ -213,46 +213,6 @@ const Hero = ({ product }: HeroProps) => {
         </div>
       </section>
 
-      <section className="aura-shell py-16 small:py-24">
-        <div className="grid gap-10 small:grid-cols-[0.75fr_1.25fr] small:items-end">
-          <div>
-            <p className="aura-eyebrow text-aura-gold">A considered topical format</p>
-            <h2 className="aura-display mt-6 text-[48px] leading-none small:text-[64px]">
-              Designed around<br />skin contact.
-            </h2>
-          </div>
-          <p className="max-w-[620px] text-[18px] leading-8 text-aura-forest/72 small:justify-self-end">
-            Aura uses a matrix-style construction that keeps the formulation in
-            close contact with the skin while the patch is worn—without water,
-            mixing, or another step in your supplement routine.
-          </p>
-        </div>
-
-        <div className="mt-14 grid gap-5 small:grid-cols-2 medium:grid-cols-4">
-          {[
-            ["01", "Prepare", "Choose healthy, relatively hair-free skin. Clean and dry the area completely, without lotion or oil."],
-            ["02", "Place", "Peel away the backing and position the patch directly on the prepared area."],
-            ["03", "Press", "Apply firm, even pressure across the patch to help the medical-grade adhesive make secure contact."],
-            ["04", "Wear", "Continue with your day for up to 12 hours, following the package directions. Remove gently after use."],
-          ].map(([number, title, copy]) => (
-            <article key={number} className="rounded-[1.5rem] bg-aura-mint px-7 py-9 small:px-8 small:py-11">
-              <span className="text-xs tracking-[0.2em] text-aura-gold">{number}</span>
-              <h3 className="aura-display mt-12 text-[36px] leading-none">{title}</h3>
-              <p className="mt-6 text-[15px] leading-7 text-aura-forest/70">{copy}</p>
-            </article>
-          ))}
-        </div>
-
-        <div className="mt-8 flex flex-col gap-5 border-t border-aura-forest/15 pt-7 text-[14px] leading-6 text-aura-forest/60 small:flex-row small:items-start small:justify-between">
-          <p className="max-w-[720px]">
-            The patch format is designed to hold the formulation against the skin.
-            Absorption and performance depend on the finished formulation and
-            should not be inferred from general ingredient research alone.
-          </p>
-          <p className="shrink-0">For external use only · Single use</p>
-        </div>
-      </section>
-
       <CollectionChooser corePrice={price?.calculated_price} />
 
       <IngredientsShowcase />
