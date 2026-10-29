@@ -41,7 +41,7 @@ export default function InvestorsPage() {
             alt="Aura daily wellness pouch with cream patches, gold AURA lettering and gold floral emblems, ginger, and greens"
             fill
             priority
-            quality={90}
+            unoptimized
             className="object-cover object-center"
             sizes="(max-width: 1024px) 92vw, 640px"
           />
