@@ -25,7 +25,7 @@ const IngredientsShowcase = () => (
       <div className="relative mt-12 overflow-hidden rounded-[1.75rem] bg-aura-cream">
         <div className="relative aspect-[3/2] min-h-[240px] small:aspect-[16/10] small:min-h-[480px]">
           <Image
-            src="/images/aura-collection.webp"
+            src="/images/aura-collection-current-v2.webp"
             alt="The Aura Collection: Aura Patch, Restore, and Energy pouches"
             fill
             className="object-contain object-center p-4 small:p-8"
