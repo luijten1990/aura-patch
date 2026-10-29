@@ -35,7 +35,7 @@ const campaignTiles = [
   ["/images/ambassador-daily-ritual.webp", "Wellness", "in real life"],
   ["/images/ambassador-apply.webp", "Share your ritual", "in your own voice"],
   ["/images/ambassador-create.webp", "Create with intention", "earn as you inspire"],
-  ["/images/aura-core-pouch-front.webp", "Join the Aura community", "today"],
+  ["/images/aura-patch-pouch-front.webp", "Join the Aura community", "today"],
 ]
 
 const programFaqs = [
@@ -86,7 +86,7 @@ export default function AmbassadorsPage() {
         <div className="grid gap-4 small:grid-cols-4">
           {campaignTiles.map(([image, title, line], index) => (
             <article key={title} className="group relative aspect-[4/5] overflow-hidden rounded-[1.5rem] bg-aura-sage">
-              <Image src={image} alt={index === 3 ? "Aura Core 30-day daily wellness pouch" : "Aura ambassador lifestyle"} fill quality={90} className={`transition-transform duration-700 group-hover:scale-[1.025] ${index === 3 ? "object-contain" : "object-cover"}`} sizes="(max-width: 1023px) 50vw, 25vw" />
+              <Image src={image} alt={index === 3 ? "Aura Patch 30-day daily wellness pouch" : "Aura ambassador lifestyle"} fill quality={90} className={`transition-transform duration-700 group-hover:scale-[1.025] ${index === 3 ? "object-contain" : "object-cover"}`} sizes="(max-width: 1023px) 50vw, 25vw" />
               <div className="absolute inset-0 bg-gradient-to-t from-aura-forest/90 via-aura-forest/10 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-6 text-aura-cream">
                 <h2 className="aura-display text-[30px] leading-[0.95]">{title}</h2>

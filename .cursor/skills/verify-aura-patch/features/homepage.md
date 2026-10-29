@@ -1,10 +1,10 @@
 # Homepage and navigation
 
-The homepage explains Aura Core and lets a shopper reach Shop, Collection, Ingredients, Science, FAQ, and the cart.
+The homepage explains Aura Patch and lets a shopper reach Shop, Collection, Ingredients, Science, FAQ, and the cart.
 
 ## Sub-features
 
-- `home-hero` shows the Aura Core story and Shop Aura Core.
+- `home-hero` shows the Aura Patch story and Shop Aura Patch.
 - `home-nav` reaches Shop and Home from the header.
 - `home-mobile` exposes links from the side menu under ~768px.
 
@@ -21,7 +21,7 @@ Preconditions:
 - Doctor passed for the storefront.
 - Viewport 1280px for desktop, 375px for mobile.
 
-- **Load home.** Open `/us`. Heading and `Shop Aura Core` are visible. Screenshot `artifacts/qa/homepage/desktop.png`.
+- **Load home.** Open `/us`. Heading and `Shop Aura Patch` are visible. Screenshot `artifacts/qa/homepage/desktop.png`.
 - **Shop from nav.** Click `Shop`. URL includes `/store`. Catalog or product cards render.
 - **Logo home.** Click `data-testid="nav-store-link"`. Return to `/us`.
 - **Mobile menu.** 375px viewport, open the side menu, confirm Shop/Home. Screenshot `artifacts/qa/homepage/mobile.png`.

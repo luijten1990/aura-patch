@@ -6,7 +6,7 @@ export const revalidate = 300
 
 export const metadata: Metadata = {
   title: "Shop the Aura Collection",
-  description: "Aura Core, Restore, and Energy — three daily rituals. Start with Core.",
+  description: "Aura Patch, Restore, and Energy — three daily rituals. Start with Aura Patch.",
 }
 
 type Params = {

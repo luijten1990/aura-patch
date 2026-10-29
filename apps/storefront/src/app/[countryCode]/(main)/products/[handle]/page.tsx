@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { getProductByHandle } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
 import ProductTemplate from "@modules/products/templates"
+import { shopperProductName } from "@lib/data/aura-collection"
 
 export const dynamic = "force-dynamic"
 
@@ -27,13 +28,15 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       }
     }
 
+    const name = shopperProductName(product.handle, product.title)
+
     return {
-      title: `${product.title} | Aura Patch`,
-      description: `${product.title}`,
+      title: `${name} | Aura Patch`,
+      description: name,
       openGraph: {
-        title: `${product.title} | Aura Patch`,
-        description: `${product.title}`,
-        images: ["/images/aura-core-pouch-front.jpeg"],
+        title: `${name} | Aura Patch`,
+        description: name,
+        images: ["/images/aura-patch-pouch-front.jpeg"],
       },
     }
   } catch {

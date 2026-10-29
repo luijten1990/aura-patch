@@ -16,7 +16,7 @@ const pouchImages: HttpTypes.StoreProductImage[] = [
   },
   {
     id: "aura-patch-back",
-    url: "/images/aura-core-pouch-back-label.webp",
+    url: "/images/aura-patch-pouch-back-label.webp",
     rank: 1,
   },
 ]

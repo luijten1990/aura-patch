@@ -122,7 +122,7 @@ export default function CartDropdown({
                         <Thumbnail
                           thumbnail={
                             item.product_handle === "aura-patch"
-                              ? "/images/aura-core-pouch-front.webp"
+                              ? "/images/aura-patch-pouch-front.webp"
                               : item.thumbnail
                           }
                           size="square"
@@ -136,7 +136,7 @@ export default function CartDropdown({
                           className="text-base font-semibold"
                         >
                           {item.product_handle === "aura-patch"
-                            ? "Aura Core"
+                            ? "Aura Patch"
                             : item.title}
                         </LocalizedClientLink>
                         <p className="mt-1 text-sm">

@@ -7,12 +7,12 @@ export function ProductJsonLd() {
   const schema = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: "Aura Core — Daily Wellness Patch",
+    name: "Aura Patch — Daily Wellness Patch",
     description:
-      "A 30-day transdermal wellness patch with 19 ingredients. Peel, apply, go.",
+      "Aura Patch is your daily defense. Wear one patch every day. Vitamin C, zinc, and vitamin A are included for their roles in normal immune function. Peel, apply, go. A 30-day pouch.",
     brand: { "@type": "Brand", name: "Aura Patch" },
     category: "Health & Wellness > Dietary Supplements > Transdermal Patches",
-    image: "https://www.getaurapatch.com/images/aura-core-pouch-front.jpeg",
+    image: "https://www.getaurapatch.com/images/aura-patch-pouch-front.jpeg",
     url: "https://www.getaurapatch.com/us/products/aura-patch",
     sku: "AURA-PATCH-30",
     offers: {
@@ -41,10 +41,18 @@ export function FAQJsonLd() {
     mainEntity: [
       {
         "@type": "Question",
+        name: "What is Aura Patch for?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Aura Patch is your daily defense. Wear it every day. Vitamin C, zinc, and vitamin A are included for their established roles in normal immune function. It does not treat or cure any infection or disease.",
+        },
+      },
+      {
+        "@type": "Question",
         name: "How do I use Aura Patch?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Remove one patch from its protective backing and apply it to clean, dry skin according to the product instructions.",
+          text: "Remove one patch from its protective backing and apply it to clean, dry skin according to the product instructions. Aura Patch is meant to be worn daily.",
         },
       },
       {
@@ -52,7 +60,15 @@ export function FAQJsonLd() {
         name: "Where should I apply it?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Choose a clean, dry, relatively hair-free area of healthy, unbroken skin. Avoid lotions or oils where the patch will be placed, as they can affect adhesion.",
+          text: "Choose a clean, dry, relatively hair-free area of healthy, unbroken skin, such as your upper arm or stomach. Avoid lotions or oils where the patch will be placed, as they can affect adhesion.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Can you shower with it?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Showering with the patch on is not ideal. Apply it after you shower, once you have dried off.",
         },
       },
       {

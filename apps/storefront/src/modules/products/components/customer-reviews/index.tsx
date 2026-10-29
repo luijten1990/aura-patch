@@ -27,18 +27,20 @@ const CustomerReviews = ({ featured = true }: { featured?: boolean }) => (
         {auraReviews.map((review) => (
           <article
             key={`${review.name}-${review.title}`}
-            className="grid grid-cols-[112px_1fr] gap-4 border border-aura-forest/15 bg-white/40 p-4"
+            className={`grid gap-4 border border-aura-forest/15 bg-white/40 p-4${review.photo ? " grid-cols-[112px_1fr]" : ""}`}
           >
-            <div className="relative h-[112px] w-[112px] overflow-hidden">
-              <Image
-                src={review.photo}
-                alt={review.photoAlt}
-                fill
-                quality={85}
-                sizes="112px"
-                className="object-cover object-center"
-              />
-            </div>
+            {review.photo && review.photoAlt ? (
+              <div className="relative h-[112px] w-[112px] overflow-hidden">
+                <Image
+                  src={review.photo}
+                  alt={review.photoAlt}
+                  fill
+                  quality={85}
+                  sizes="112px"
+                  className="object-cover object-center"
+                />
+              </div>
+            ) : null}
             <div className="min-w-0">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <p className="font-semibold text-aura-forest">{review.name}</p>
@@ -75,10 +77,10 @@ const CustomerReviews = ({ featured = true }: { featured?: boolean }) => (
       </p>
     )}
     <p className="mt-4 text-[13px] leading-6 text-aura-forest/60">
-      Have experience with Aura Core?{" "}
+      Have experience with Aura Patch?{" "}
       <a
         className="underline underline-offset-4"
-        href="mailto:support@getaurapatch.com?subject=Aura%20Core%20feedback"
+        href="mailto:support@getaurapatch.com?subject=Aura%20Patch%20feedback"
       >
         Share your feedback with Aura.
       </a>

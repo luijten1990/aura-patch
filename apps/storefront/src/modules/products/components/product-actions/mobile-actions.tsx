@@ -13,6 +13,7 @@ import { bundleAmount } from "@lib/util/bundle"
 import OptionSelect from "./option-select"
 import { HttpTypes } from "@medusajs/types"
 import { isSimpleProduct } from "@lib/util/product"
+import { shopperProductName } from "@lib/data/aura-collection"
 
 type MobileActionsProps = {
   product: HttpTypes.StoreProduct
@@ -81,7 +82,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
             data-testid="mobile-actions"
           >
             <div className="flex items-center gap-x-2">
-              <span data-testid="mobile-title">{product.title}</span>
+              <span data-testid="mobile-title">{shopperProductName(product.handle, product.title)}</span>
               <span>—</span>
               {selectedPrice ? (
                 <div className="flex items-end gap-x-2 text-ui-fg-base">
