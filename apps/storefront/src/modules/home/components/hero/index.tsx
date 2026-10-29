@@ -158,7 +158,7 @@ const Hero = ({ product }: HeroProps) => {
           </ol>
           <div className="relative min-h-[480px] overflow-hidden rounded-[2rem] small:min-h-[580px]">
             <Image
-              src="/images/aura-patch-how-it-works-current.webp"
+              src="/images/aura-application-latest-patch.webp"
               alt="Woman applying the gold AURA patch beside the current teal Daily Wellness Patch pouch"
               fill
               className="object-cover object-center"
@@ -186,7 +186,7 @@ const Hero = ({ product }: HeroProps) => {
           <div className="mt-14 overflow-hidden rounded-[2rem] bg-aura-cream text-aura-forest">
             <div className="relative">
               <Image
-                src="/images/aura-anatomy-teal.webp"
+                src="/images/aura-anatomy-latest-patch.webp"
                 alt="Illustrative exploded view of an Aura patch: a branded protective outer layer, ingredient matrix, and adhesive layer. Not to scale."
                 width={1672}
                 height={941}

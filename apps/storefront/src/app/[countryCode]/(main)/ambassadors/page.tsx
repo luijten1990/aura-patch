@@ -69,7 +69,7 @@ export default function AmbassadorsPage() {
         </div>
         <div className="relative mx-auto aspect-[4/5] w-full max-w-[510px] overflow-hidden rounded-[2rem]">
           <Image
-            src="/images/aura-patch-how-it-works.webp"
+            src="/images/aura-application-latest-patch.webp"
             alt="Woman wearing an Aura wellness patch"
             fill
             priority
