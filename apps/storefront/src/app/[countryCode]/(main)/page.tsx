@@ -1,5 +1,6 @@
 import { Metadata } from "next"
 
+import { getProductByHandle } from "@lib/data/products"
 import Hero from "@modules/home/components/hero"
 import { ProductJsonLd, FAQJsonLd, OrganizationJsonLd, WebsiteJsonLd } from "@modules/seo/json-ld"
 
@@ -28,14 +29,21 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function Home() {
+export default async function Home(props: {
+  params: Promise<{ countryCode: string }>
+}) {
+  const { countryCode } = await props.params
+  const product = await getProductByHandle(countryCode, "aura-patch").catch(
+    () => undefined
+  )
+
   return (
     <>
       <ProductJsonLd />
       <FAQJsonLd />
       <OrganizationJsonLd />
       <WebsiteJsonLd />
-      <Hero />
+      <Hero product={product} />
     </>
   )
 }

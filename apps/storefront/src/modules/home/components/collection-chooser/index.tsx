@@ -76,9 +76,9 @@ const CollectionChooser = ({ corePrice }: CollectionChooserProps) => (
                   </LocalizedClientLink>
                 </div>
               ) : (
-                <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.16em] text-aura-forest/45">
-                  Coming soon
-                </p>
+                <a href="#contact" className="mt-2 inline-flex text-[11px] font-bold uppercase tracking-[0.16em] underline decoration-aura-gold decoration-2 underline-offset-8">
+                  Notify me
+                </a>
               )}
             </div>
           </article>
@@ -110,7 +110,7 @@ const CollectionChooser = ({ corePrice }: CollectionChooserProps) => (
                 Shop {formula.shortName}
               </LocalizedClientLink>
             ) : (
-              <p className="mt-6 text-[11px] font-bold uppercase tracking-[0.16em] text-aura-forest/40">Coming soon</p>
+              <a href="#contact" className="mt-6 inline-flex text-[11px] font-bold uppercase tracking-[0.16em] underline decoration-aura-gold decoration-2 underline-offset-8">Notify me</a>
             )}
           </div>
         ))}

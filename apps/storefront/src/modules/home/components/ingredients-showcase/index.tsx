@@ -2,7 +2,6 @@ import Image from "next/image"
 
 import {
   AURA_COLLECTION_EYEBROW,
-  AURA_COLLECTION_SUPPORT,
   auraCollection,
   formulaAccentBar,
   formulaAccentText,
@@ -17,9 +16,9 @@ const IngredientsShowcase = () => (
         <div>
           <p className="aura-eyebrow text-aura-gold">{AURA_COLLECTION_EYEBROW}</p>
           <span className="mt-5 aura-spark" />
-          <h2 className="aura-display mt-6 text-[48px] leading-[1.02] tracking-[0.005em] small:text-[62px]">Three formulas.<br />One Aura.</h2>
+          <h2 className="aura-display mt-6 text-[48px] leading-[1.02] tracking-[0.005em] small:text-[62px]">Inside each formula.</h2>
         </div>
-        <p className="max-w-[650px] text-[18px] leading-8 text-aura-cream/75 small:justify-self-end">{AURA_COLLECTION_SUPPORT}</p>
+        <p className="max-w-[650px] text-[18px] leading-8 text-aura-cream/75 small:justify-self-end">The ingredient list for each pouch is below. Amounts per patch are printed on the label. This page does not add milligram amounts or an absorption study.</p>
       </div>
 
       <div className="relative mt-12 overflow-hidden rounded-[1.75rem] bg-aura-cream">

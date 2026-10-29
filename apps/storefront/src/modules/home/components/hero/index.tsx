@@ -6,6 +6,7 @@ import CollectionChooser from "@modules/home/components/collection-chooser"
 import ContactForm from "@modules/home/components/contact-form"
 import NewsletterSignup from "@modules/home/components/newsletter-signup"
 import Image from "next/image"
+import CustomerReviews from "@modules/products/components/customer-reviews"
 
 type HeroProps = {
   product?: HttpTypes.StoreProduct
@@ -13,10 +14,10 @@ type HeroProps = {
 }
 
 const benefits = [
-  ["01", "All-day support", "Designed for a slow, considered release of ingredients while you wear it — up to 12 hours of daily support."],
-  ["02", "Easy to Use", "Peel, apply, and continue with your day. No pills, powders, or complicated routines."],
-  ["03", "Portable Wellness", "Take your daily ritual wherever the day takes you, with one discreet patch."],
-  ["04", "Simple Routine", "One simple step, created for modern life and effortless consistency."],
+  ["01", "Worn on the skin", "Apply one patch to clean, dry skin. The ingredient matrix stays against the skin while you wear it, for up to 12 hours."],
+  ["02", "Nothing to swallow", "No capsules to line up, no scoop, and no glass of water. Peel, apply, and continue with your day."],
+  ["03", "Your daily defense", "Aura Patch is meant to be worn every day. Vitamin C, zinc, and vitamin A are included for normal immune function. It does not treat or cure any infection or disease."],
+  ["04", "A 30-day pouch", "One patch for each day. Pack the pouch when you travel. There is no shaker to bring along."],
 ]
 
 const BenefitIllustration = ({ number }: { number: string }) => (
@@ -76,6 +77,9 @@ const faqs = [
   ["How long can I wear it?", "Aura is designed for comfortable wear for up to 12 hours. Always follow the directions on your product packaging and remove the patch sooner if irritation occurs."],
   ["How many patches are included?", "Each pouch is designed as a 30-day supply, with one patch for each day of your routine."],
   ["Can I take Aura Patch with me?", "Yes. The lightweight pouch and individually protected patches make it easy to keep your routine with you."],
+  ["How does the patch work?", "You wear it on the skin. There is nothing to swallow or mix. That describes the format. It is not a claim that the patch absorbs better than a pill, and this site does not publish amounts delivered through the skin. Amounts per patch are on the pouch label."],
+  ["What if my skin reacts?", "Use it only on healthy, unbroken skin. Remove the patch if irritation occurs. If you know you react to an ingredient, read the ingredient list on the pouch before you try it."],
+  ["What about shipping and returns?", "Shipping and taxes are calculated at checkout. Return terms shown at checkout apply to the order."],
 ]
 
 const Hero = ({ product }: HeroProps) => {
@@ -94,7 +98,7 @@ const Hero = ({ product }: HeroProps) => {
             Next-generation<br />daily wellness.
           </h1>
           <p className="mt-7 max-w-[540px] text-[16px] leading-7 text-aura-forest/80">
-            Aura Patch is your daily defense: one patch, worn every day, with vitamin C, zinc, and vitamin A for their roles in normal immune function. Peel, apply, go. Wear for up to 12 hours. A 30-day pouch.
+            Aura Patch is your daily defense: one patch, worn on the skin every day, with vitamin C, zinc, and vitamin A for their roles in normal immune function. Nothing to mix or swallow. Wear for up to 12 hours. A 30-day pouch.
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
             <LocalizedClientLink href={productHref} className="aura-button">Shop Aura Patch</LocalizedClientLink>
@@ -116,7 +120,7 @@ const Hero = ({ product }: HeroProps) => {
               </div>
               <div className="mt-2 flex items-baseline justify-between gap-5 border-t border-aura-forest/20 pt-4 text-[14px]">
                 <span>{product?.title || "Aura Patch — 30-day supply"}</span>
-                {price && <span className="font-semibold">{price.calculated_price}</span>}
+                <span className="font-semibold">{price?.calculated_price || "$49.99"}</span>
               </div>
             </LocalizedClientLink>
         </div>
@@ -124,8 +128,14 @@ const Hero = ({ product }: HeroProps) => {
 
       <section id="science" className="border-y border-aura-forest/10 py-16 small:py-20">
         <div className="aura-shell">
-          <p className="aura-eyebrow">Wellness, reimagined</p>
-          <h2 className="aura-display mt-5 max-w-[1000px] text-[44px] leading-none small:text-[60px]">A simpler path to daily wellness.</h2>
+          <p className="aura-eyebrow">Why a patch</p>
+          <h2 className="aura-display mt-5 max-w-[1000px] text-[44px] leading-none small:text-[60px]">Worn on the skin. Nothing to swallow.</h2>
+          <p className="mt-6 max-w-[760px] text-[17px] leading-8 text-aura-forest/75">
+            Aura is a transdermal patch: the formula sits on clean, dry skin for up to 12 hours. That is a simpler daily step than capsules or a powder. It is not a claim that the patch absorbs better than a pill, and we do not publish a finished-formula absorption study here. Amounts per patch are printed on the pouch.
+          </p>
+          <LocalizedClientLink href="/why-a-patch" className="mt-6 inline-flex text-[11px] font-bold uppercase tracking-[0.16em] underline decoration-aura-gold decoration-2 underline-offset-8">
+            Read why a patch
+          </LocalizedClientLink>
           <div className="mt-10 grid gap-5 xsmall:grid-cols-2 medium:grid-cols-4">
             {benefits.map(([number, title, copy]) => (
               <article key={title} className="aura-feature-card">
@@ -159,7 +169,7 @@ const Hero = ({ product }: HeroProps) => {
           <div className="relative min-h-[480px] overflow-hidden rounded-[2rem] small:min-h-[580px]">
             <Image
               src="/images/aura-patch-how-it-works-current.webp"
-              alt="Woman applying the gold AURA patch beside the current teal Daily Wellness Patch pouch"
+              alt="Person applying a round gold AURA patch, with the Aura Patch pouch nearby"
               fill
               className="object-cover object-center"
               sizes="(max-width: 1024px) 100vw, 48vw"
@@ -218,6 +228,10 @@ const Hero = ({ product }: HeroProps) => {
       <CollectionChooser corePrice={price?.calculated_price} />
 
       <IngredientsShowcase />
+
+      <section className="aura-shell pb-4 small:pb-8">
+        <CustomerReviews />
+      </section>
 
       <section id="faq" className="aura-shell py-16 small:py-24">
         <div className="grid gap-16 small:grid-cols-[0.7fr_1.3fr]">
