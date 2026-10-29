@@ -65,24 +65,24 @@ export default function Nav() {
 
           <div className="hidden small:flex items-center justify-center gap-7 flex-1 text-[12px] tracking-[0.08em] uppercase">
             <LocalizedClientLink
-              href="/"
-              className="hover:opacity-70 transition-opacity"
-            >
-              Home
-            </LocalizedClientLink>
-
-            <LocalizedClientLink
               href="/store"
               className="hover:opacity-70 transition-opacity"
             >
               Shop
             </LocalizedClientLink>
 
+            <LocalizedClientLink
+              href="/why-a-patch"
+              className="hover:opacity-70 transition-opacity"
+            >
+              Why a patch
+            </LocalizedClientLink>
+
             <LocalizedClientLink href="/#collection" className="hover:opacity-70 transition-opacity">
               Collection
             </LocalizedClientLink>
 
-            <LocalizedClientLink href="/#formulations" className="hover:opacity-70 transition-opacity">
+            <LocalizedClientLink href="/#ingredients" className="hover:opacity-70 transition-opacity">
               Ingredients
             </LocalizedClientLink>
 

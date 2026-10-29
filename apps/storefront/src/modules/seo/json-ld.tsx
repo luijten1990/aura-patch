@@ -95,6 +95,30 @@ export function FAQJsonLd() {
           text: "Yes. The lightweight pouch and individually protected patches make it easy to keep your routine with you.",
         },
       },
+      {
+        "@type": "Question",
+        name: "How does the patch work?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "You wear it on the skin. There is nothing to swallow or mix. That describes the format. It is not a claim that the patch absorbs better than a pill, and this site does not publish amounts delivered through the skin. Amounts per patch are on the pouch label.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What if my skin reacts?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Use it only on healthy, unbroken skin. Remove the patch if irritation occurs. If you know you react to an ingredient, read the ingredient list on the pouch before you try it.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What about shipping and returns?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Shipping and taxes are calculated at checkout. Return terms shown at checkout apply to the order.",
+        },
+      },
     ],
   }
 

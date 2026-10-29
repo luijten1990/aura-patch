@@ -11,8 +11,9 @@ import { Locale } from "@lib/data/locales"
 const SideMenuItems = [
   { name: "Home", href: "/" },
   { name: "Shop", href: "/store" },
+  { name: "Why a patch", href: "/why-a-patch" },
   { name: "Collection", href: "/#collection" },
-  { name: "Ingredients", href: "/#formulations" },
+  { name: "Ingredients", href: "/#ingredients" },
   { name: "Science", href: "/#science" },
   { name: "FAQ", href: "/#faq" },
   { name: "Contact", href: "/#contact" },

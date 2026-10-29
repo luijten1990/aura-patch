@@ -2,17 +2,16 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import Image from "next/image"
 
 const footerLinks = [
-  ["Home", "/"],
   ["Shop", "/store"],
   ["Why a patch?", "/why-a-patch"],
-  ["Wholesale", "/wholesale"],
-  ["Ambassadors", "/ambassadors"],
-  ["Investor Relations", "/investors"],
   ["Ingredients", "/#ingredients"],
   ["Science", "/#science"],
   ["FAQ", "/#faq"],
+  ["Contact", "/#contact"],
+  ["Wholesale", "/wholesale"],
+  ["Ambassadors", "/ambassadors"],
+  ["Investor Relations", "/investors"],
   ["Account", "/account"],
-  ["Cart", "/cart"],
   ["Privacy Policy", "/privacy"],
   ["Terms of Service", "/terms"],
   ["Accessibility", "/accessibility"],
@@ -51,7 +50,7 @@ export default function Footer() {
               <LocalizedClientLink
                 key={label}
                 href={href}
-                className={`transition-colors hover:text-aura-gold ${label === "Investor Relations" ? "font-bold text-aura-gold" : ""}`}
+                className="transition-colors hover:text-aura-gold"
               >
                 {label}
               </LocalizedClientLink>
