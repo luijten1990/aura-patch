@@ -16,8 +16,8 @@ export const auraReviews: AuraReview[] = [
     dateLabel: "May 3, 2026",
     quote:
       "I love this patch. I peel it on in the morning and wear it through the day. It stays with me while I do housework, and I don't notice it until the end of the day, when the dishes are done.",
-    photo: "/images/reviews/review-kitchen-current.webp",
-    photoAlt: "Aura pouch on a kitchen counter next to a cereal bowl and mail",
+    photo: "/images/reviews/review-kitchen-tidy.webp",
+    photoAlt: "Aura pouch on a tidy oak kitchen counter beside a ceramic mug and folded linen",
   },
   {
     name: "Lauren Hayes",
