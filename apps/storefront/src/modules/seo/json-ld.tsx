@@ -12,7 +12,7 @@ export function ProductJsonLd() {
       "Aura Patch is your daily defense. Wear one patch every day. Vitamin C, zinc, and vitamin A are included for their roles in normal immune function. Peel, apply, go. A 30-day pouch.",
     brand: { "@type": "Brand", name: "Aura Patch" },
     category: "Health & Wellness > Dietary Supplements > Transdermal Patches",
-    image: "https://www.getaurapatch.com/images/aura-core-pouch-front.jpeg",
+    image: "https://www.getaurapatch.com/images/aura-patch-pouch-front.jpeg",
     url: "https://www.getaurapatch.com/us/products/aura-patch",
     sku: "AURA-PATCH-30",
     offers: {

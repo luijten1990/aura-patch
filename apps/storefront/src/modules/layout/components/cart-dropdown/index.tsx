@@ -122,7 +122,7 @@ export default function CartDropdown({
                         <Thumbnail
                           thumbnail={
                             item.product_handle === "aura-patch"
-                              ? "/images/aura-core-pouch-front.webp"
+                              ? "/images/aura-patch-pouch-front.webp"
                               : item.thumbnail
                           }
                           size="square"

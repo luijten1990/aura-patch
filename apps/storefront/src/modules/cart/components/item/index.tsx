@@ -14,6 +14,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import Spinner from "@modules/common/icons/spinner"
 import Thumbnail from "@modules/products/components/thumbnail"
 import { useState } from "react"
+import { shopperProductName } from "@lib/data/aura-collection"
 
 type ItemProps = {
   item: HttpTypes.StoreCartLineItem
@@ -53,7 +54,7 @@ const Item = ({ item, type = "full", currencyCode, isSubscription }: ItemProps) 
   const maxQuantity = item.variant?.manage_inventory ? 10 : maxQtyFromInventory
   const thumbnail =
     item.product_handle === "aura-patch"
-      ? "/images/aura-core-pouch-front.webp"
+      ? "/images/aura-patch-pouch-front.webp"
       : item.thumbnail
 
   return (
@@ -84,7 +85,7 @@ const Item = ({ item, type = "full", currencyCode, isSubscription }: ItemProps) 
           className="font-sans text-[16px] font-semibold leading-6 text-aura-forest"
           data-testid="product-title"
         >
-          {item.product_title}
+          {shopperProductName(item.product_handle, item.product_title)}
         </p>
         <div className="mt-1 text-[12px] text-aura-forest/55">
           {isSubscription || item.metadata?.purchase_type === "subscription" ? (

@@ -5,6 +5,7 @@ import LineItemOptions from "@modules/common/components/line-item-options"
 import LineItemPrice from "@modules/common/components/line-item-price"
 import LineItemUnitPrice from "@modules/common/components/line-item-unit-price"
 import Thumbnail from "@modules/products/components/thumbnail"
+import { shopperProductName } from "@lib/data/aura-collection"
 
 type ItemProps = {
   item: HttpTypes.StoreCartLineItem | HttpTypes.StoreOrderLineItem
@@ -14,7 +15,7 @@ type ItemProps = {
 const Item = ({ item, currencyCode }: ItemProps) => {
   const thumbnail =
     item.product_handle === "aura-patch"
-      ? "/images/aura-core-pouch-front.webp"
+      ? "/images/aura-patch-pouch-front.webp"
       : item.thumbnail
 
   return (
@@ -38,7 +39,7 @@ const Item = ({ item, currencyCode }: ItemProps) => {
           className="text-[16px] font-semibold leading-6 text-aura-forest"
           data-testid="product-name"
         >
-          {item.product_title}
+          {shopperProductName(item.product_handle, item.product_title)}
         </Text>
         <div className="mt-1 text-[12px] text-aura-forest/55">
           <LineItemOptions variant={item.variant} data-testid="product-variant" />
