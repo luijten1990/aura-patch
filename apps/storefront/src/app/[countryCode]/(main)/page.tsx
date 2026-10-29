@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "The Aura Collection — Aura Patch, Restore, Energy",
     description:
-      "Next-generation daily wellness. Aura Patch, Restore, and Energy — three patches designed for all-day support. Start with Aura Patch.",
+      "The future of daily wellness is here now. Aura Patch, Restore, and Energy — three patches worn on the skin. Start with Aura Patch.",
     images: ["/images/aura-patch-pouch-front.jpeg"],
     type: "website",
     siteName: "Aura Patch",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "The Aura Collection — Aura Patch, Restore, Energy",
     description:
-      "Next-generation daily wellness. Aura Patch, Restore, and Energy — three patches designed for all-day support. Start with Aura Patch.",
+      "The future of daily wellness is here now. Aura Patch, Restore, and Energy — three patches worn on the skin. Start with Aura Patch.",
   },
   alternates: {
     canonical: "https://www.getaurapatch.com/us",

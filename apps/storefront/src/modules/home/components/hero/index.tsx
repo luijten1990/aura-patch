@@ -94,8 +94,8 @@ const Hero = ({ product }: HeroProps) => {
         <div className="max-w-[600px]">
           <p className="aura-eyebrow text-aura-gold">The Aura Collection</p>
           <span className="mt-5 aura-spark" />
-          <h1 className="aura-display mt-6 text-[50px] leading-[1.04] small:text-[68px]">
-            Next-generation<br />daily wellness.
+          <h1 className="aura-display mt-6 text-[42px] leading-[1.05] small:text-[56px]">
+            The future of daily wellness is here now.
           </h1>
           <p className="mt-7 max-w-[540px] text-[16px] leading-7 text-aura-forest/80">
             Aura Patch is your daily defense: one patch, worn on the skin every day, with vitamin C, zinc, and vitamin A for their roles in normal immune function. Nothing to mix or swallow. Wear for up to 12 hours. A 30-day pouch.
