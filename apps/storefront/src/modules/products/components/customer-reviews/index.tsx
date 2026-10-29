@@ -27,18 +27,20 @@ const CustomerReviews = ({ featured = true }: { featured?: boolean }) => (
         {auraReviews.map((review) => (
           <article
             key={`${review.name}-${review.title}`}
-            className="grid grid-cols-[112px_1fr] gap-4 border border-aura-forest/15 bg-white/40 p-4"
+            className={`grid gap-4 border border-aura-forest/15 bg-white/40 p-4${review.photo ? " grid-cols-[112px_1fr]" : ""}`}
           >
-            <div className="relative h-[112px] w-[112px] overflow-hidden">
-              <Image
-                src={review.photo}
-                alt={review.photoAlt}
-                fill
-                quality={85}
-                sizes="112px"
-                className="object-cover object-center"
-              />
-            </div>
+            {review.photo && review.photoAlt ? (
+              <div className="relative h-[112px] w-[112px] overflow-hidden">
+                <Image
+                  src={review.photo}
+                  alt={review.photoAlt}
+                  fill
+                  quality={85}
+                  sizes="112px"
+                  className="object-cover object-center"
+                />
+              </div>
+            ) : null}
             <div className="min-w-0">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <p className="font-semibold text-aura-forest">{review.name}</p>

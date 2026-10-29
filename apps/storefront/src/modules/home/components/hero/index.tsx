@@ -185,39 +185,14 @@ const Hero = ({ product }: HeroProps) => {
 
           <div className="mt-14 overflow-hidden rounded-[2rem] bg-aura-cream text-aura-forest">
             <div className="relative">
-              <div className="relative aspect-[4/3] min-h-[390px] small:aspect-[16/9] small:min-h-[620px]">
-                <Image
-                  src="/images/aura-patch-anatomy.webp"
-                  alt="Exploded view showing the three round layers of an Aura Patch"
-                  fill
-                  className="object-cover object-center small:object-contain"
-                  sizes="100vw"
-                />
-
-                <div className="absolute right-[5%] top-[13%] hidden w-[250px] small:block">
-                  <span className="mb-3 block h-px w-24 bg-aura-ember" />
-                  <h3 className="aura-display text-[28px] leading-none">Protective outer layer</h3>
-                  <p className="mt-3 text-[14px] leading-6 text-aura-forest/70">
-                    Helps keep the ingredient matrix stable and effective.
-                  </p>
-                </div>
-
-                <div className="absolute left-[5%] top-[45%] hidden w-[230px] text-right small:block">
-                  <span className="mb-3 ml-auto block h-px w-24 bg-aura-ember" />
-                  <h3 className="aura-display text-[28px] leading-none">Ingredient matrix</h3>
-                  <p className="mt-3 text-[14px] leading-6 text-aura-forest/70">
-                    Holds Aura’s carefully formulated wellness ingredients.
-                  </p>
-                </div>
-
-                <div className="absolute bottom-[11%] right-[6%] hidden w-[260px] small:block">
-                  <span className="mb-3 block h-px w-24 bg-aura-ember" />
-                  <h3 className="aura-display text-[28px] leading-none">Medical-grade adhesive</h3>
-                  <p className="mt-3 text-[14px] leading-6 text-aura-forest/70">
-                    Designed to stay securely in place for up to 12 hours.
-                  </p>
-                </div>
-              </div>
+              <Image
+                src="/images/aura-anatomy-teal.webp"
+                alt="Illustrative exploded view of an Aura patch: a branded protective outer layer, ingredient matrix, and adhesive layer. Not to scale."
+                width={1672}
+                height={941}
+                className="h-auto w-full"
+                sizes="(max-width: 1320px) 100vw, 1256px"
+              />
               <ol className="divide-y divide-aura-forest/15 px-7 py-4 small:hidden">
                 {[
                   ["01", "Protective outer layer", "Helps keep the ingredient matrix stable and effective."],
