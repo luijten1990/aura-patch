@@ -36,7 +36,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       openGraph: {
         title: `${name} | Aura Patch`,
         description: name,
-        images: ["/images/aura-patch-pouch-front.jpeg"],
+        images: ["/images/aura-patch-pouch-front-current.jpeg"],
       },
     }
   } catch {

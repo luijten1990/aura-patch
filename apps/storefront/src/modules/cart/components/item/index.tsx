@@ -54,7 +54,7 @@ const Item = ({ item, type = "full", currencyCode, isSubscription }: ItemProps) 
   const maxQuantity = item.variant?.manage_inventory ? 10 : maxQtyFromInventory
   const thumbnail =
     item.product_handle === "aura-patch"
-      ? "/images/aura-patch-pouch-front.webp"
+      ? "/images/aura-patch-pouch-front-current.webp"
       : item.thumbnail
 
   return (

@@ -105,7 +105,7 @@ const Hero = ({ product }: HeroProps) => {
             <LocalizedClientLink href={productHref} className="group relative block">
               <div className="relative aspect-[4/5] min-h-[420px] w-full overflow-hidden bg-aura-cream">
                 <Image
-                  src="/images/aura-patch-pouch-front.webp"
+                  src="/images/aura-patch-pouch-front-current.webp"
                   alt="Aura Patch 30-day daily wellness pouch with gold mandala"
                   fill
                   priority

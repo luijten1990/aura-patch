@@ -32,10 +32,10 @@ const opportunities = [
 ]
 
 const campaignTiles = [
-  ["/images/ambassador-daily-ritual.webp", "Wellness", "in real life"],
-  ["/images/ambassador-apply.webp", "Share your ritual", "in your own voice"],
-  ["/images/ambassador-create.webp", "Create with intention", "earn as you inspire"],
-  ["/images/aura-patch-pouch-front.webp", "Join the Aura community", "today"],
+  ["/images/ambassador-daily-ritual-current.webp", "Wellness", "in real life"],
+  ["/images/ambassador-apply-current.webp", "Share your ritual", "in your own voice"],
+  ["/images/ambassador-create-current.webp", "Create with intention", "earn as you inspire"],
+  ["/images/aura-patch-pouch-front-current.webp", "Join the Aura community", "today"],
 ]
 
 const programFaqs = [

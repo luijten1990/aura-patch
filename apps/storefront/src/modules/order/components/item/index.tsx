@@ -15,7 +15,7 @@ type ItemProps = {
 const Item = ({ item, currencyCode }: ItemProps) => {
   const thumbnail =
     item.product_handle === "aura-patch"
-      ? "/images/aura-patch-pouch-front.webp"
+      ? "/images/aura-patch-pouch-front-current.webp"
       : item.thumbnail
 
   return (

@@ -43,7 +43,7 @@ export default async function ProductPreview({
         {product.handle === "aura-patch" ? (
           <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-aura-cream">
             <Image
-              src="/images/aura-patch-pouch-front.webp"
+              src="/images/aura-patch-pouch-front-current.webp"
               alt="Aura Patch 30-day pouch"
               fill
               quality={90}
