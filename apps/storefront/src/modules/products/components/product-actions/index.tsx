@@ -282,7 +282,18 @@ export default function ProductActions({
               )}
             </div>
             <p className="mt-1 text-[13px] leading-5 text-aura-forest/65">
-              A new pouch each month, billed monthly. Cancel anytime from your account.
+              About{" "}
+              {selectedVariant?.calculated_price?.calculated_amount != null
+                ? convertToLocale({
+                    amount:
+                      subscriptionAmount(
+                        selectedVariant.calculated_price.calculated_amount
+                      ) / 30,
+                    currency_code:
+                      selectedVariant.calculated_price.currency_code || "usd",
+                  })
+                : "$1.33"}
+              /day. A new pouch each month. Cancel anytime from your account.
             </p>
           </button>
           <button
@@ -313,6 +324,18 @@ export default function ProductActions({
                 </span>
               )}
             </div>
+            <p className="mt-1 text-[13px] leading-5 text-aura-forest/65">
+              About{" "}
+              {selectedVariant?.calculated_price?.calculated_amount != null
+                ? convertToLocale({
+                    amount:
+                      selectedVariant.calculated_price.calculated_amount / 30,
+                    currency_code:
+                      selectedVariant.calculated_price.currency_code || "usd",
+                  })
+                : "$1.67"}
+              /day. Paid once.
+            </p>
           </button>
         </div>
 
@@ -322,7 +345,7 @@ export default function ProductActions({
               Buy more, save more
             </h2>
             <p className="mt-2 text-[13px] leading-5 text-aura-forest/65">
-              One-time pouches. Each pouch is a 30-day supply. Free standard US shipping.
+              One-time pouches. Each pouch is a 30-day supply. Free standard US shipping. Subscribe & save is the monthly price. A 4-pouch bundle is paid once, at a similar price per pouch.
             </p>
             <div
               className="mt-3 flex flex-col gap-2"

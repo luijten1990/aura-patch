@@ -9,11 +9,11 @@ export const revalidate = 300
 export const metadata: Metadata = {
   title: "Aura Patch — Daily Wellness Patch",
   description:
-    "Aura Patch is your daily defense. Wear one patch every day. Vitamin C, zinc, and vitamin A support normal immune function. Peel, apply, go. 30-day pouch.",
+    "Aura Patch is a daily immune-support ritual. One patch a day, 30 days per pouch. Peel, apply, go.",
   openGraph: {
     title: "The Aura Collection — Aura Patch, Restore, Energy",
     description:
-      "The future of daily wellness is here now. Aura Patch, Restore, and Energy — three patches worn on the skin. Start with Aura Patch.",
+      "Aura Patch is a daily immune-support ritual. One patch a day, 30 days per pouch. Start with Aura Patch.",
     images: ["/images/aura-patch-pouch-front.jpeg"],
     type: "website",
     siteName: "Aura Patch",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "The Aura Collection — Aura Patch, Restore, Energy",
     description:
-      "The future of daily wellness is here now. Aura Patch, Restore, and Energy — three patches worn on the skin. Start with Aura Patch.",
+      "Aura Patch is a daily immune-support ritual. One patch a day, 30 days per pouch. Start with Aura Patch.",
   },
   alternates: {
     canonical: "https://www.getaurapatch.com/us",

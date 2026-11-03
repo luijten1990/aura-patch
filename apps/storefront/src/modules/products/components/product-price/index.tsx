@@ -49,7 +49,7 @@ export default function ProductPrice({
     >
       <div>
         <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-aura-forest/55">
-          Normal
+          One-time
         </p>
         <p className="aura-display mt-1 text-[30px] leading-none">
           {!variant && "From "}
@@ -60,7 +60,7 @@ export default function ProductPrice({
       </div>
       <div>
         <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-aura-forest/55">
-          Subscribe
+          Subscribe & save
         </p>
         <p className="aura-display mt-1 text-[30px] leading-none">
           <span data-testid="subscribe-price" data-value={subscribeNumber}>

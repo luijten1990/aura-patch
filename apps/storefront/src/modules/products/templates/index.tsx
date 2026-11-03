@@ -10,6 +10,7 @@ import SkeletonRelatedProducts from "@modules/skeletons/templates/skeleton-relat
 import { notFound } from "next/navigation"
 import { HttpTypes } from "@medusajs/types"
 
+import AuraProductFaq from "@modules/products/components/aura-product-faq"
 import AuraIngredientsGallery from "@modules/products/components/aura-ingredients-gallery"
 import AuraProductStage from "@modules/products/components/aura-product-stage"
 import CustomerReviews from "@modules/products/components/customer-reviews"
@@ -76,11 +77,20 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
           <div>
             <p className="aura-eyebrow">Made for everyday moments</p>
             <h2 id="everyday-aura-title" className="mt-4 font-sans text-[32px] leading-tight small:text-[40px]">A simple step in your daily routine.</h2>
-            <p className="mt-5 max-w-lg text-base leading-7 text-aura-forest/75">Peel, apply as directed, and carry on with your day. Discover the thinking behind Aura Patch’s wearable format.</p>
+            <div className="mt-6 flex flex-col gap-5 text-base leading-7 text-aura-forest/75">
+              <p><strong className="text-aura-forest">A different kind of daily habit.</strong> Many people skip supplements because of pills, powders, or one more thing to swallow. A patch takes a moment in the morning and then stays out of the way.</p>
+              <p><strong className="text-aura-forest">Easy to stick with.</strong> One patch, one pouch, 30 days. It is easy to see whether you have done the routine.</p>
+              <p><strong className="text-aura-forest">Made for real days.</strong> Wear it through work, travel, or housework, for up to 12 hours.</p>
+              <p>Research on individual ingredients does not establish the absorption or effect of the finished patch.</p>
+            </div>
             <a href={`/${countryCode}/why-a-patch`} className="aura-button-outline mt-6">Why a patch?</a>
           </div>
         </section>
         <AuraIngredientsGallery />
+        <AuraProductFaq />
+        <div className="content-container py-16 small:py-24">
+          <CustomerReviews />
+        </div>
         <div
           className="content-container my-16 small:my-32"
           data-testid="related-products-container"

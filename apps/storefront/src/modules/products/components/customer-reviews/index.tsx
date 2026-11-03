@@ -52,15 +52,11 @@ const CustomerReviews = ({ featured = true }: { featured?: boolean }) => (
                   ★★★★★
                 </span>
               </div>
-              <p className="mt-1 text-[13px] text-aura-forest/60">
-                United States
-                {review.date && review.dateLabel ? (
-                  <>
-                    {" "}
-                    · <time dateTime={review.date}>{review.dateLabel}</time>
-                  </>
-                ) : null}
-              </p>
+              {review.date && review.dateLabel ? (
+                <p className="mt-1 text-[13px] text-aura-forest/60">
+                  <time dateTime={review.date}>{review.dateLabel}</time>
+                </p>
+              ) : null}
               <h3 className="mt-3 text-[16px] font-semibold text-aura-forest">
                 {review.title}
               </h3>

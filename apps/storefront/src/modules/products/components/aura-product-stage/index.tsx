@@ -3,7 +3,6 @@ import { HttpTypes } from "@medusajs/types"
 
 import { auraCore } from "@lib/data/aura-collection"
 import { AURA_REVIEW_COUNT } from "@lib/data/aura-reviews"
-import CustomerReviews from "@modules/products/components/customer-reviews"
 import FormulaPouchNotes from "@modules/products/components/formula-pouch-notes"
 import ImageGallery from "@modules/products/components/image-gallery"
 import ProductActions from "@modules/products/components/product-actions"
@@ -64,10 +63,10 @@ const AuraProductStage = ({
           </p>
           <span className="mt-4 aura-spark" />
           <h1
-            className="aura-display mt-4 text-[46px] leading-none text-aura-forest small:text-[56px]"
+            className="aura-display mt-4 text-[40px] leading-[1.05] text-aura-forest small:text-[52px]"
             data-testid={titleTestId}
           >
-            {auraCore.name}
+            Aura Patch: your daily immune-support ritual
           </h1>
           <p className="mt-4 max-w-[36rem] text-[15px] leading-7 text-aura-forest/70">
             {auraCore.description}
@@ -82,11 +81,16 @@ const AuraProductStage = ({
             <Suspense fallback={null}>
               <ProductActions product={product} region={region} />
             </Suspense>
+            <p className="mt-4 text-[13px] leading-5 text-aura-forest/65">
+              Wear for up to 12 hours. Free standard US shipping.
+            </p>
+            <p className="mt-3 text-[12px] leading-5 text-aura-forest/60">
+              These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.
+            </p>
           </div>
         </div>
 
         <FormulaPouchNotes formula={auraCore} dense />
-        <CustomerReviews />
       </div>
     </div>
   )

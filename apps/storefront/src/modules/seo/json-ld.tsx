@@ -9,7 +9,7 @@ export function ProductJsonLd() {
     "@type": "Product",
     name: "Aura Patch — Daily Wellness Patch",
     description:
-      "Aura Patch is your daily defense. Wear one patch every day. Vitamin C, zinc, and vitamin A are included for their roles in normal immune function. Peel, apply, go. A 30-day pouch.",
+      "Aura Patch is a daily immune-support ritual. One patch a day, 30 days per pouch. Vitamin C, zinc, and vitamin A are included to support healthy immune function. Peel, apply, go.",
     brand: { "@type": "Brand", name: "Aura Patch" },
     category: "Health & Wellness > Dietary Supplements > Transdermal Patches",
     image: "https://www.getaurapatch.com/images/aura-patch-pouch-front.jpeg",
@@ -44,7 +44,7 @@ export function FAQJsonLd() {
         name: "What is Aura Patch for?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Aura Patch is your daily defense. Wear it every day. Vitamin C, zinc, and vitamin A are included for their established roles in normal immune function. It does not treat or cure any infection or disease.",
+          text: "Aura Patch is a daily immune-support ritual. Wear one patch a day. Vitamin C, zinc, and vitamin A are included to support healthy immune function. It isn't a treatment or cure for any condition.",
         },
       },
       {

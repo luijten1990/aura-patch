@@ -16,7 +16,7 @@ type HeroProps = {
 const benefits = [
   ["01", "Worn on the skin", "Apply one patch to clean, dry skin. The ingredient matrix stays against the skin while you wear it, for up to 12 hours."],
   ["02", "Nothing to swallow", "No capsules to line up, no scoop, and no glass of water. Peel, apply, and continue with your day."],
-  ["03", "Your daily defense", "Aura Patch is meant to be worn every day. Vitamin C, zinc, and vitamin A are included for normal immune function. It does not treat or cure any infection or disease."],
+  ["03", "Daily immune support", "Vitamin C, zinc, and vitamin A are included to support healthy immune function. Aura Patch is a daily wellness product and isn't a treatment or cure for any condition."],
   ["04", "A 30-day pouch", "One patch for each day. Pack the pouch when you travel. There is no shaker to bring along."],
 ]
 
@@ -70,7 +70,7 @@ const BenefitIllustration = ({ number }: { number: string }) => (
 )
 
 const faqs = [
-  ["What is Aura Patch for?", "Aura Patch is your daily defense. Wear it every day. Vitamin C, zinc, and vitamin A are included for their established roles in normal immune function. It does not treat or cure any infection or disease."],
+  ["What is Aura Patch for?", "Aura Patch is a daily immune-support ritual. Wear one patch a day. Vitamin C, zinc, and vitamin A are included to support healthy immune function. It isn't a treatment or cure for any condition."],
   ["How do I use Aura Patch?", "Remove one patch from its protective backing and apply it to clean, dry skin according to the product instructions. Aura Patch is meant to be worn daily."],
   ["Where should I apply it?", "Choose a clean, dry, relatively hair-free area of healthy, unbroken skin, such as your upper arm or stomach. Avoid lotions or oils where the patch will be placed, as they can affect adhesion."],
   ["Can you shower with it?", "Showering with the patch on is not ideal. Apply it after you shower, once you have dried off."],
@@ -95,10 +95,10 @@ const Hero = ({ product }: HeroProps) => {
           <p className="aura-eyebrow text-aura-gold">The Aura Collection</p>
           <span className="mt-5 aura-spark" />
           <h1 className="aura-display mt-6 text-[42px] leading-[1.05] small:text-[56px]">
-            The future of daily wellness is here now.
+            Aura Patch: your daily immune-support ritual.
           </h1>
           <p className="mt-7 max-w-[540px] text-[16px] leading-7 text-aura-forest/80">
-            Aura Patch is your daily defense: one patch, worn on the skin every day, with vitamin C, zinc, and vitamin A for their roles in normal immune function. Nothing to mix or swallow. Wear for up to 12 hours. A 30-day pouch.
+            One patch a day, 30 days per pouch. Vitamin C, zinc, and vitamin A, plus probiotics, botanicals, and adaptogens, in a format that's easy to remember. Peel, apply, go.
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
             <LocalizedClientLink href={productHref} className="aura-button">Shop Aura Patch</LocalizedClientLink>

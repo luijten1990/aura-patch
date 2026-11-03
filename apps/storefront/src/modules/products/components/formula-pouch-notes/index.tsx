@@ -47,9 +47,8 @@ const FormulaPouchNotes = ({
           onDark ? "text-aura-cream/50" : "text-aura-forest/50"
         }`}
       >
-        These notes describe the pouch and the ingredients in it. They are
-        general wellness information, not a claim that the finished patch
-        treats or prevents any condition.
+        Research on individual ingredients doesn't establish how the finished
+        patch is absorbed or what effect it has.
       </p>
     </div>
   )

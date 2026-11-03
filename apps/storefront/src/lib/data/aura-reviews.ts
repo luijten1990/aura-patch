@@ -35,27 +35,9 @@ export const auraReviews: AuraReview[] = [
       "Aura pouch on a wood table beside a sticker sheet of six round AURA patches",
   },
   {
-    name: "Hillary Ivy",
-    title: "They really work",
-    quote:
-      "I work as a teacher and I am prone to always getting sick, nowadays so many diseases are going round. However ever since I started wearing these I have not had a cold or sore throat, they really work!",
-  },
-  {
-    name: "Amandeep Singh",
-    title: "I was skeptical",
-    quote:
-      "I struggle with a low immune system and always sniffle and cough during flu season, ever since I started wearing these I have not been getting sick! I was skeptical, but they really work!",
-  },
-  {
     name: "Katie Brennan",
     title: "One daily step",
     quote: "I like having the routine in one patch. Peel, apply, go.",
-  },
-  {
-    name: "Josh Miller",
-    title: "They work",
-    quote:
-      "A friend recommended these to wear in airports during my travels to boost my immune system, they work!",
   },
 ]
 

@@ -34,8 +34,8 @@ export const auraCollection: AuraFormula[] = [
     key: "core",
     name: "Aura Patch",
     shortName: "Aura Patch",
-    tagline: "Your daily defense.",
-    use: "Daily defense",
+    tagline: "Your daily immune-support ritual.",
+    use: "Daily immune support",
     bestFor: "Worn every day",
     status: "available",
     href: "/products/aura-patch",
@@ -45,9 +45,9 @@ export const auraCollection: AuraFormula[] = [
     categories: "Daily · Immune support · Vitality",
     subtitle: "Daily immune-support patch",
     description:
-      "Aura Patch is your daily defense. Wear one patch every day. Vitamin C, zinc, and vitamin A are included for their established roles in normal immune function. Peel, apply, go. Wear for up to 12 hours. A 30-day pouch.",
+      "One patch a day, 30 days per pouch. Vitamin C, zinc, and vitamin A, plus probiotics, botanicals, and adaptogens, in a format that's easy to remember. Peel, apply, go.",
     accent: "ember",
-    traits: ["Daily defense", "Immune support", "Vitality"],
+    traits: ["Immune support", "Daily ritual", "Vitality"],
     ingredients: [
       "Stabilized Allicin",
       "Organic Ashwagandha",
@@ -72,19 +72,19 @@ export const auraCollection: AuraFormula[] = [
     benefits: [
       {
         title: "A patch for the whole day",
-        body: "Peel, apply, and wear it for up to 12 hours. The pouch holds 30 patches, one for each day of the ritual.",
+        body: "Peel it on in the morning and carry on. Each pouch holds 30 patches, one for each day of your routine.",
       },
       {
-        title: "Your daily defense",
-        body: "Aura Patch is meant to be worn every day. Vitamin C, zinc, and vitamin A are in the blend for their established roles in normal immune function. It is not a treatment or cure for any infection or disease.",
+        title: "Daily immune support",
+        body: "Vitamin C, zinc, and vitamin A are included to support healthy immune function. Aura Patch is a daily wellness product and isn't a treatment or cure for any condition.",
       },
       {
-        title: "Three probiotic cultures, named",
+        title: "Three named probiotic cultures",
         body: "Lactobacillus casei, Lactobacillus paracasei, and Bifidobacterium longum are part of the formula.",
       },
       {
         title: "Botanicals with a long traditional use",
-        body: "Stabilized allicin, a garlic-derived botanical, sits with ginger, a warming root. Organic ashwagandha and rhodiola are traditional adaptogenic botanicals in the same pouch.",
+        body: "Stabilized allicin from garlic, ginger, organic ashwagandha, and rhodiola, ingredients with long histories in traditional wellness practice.",
       },
     ],
   },
@@ -125,7 +125,7 @@ export const auraCollection: AuraFormula[] = [
       },
       {
         title: "Recovery, immune support, and rejuvenation",
-        body: "Those are the three traits of this blend. Vitamin C is included for its established role in normal immune function.",
+        body: "Those are the three traits of this blend. Vitamin C is included to support healthy immune function.",
       },
       {
         title: "Ashwagandha in a quieter formula",

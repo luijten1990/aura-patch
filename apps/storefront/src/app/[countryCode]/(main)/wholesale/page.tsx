@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 const partnerBenefits = [
   ["Premium shelf presence", "Distinctive packaging created to feel considered, elevated, and easy to discover."],
   ["A simple daily ritual", "A wearable wellness format customers can understand and add naturally to their routines."],
-  ["A focused collection", "Aura Daily Wellness leads a growing family designed around defense, energy, and recovery."],
+  ["A focused collection", "Aura Patch leads a growing family designed around immune support, energy, and recovery."],
   ["Retailer support", "Product education and brand materials designed to help your team introduce Aura with confidence."],
 ]
 
