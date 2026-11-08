@@ -12,6 +12,7 @@ import {
   getCartId,
   removeCartId,
   setCartId,
+  getReferralCode,
 } from "./cookies"
 import { getRegion } from "./regions"
 import { getLocale } from "./locale-actions"
@@ -92,10 +93,16 @@ export async function getOrSetCart(countryCode: string) {
     ...(await getAuthHeaders()),
   }
 
+  const referralCode = await getReferralCode()
+
   if (!cart) {
     const locale = await getLocale()
     const cartResp = await sdk.store.cart.create(
-      { region_id: region.id, locale: locale || undefined },
+      {
+        region_id: region.id,
+        locale: locale || undefined,
+        metadata: referralCode ? { referral_code: referralCode } : undefined,
+      },
       {},
       headers
     )
@@ -107,6 +114,21 @@ export async function getOrSetCart(countryCode: string) {
 
   if (cart && cart?.region_id !== region.id) {
     await sdk.store.cart.update(cart.id, { region_id: region.id }, {}, headers)
+    await revalidateByTag("carts")
+  }
+
+  if (
+    cart &&
+    referralCode &&
+    cart.metadata?.referral_code !== referralCode &&
+    !cart.metadata?.referral_code
+  ) {
+    await sdk.store.cart.update(
+      cart.id,
+      { metadata: { referral_code: referralCode } },
+      {},
+      headers
+    )
     await revalidateByTag("carts")
   }
 
@@ -725,6 +747,17 @@ export async function placeOrder(cartId?: string) {
 
   const headers = {
     ...(await getAuthHeaders()),
+  }
+
+  const referralCode = await getReferralCode()
+  const current = await retrieveCart(id, "id,metadata")
+  if (referralCode && current && !current.metadata?.referral_code) {
+    await sdk.store.cart.update(
+      id,
+      { metadata: { referral_code: referralCode } },
+      {},
+      headers
+    )
   }
 
   const cart = await retrieveCart(id)
