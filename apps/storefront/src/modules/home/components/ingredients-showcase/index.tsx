@@ -23,15 +23,15 @@ const IngredientsShowcase = () => (
       </div>
 
       <div className="relative mt-12 overflow-hidden rounded-[1.75rem] bg-aura-cream">
-        <div className="relative aspect-[3/2] min-h-[240px] small:aspect-[16/10] small:min-h-[480px]">
-          <Image
-            src="/images/aura-collection-current-v2.webp"
-            alt="The Aura Collection: Aura Patch, Restore, and Energy pouches"
-            fill
-            className="object-contain object-center p-4 small:p-8"
-            sizes="(max-width: 1023px) 100vw, 1320px"
-          />
-        </div>
+        <Image
+          src="/images/aura-collection-current-v2.webp"
+          alt="The Aura Collection: Aura Patch, Restore, and Energy pouches"
+          width={1100}
+          height={528}
+          unoptimized
+          className="h-auto w-full"
+          sizes="(max-width: 1023px) 100vw, 1100px"
+        />
       </div>
 
       <div className="mt-14 space-y-6">
