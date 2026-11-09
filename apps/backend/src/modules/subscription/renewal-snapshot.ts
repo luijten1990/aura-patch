@@ -32,6 +32,7 @@ export type SubscriptionRenewalSnapshot = {
   billing_address?: Record<string, unknown>
   items: SubscriptionRenewalItem[]
   shipping_methods: SubscriptionRenewalShippingMethod[]
+  referral_code?: string
 }
 
 const asRecord = (value: unknown) =>
@@ -101,6 +102,9 @@ export const buildRenewalSnapshot = (
       data: asRecord(method.data),
     }))
 
+  const orderMetadata = asRecord(order.metadata)
+  const referralCode = asString(orderMetadata?.referral_code)?.toLowerCase()
+
   const itemTotal = items.reduce(
     (sum, item) => sum + item.unit_price * item.quantity,
     0
@@ -123,6 +127,7 @@ export const buildRenewalSnapshot = (
     billing_address: sanitizeAddress(order.billing_address),
     items,
     shipping_methods: shippingMethods,
+    referral_code: referralCode,
   }
 }
 

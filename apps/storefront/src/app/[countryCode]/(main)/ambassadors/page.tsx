@@ -42,7 +42,7 @@ const programFaqs = [
   ["How much can I earn?", "Aura ambassadors earn 20% commission on eligible net product sales. Net product sales exclude discounts, taxes, shipping, returns, refunds, chargebacks, and cancelled or fraudulent orders."],
   ["How are referrals tracked?", "A partner link such as getaurapatch.com/us?ref=yourname stores that code on the order. The first link a shopper opens is the one that is kept for 60 days. A code spoken at checkout is not recorded."],
   ["When are commissions approved?", "Commissions remain pending until the applicable return and payment-review period has passed. Payout timing, thresholds, and available payout methods will be included in the final Ambassador Agreement."],
-  ["Do subscription renewals earn commission?", "The initial eligible Subscribe & Save purchase can be attributed to an ambassador. Future renewals are not commissioned unless we notify you otherwise."],
+  ["Do later orders earn commission?", "Yes. The partner who sent the shopper also earns the same rate on later purchases and on Subscribe & Save renewals, as long as those orders are paid."],
   ["Can I make health claims?", "No ambassador may say that Aura diagnoses, treats, cures, or prevents disease, or make claims beyond Aura’s current approved materials. We will provide a concise messaging guide and approved creative."],
   ["Do I need to disclose the relationship?", "Yes. Ambassadors must clearly disclose their material relationship with Aura wherever they share the brand—for example, with an easy-to-see “ad,” “sponsored,” or “Aura Partner” disclosure placed with the endorsement."],
 ]

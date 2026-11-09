@@ -37,6 +37,9 @@ const getOrderData = (snapshot: SubscriptionRenewalSnapshot) => ({
     shipping_option_id: method.shipping_option_id,
     data: method.data,
   })),
+  metadata: snapshot.referral_code
+    ? { referral_code: snapshot.referral_code }
+    : undefined,
 })
 
 const createSubscriptionOrderStep = createStep(

@@ -749,7 +749,29 @@ export async function placeOrder(cartId?: string) {
     ...(await getAuthHeaders()),
   }
 
-  const referralCode = await getReferralCode()
+  const cookieCode = await getReferralCode()
+  let referralCode = cookieCode
+  if (!referralCode) {
+    const headersForCustomer = {
+      ...(await getAuthHeaders()),
+    }
+    if ("authorization" in headersForCustomer) {
+      const customer = await sdk.client
+        .fetch<{ customer: { metadata?: Record<string, unknown> | null } }>(
+          "/store/customers/me",
+          {
+            method: "GET",
+            query: { fields: "metadata" },
+            headers: headersForCustomer,
+            cache: "no-store",
+          }
+        )
+        .then(({ customer }) => customer)
+        .catch(() => null)
+      const saved = customer?.metadata?.referral_code
+      referralCode = typeof saved === "string" ? saved : ""
+    }
+  }
   const current = await retrieveCart(id, "id,metadata")
   if (referralCode && current && !current.metadata?.referral_code) {
     await sdk.store.cart.update(

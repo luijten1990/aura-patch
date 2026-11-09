@@ -9,6 +9,7 @@ describe("buildRenewalSnapshot", () => {
       region_id: "reg_1",
       sales_channel_id: "sc_1",
       total: 46.07,
+      metadata: { referral_code: "maya" },
       shipping_address: {
         id: "addr_ship",
         first_name: "Test",
@@ -36,6 +37,7 @@ describe("buildRenewalSnapshot", () => {
     expect(snapshot.amount).toBe(46.07)
     expect(snapshot.items[0].unit_price).toBe(39.99)
     expect(snapshot.shipping_methods[0].amount).toBe(6.08)
+    expect(snapshot.referral_code).toBe("maya")
     expect(snapshot.shipping_address).toEqual({
       first_name: "Test",
       id: null,
