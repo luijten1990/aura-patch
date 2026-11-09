@@ -3,6 +3,8 @@ import type {
   MedusaResponse,
 } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import { AFFILIATE_MODULE } from "../../../modules/affiliate"
+import AffiliateModuleService from "../../../modules/affiliate/service"
 
 type OrderRow = {
   id: string
@@ -15,10 +17,10 @@ type OrderRow = {
 }
 
 export const GET = async (
-  _req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest,
   res: MedusaResponse
 ) => {
-  const query = _req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
   const { data } = await query.graph({
     entity: "order",
     fields: [
@@ -53,5 +55,12 @@ export const GET = async (
     })
     .filter((order) => order !== null)
 
-  res.json({ orders, count: orders.length })
+  const affiliates = req.scope.resolve<AffiliateModuleService>(AFFILIATE_MODULE)
+  const partners = await affiliates.listAffiliates({}, { order: { created_at: "DESC" } })
+  const commissions = await affiliates.listAffiliateCommissions(
+    {},
+    { order: { created_at: "DESC" }, take: 200 }
+  )
+
+  res.json({ orders, count: orders.length, partners, commissions })
 }

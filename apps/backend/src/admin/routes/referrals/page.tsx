@@ -31,7 +31,11 @@ const ReferralsPage = () => {
       if (!response.ok) {
         throw new Error(`Unable to load referrals (${response.status})`)
       }
-      return response.json() as Promise<{ orders: ReferralOrder[]; count: number }>
+      return response.json() as Promise<{
+        orders: ReferralOrder[]
+        count: number
+        commissions?: { id: string; referral_code: string; commission_amount: number; status: string; currency_code: string }[]
+      }>
     },
   })
 
@@ -43,7 +47,7 @@ const ReferralsPage = () => {
         <Heading>Referrals</Heading>
         <Text className="text-ui-fg-subtle" size="small">
           Orders that arrived from a partner link. The code is stored on the order.
-          Totals include shipping and tax, so commission is calculated from these rows, not paid from this screen.
+          Pending commissions are calculated when a paid order carries an active partner code. Approving or paying them is still a manual step.
         </Text>
       </div>
       {isLoading && (
