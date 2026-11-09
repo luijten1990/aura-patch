@@ -47,6 +47,10 @@ export default defineMiddlewares({
       middlewares: [authenticate("customer", ["session", "bearer"])],
     },
     {
+      matcher: "/store/customers/me/affiliate*",
+      middlewares: [authenticate("customer", ["session", "bearer"])],
+    },
+    {
       matcher: "/store/*",
       middlewares: [logSlowStoreWrite],
     },

@@ -1,5 +1,11 @@
 import { HttpTypes } from "@medusajs/types"
 import { NextRequest, NextResponse } from "next/server"
+import {
+  normalizeReferralCode,
+  REFERRAL_COOKIE,
+  REFERRAL_MAX_AGE,
+  REFERRAL_QUERY,
+} from "./lib/util/referral"
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
 const PUBLISHABLE_API_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
@@ -103,6 +109,29 @@ async function getCountryCode(
 /**
  * Middleware to handle region selection and onboarding status.
  */
+function rememberReferral(request: NextRequest, response: NextResponse) {
+  const existing = normalizeReferralCode(
+    request.cookies.get(REFERRAL_COOKIE)?.value
+  )
+  if (existing) {
+    return response
+  }
+
+  const code = normalizeReferralCode(request.nextUrl.searchParams.get(REFERRAL_QUERY))
+  if (!code) {
+    return response
+  }
+
+  response.cookies.set(REFERRAL_COOKIE, code, {
+    maxAge: REFERRAL_MAX_AGE,
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  })
+  return response
+}
+
 export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.includes(".")) {
     return NextResponse.next()
@@ -121,9 +150,9 @@ export async function middleware(request: NextRequest) {
       response.cookies.set("_medusa_cache_id", cacheId, {
         maxAge: 60 * 60 * 24,
       })
-      return response
+      return rememberReferral(request, response)
     }
-    return NextResponse.next()
+    return rememberReferral(request, NextResponse.next())
   }
 
   let country = DEFAULT_REGION
@@ -140,7 +169,7 @@ export async function middleware(request: NextRequest) {
   const queryString = request.nextUrl.search || ""
   const redirectUrl = `${request.nextUrl.origin}/${country}${redirectPath}${queryString}`
 
-  return NextResponse.redirect(redirectUrl, 307)
+  return rememberReferral(request, NextResponse.redirect(redirectUrl, 307))
 }
 
 export const config = {

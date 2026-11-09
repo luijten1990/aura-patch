@@ -40,9 +40,9 @@ const campaignTiles = [
 
 const programFaqs = [
   ["How much can I earn?", "Aura ambassadors earn 20% commission on eligible net product sales. Net product sales exclude discounts, taxes, shipping, returns, refunds, chargebacks, and cancelled or fraudulent orders."],
-  ["How are referrals tracked?", "Approved ambassadors will receive a personal link and code. Link tracking will use a first-party attribution cookie, while the code provides a backup for social, podcast, and offline sharing. Final tracking details will be provided when the program opens."],
+  ["How are referrals tracked?", "A partner link such as getaurapatch.com/us?ref=yourname stores that code on the order. The first link a shopper opens is the one that is kept for 60 days. A code spoken at checkout is not recorded."],
   ["When are commissions approved?", "Commissions remain pending until the applicable return and payment-review period has passed. Payout timing, thresholds, and available payout methods will be included in the final Ambassador Agreement."],
-  ["Do subscription renewals earn commission?", "The initial eligible Subscribe & Save purchase can be attributed to an ambassador. Future renewals are not commissioned unless we notify you otherwise."],
+  ["Do later orders earn commission?", "Yes. The partner who sent the shopper also earns the same rate on later purchases and on Subscribe & Save renewals, as long as those orders are paid."],
   ["Can I make health claims?", "No ambassador may say that Aura diagnoses, treats, cures, or prevents disease, or make claims beyond Aura’s current approved materials. We will provide a concise messaging guide and approved creative."],
   ["Do I need to disclose the relationship?", "Yes. Ambassadors must clearly disclose their material relationship with Aura wherever they share the brand—for example, with an easy-to-see “ad,” “sponsored,” or “Aura Partner” disclosure placed with the endorsement."],
 ]
@@ -50,7 +50,12 @@ const programFaqs = [
 const applicationHref =
   "mailto:support@getaurapatch.com?subject=Aura%20Ambassador%20Application&body=Name%3A%0AEmail%3A%0ALocation%3A%0AWebsite%20or%20social%20profiles%3A%0AAudience%20size%3A%0AWhy%20Aura%20feels%20like%20a%20fit%3A%0A"
 
-export default function AmbassadorsPage() {
+export default async function AmbassadorsPage({
+  params,
+}: {
+  params: Promise<{ countryCode: string }>
+}) {
+  const { countryCode } = await params
   return (
     <main className="bg-aura-cream text-aura-forest">
       <section className="aura-shell grid gap-12 py-14 small:grid-cols-[0.92fr_1.08fr] small:items-center small:py-20">
@@ -63,9 +68,14 @@ export default function AmbassadorsPage() {
             Help more people discover a beautifully simple approach to daily
             wellness—and earn 20% commission on eligible product sales you refer.
           </p>
-          <a href={applicationHref} className="aura-button mt-9 inline-flex">
-            Become an ambassador
-          </a>
+          <div className="mt-9 flex flex-wrap gap-3">
+            <a href={applicationHref} className="aura-button inline-flex">
+              Become an ambassador
+            </a>
+            <a href={`/${countryCode}/ambassadors/dashboard`} className="inline-flex min-h-12 items-center rounded-full border border-aura-forest/25 px-6 text-[11px] font-bold uppercase tracking-[0.16em]">
+              Partner portal
+            </a>
+          </div>
         </div>
         <div className="relative mx-auto aspect-[4/5] w-full max-w-[510px] overflow-hidden rounded-[2rem]">
           <Image

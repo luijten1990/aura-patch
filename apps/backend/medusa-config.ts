@@ -141,5 +141,8 @@ module.exports = defineConfig({
     {
       resolve: "./src/modules/subscription",
     },
+    {
+      resolve: "./src/modules/affiliate",
+    },
   ],
 })

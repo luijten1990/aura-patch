@@ -30,6 +30,7 @@ const createSubscriptionStep = createStep(
       entity: "order",
       fields: [
         "id",
+        "metadata",
         "customer_id",
         "email",
         "currency_code",

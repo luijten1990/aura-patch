@@ -135,6 +135,14 @@ export const getCartId = async () => {
   return cookies.get("_medusa_cart_id")?.value
 }
 
+export const getReferralCode = async () => {
+  const cookies = await nextCookies()
+  const { normalizeReferralCode, REFERRAL_COOKIE } = await import(
+    "@lib/util/referral"
+  )
+  return normalizeReferralCode(cookies.get(REFERRAL_COOKIE)?.value)
+}
+
 // See the note on `setAuthToken`: `sameSite: "lax"` so the cart cookie survives
 // the cross-site return navigation from a redirect-based payment method.
 export const setCartId = async (cartId: string) => {
