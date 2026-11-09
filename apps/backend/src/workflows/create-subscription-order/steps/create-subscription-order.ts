@@ -3,6 +3,7 @@ import { MedusaError, Modules } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { createOrderWorkflow } from "@medusajs/medusa/core-flows"
 import { SUBSCRIPTION_MODULE } from "../../../modules/subscription"
+import { renewalOrderMetadata } from "../../../modules/affiliate/ledger"
 import { SubscriptionRenewalSnapshot } from "../../../modules/subscription/renewal-snapshot"
 import { SubscriptionData } from "../../../modules/subscription/types"
 
@@ -12,7 +13,10 @@ export type CreateSubscriptionOrderStepInput = {
   payment_collection: PaymentCollectionDTO
 }
 
-const getOrderData = (snapshot: SubscriptionRenewalSnapshot) => ({
+const getOrderData = (
+  snapshot: SubscriptionRenewalSnapshot,
+  subscriptionId: string
+) => ({
   region_id: snapshot.region_id,
   customer_id: snapshot.customer_id,
   sales_channel_id: snapshot.sales_channel_id,
@@ -37,9 +41,7 @@ const getOrderData = (snapshot: SubscriptionRenewalSnapshot) => ({
     shipping_option_id: method.shipping_option_id,
     data: method.data,
   })),
-  metadata: snapshot.referral_code
-    ? { referral_code: snapshot.referral_code, referral_source: "renewal" }
-    : undefined,
+  metadata: renewalOrderMetadata(snapshot.referral_code, subscriptionId),
 })
 
 const createSubscriptionOrderStep = createStep(
@@ -58,7 +60,7 @@ const createSubscriptionOrderStep = createStep(
 
     const linkDefs: LinkDefinition[] = []
     const { result: order } = await createOrderWorkflow(container).run({
-      input: getOrderData(snapshot),
+      input: getOrderData(snapshot, subscription.id),
       context,
     })
 

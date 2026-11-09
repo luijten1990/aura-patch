@@ -1,6 +1,7 @@
 import type { SubscriberArgs, SubscriberConfig } from "@medusajs/framework"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import { AFFILIATE_MODULE } from "../modules/affiliate"
+import { netProductAmount } from "../modules/affiliate/ledger"
 import AffiliateModuleService from "../modules/affiliate/service"
 
 type OrderRecord = {
@@ -9,6 +10,7 @@ type OrderRecord = {
   currency_code?: string | null
   total?: number | null
   item_subtotal?: number | null
+  discount_total?: number | null
   metadata?: Record<string, unknown> | null
 }
 
@@ -22,7 +24,7 @@ export default async function orderPlacedAffiliate({
     data: [order],
   } = await query.graph({
     entity: "order",
-    fields: ["id", "customer_id", "currency_code", "total", "item_subtotal", "metadata"],
+    fields: ["id", "customer_id", "currency_code", "total", "item_subtotal", "discount_total", "metadata"],
     filters: { id: data.id },
   })
 
@@ -32,7 +34,10 @@ export default async function orderPlacedAffiliate({
     return
   }
 
-  const base = Number(typed.item_subtotal ?? typed.total ?? 0)
+  const base = netProductAmount(
+    Number(typed.item_subtotal ?? 0),
+    Number(typed.discount_total ?? 0)
+  )
   const affiliates = container.resolve<AffiliateModuleService>(AFFILIATE_MODULE)
   try {
     const source = typed.metadata?.referral_source === "renewal" ? "renewal" : "initial"
