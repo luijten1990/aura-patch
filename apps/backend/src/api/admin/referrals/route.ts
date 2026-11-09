@@ -5,6 +5,17 @@ import type {
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { AFFILIATE_MODULE } from "../../../modules/affiliate"
 import AffiliateModuleService from "../../../modules/affiliate/service"
+import manageReferralWorkflow from "../../../workflows/manage-referral"
+
+type ActionBody = {
+  action?: "create_partner" | "set_partner_status" | "set_commission_status"
+  id?: string
+  name?: string
+  email?: string
+  code?: string
+  commission_rate?: number
+  status?: string
+}
 
 type OrderRow = {
   id: string
@@ -63,4 +74,23 @@ export const GET = async (
   )
 
   res.json({ orders, count: orders.length, partners, commissions })
+}
+
+export const POST = async (
+  req: AuthenticatedMedusaRequest<ActionBody>,
+  res: MedusaResponse
+) => {
+  const { result } = await manageReferralWorkflow(req.scope).run({
+    input: {
+      action: req.body?.action || "create_partner",
+      id: req.body?.id,
+      name: req.body?.name,
+      email: req.body?.email,
+      code: req.body?.code,
+      commission_rate: req.body?.commission_rate,
+      status: req.body?.status,
+    },
+  })
+
+  res.status(req.body?.action === "create_partner" ? 201 : 200).json(result)
 }

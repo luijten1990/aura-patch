@@ -50,7 +50,12 @@ const programFaqs = [
 const applicationHref =
   "mailto:support@getaurapatch.com?subject=Aura%20Ambassador%20Application&body=Name%3A%0AEmail%3A%0ALocation%3A%0AWebsite%20or%20social%20profiles%3A%0AAudience%20size%3A%0AWhy%20Aura%20feels%20like%20a%20fit%3A%0A"
 
-export default function AmbassadorsPage() {
+export default async function AmbassadorsPage({
+  params,
+}: {
+  params: Promise<{ countryCode: string }>
+}) {
+  const { countryCode } = await params
   return (
     <main className="bg-aura-cream text-aura-forest">
       <section className="aura-shell grid gap-12 py-14 small:grid-cols-[0.92fr_1.08fr] small:items-center small:py-20">
@@ -63,9 +68,14 @@ export default function AmbassadorsPage() {
             Help more people discover a beautifully simple approach to daily
             wellness—and earn 20% commission on eligible product sales you refer.
           </p>
-          <a href={applicationHref} className="aura-button mt-9 inline-flex">
-            Become an ambassador
-          </a>
+          <div className="mt-9 flex flex-wrap gap-3">
+            <a href={applicationHref} className="aura-button inline-flex">
+              Become an ambassador
+            </a>
+            <a href={`/${countryCode}/ambassadors/dashboard`} className="inline-flex min-h-12 items-center rounded-full border border-aura-forest/25 px-6 text-[11px] font-bold uppercase tracking-[0.16em]">
+              Partner portal
+            </a>
+          </div>
         </div>
         <div className="relative mx-auto aspect-[4/5] w-full max-w-[510px] overflow-hidden rounded-[2rem]">
           <Image

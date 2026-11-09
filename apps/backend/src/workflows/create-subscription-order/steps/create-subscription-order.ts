@@ -38,7 +38,7 @@ const getOrderData = (snapshot: SubscriptionRenewalSnapshot) => ({
     data: method.data,
   })),
   metadata: snapshot.referral_code
-    ? { referral_code: snapshot.referral_code }
+    ? { referral_code: snapshot.referral_code, referral_source: "renewal" }
     : undefined,
 })
 

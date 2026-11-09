@@ -35,11 +35,14 @@ export default async function orderPlacedAffiliate({
   const base = Number(typed.item_subtotal ?? typed.total ?? 0)
   const affiliates = container.resolve<AffiliateModuleService>(AFFILIATE_MODULE)
   try {
+    const source = typed.metadata?.referral_source === "renewal" ? "renewal" : "initial"
     await affiliates.recordOrderCommission({
       code,
       orderId: typed.id,
       baseAmount: base,
       currencyCode: typed.currency_code,
+      customerId: typed.customer_id,
+      source,
     })
     if (typed.customer_id) {
       const customerModule = container.resolve(Modules.CUSTOMER)

@@ -101,7 +101,9 @@ export async function getOrSetCart(countryCode: string) {
       {
         region_id: region.id,
         locale: locale || undefined,
-        metadata: referralCode ? { referral_code: referralCode } : undefined,
+        metadata: referralCode
+          ? { referral_code: referralCode, referral_source: "initial" }
+          : undefined,
       },
       {},
       headers
@@ -125,7 +127,7 @@ export async function getOrSetCart(countryCode: string) {
   ) {
     await sdk.store.cart.update(
       cart.id,
-      { metadata: { referral_code: referralCode } },
+      { metadata: { referral_code: referralCode, referral_source: "initial" } },
       {},
       headers
     )
@@ -776,7 +778,7 @@ export async function placeOrder(cartId?: string) {
   if (referralCode && current && !current.metadata?.referral_code) {
     await sdk.store.cart.update(
       id,
-      { metadata: { referral_code: referralCode } },
+      { metadata: { referral_code: referralCode, referral_source: "initial" } },
       {},
       headers
     )

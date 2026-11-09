@@ -8,6 +8,7 @@ const Affiliate = model.define("affiliate", {
   status: model.enum(["pending", "active", "rejected"]).default("pending"),
   commission_rate: model.number().default(20),
   customer_id: model.text().nullable(),
+  payout_email: model.text().nullable(),
 })
 
 export default Affiliate

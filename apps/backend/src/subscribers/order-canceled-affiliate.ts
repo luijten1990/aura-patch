@@ -30,5 +30,5 @@ export default async function orderCanceledAffiliate({
 }
 
 export const config: SubscriberConfig = {
-  event: "order.canceled",
+  event: ["order.canceled", "order.refund_created"],
 }

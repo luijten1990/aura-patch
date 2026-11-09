@@ -12,6 +12,8 @@ class AffiliateModuleService extends MedusaService({
     orderId: string
     baseAmount: number
     currencyCode?: string | null
+    customerId?: string | null
+    source?: "initial" | "renewal"
   }) {
     const code = input.code.trim().toLowerCase()
     const [affiliate] = await this.listAffiliates({ code, status: "active" })
@@ -30,7 +32,9 @@ class AffiliateModuleService extends MedusaService({
     const created = await this.createAffiliateCommissions({
       affiliate_id: affiliate.id,
       order_id: input.orderId,
+      customer_id: input.customerId || null,
       referral_code: code,
+      source: input.source === "renewal" ? "renewal" : "initial",
       base_amount: input.baseAmount,
       commission_amount: amount,
       currency_code: input.currencyCode || "usd",
