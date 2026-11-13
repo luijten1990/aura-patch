@@ -7,7 +7,7 @@ import styles from "./page.module.css"
 
 const title = "Why a patch? 5 reasons to rethink your daily ritual"
 const description =
-  "Explore the practical appeal of Aura Patch: one daily patch, 19 ingredients and a 30-day pouch. Understand the format, the formula and what to know before you choose."
+  `Explore the practical appeal of Aura Patch: one daily patch, ${auraCore.ingredients.length} ingredients and a 30-day pouch. Understand the format, the formula and what to know before you choose.`
 
 export async function generateMetadata({
   params,
@@ -71,7 +71,7 @@ export default function WhyAPatchPage() {
           <div className={styles.productImage}>
             <Image src={auraCore.image} alt={auraCore.imageAlt} fill priority sizes="(max-width: 900px) 90vw, 480px" className={styles.contain} />
           </div>
-          <figcaption>Aura Patch · 19 ingredients · 30-day pouch</figcaption>
+          <figcaption>Aura Patch · {auraCore.ingredients.length} ingredients · 30-day pouch</figcaption>
         </figure>
       </header>
 
@@ -174,8 +174,8 @@ export default function WhyAPatchPage() {
             <p className="aura-eyebrow">Reason 05</p>
             <h2 className="aura-display">Get to know what you’re choosing.</h2>
             <p>
-              Aura Patch brings 19 listed ingredients into one daily patch. The formula includes
-              vitamins, botanicals and blends, including Vitamin C, Organic Ashwagandha and a BCAA + EAA Blend.
+              Aura Patch brings {auraCore.ingredients.length} listed ingredients into one daily patch. The formula includes
+              vitamins, botanicals and blends, including Vitamin C, Broccoli Sprout Extract and a BCAA+EAA blend.
             </p>
             <p>
               An ingredient list tells you what is in the formula. It does not establish how much
@@ -183,7 +183,7 @@ export default function WhyAPatchPage() {
               Research on an ingredient taken by mouth cannot answer those questions for Aura Patch.
             </p>
             <details className={styles.ingredients}>
-              <summary>Explore all 19 listed ingredients <span aria-hidden="true">+</span></summary>
+              <summary>Explore all {auraCore.ingredients.length} listed ingredients <span aria-hidden="true">+</span></summary>
               <ul>{auraCore.ingredients.map((ingredient) => <li key={ingredient}>{ingredient}</li>)}</ul>
               <p>Refer to the product packaging for the full label and directions.</p>
             </details>
@@ -223,7 +223,7 @@ export default function WhyAPatchPage() {
             <h2 id="next-step" className="aura-display">Less preparation.<br />A little more simplicity.</h2>
             <p>If the format fits your day, take a closer look at Aura Patch.</p>
             <ProductLink>See Aura Patch &amp; purchase options</ProductLink>
-            <p className={styles.caption}>19 ingredients · One daily patch · 30-day pouch</p>
+            <p className={styles.caption}>{auraCore.ingredients.length} ingredients · One daily patch · 30-day pouch</p>
           </section>
           <p className={styles.disclosure}>
             Written by Aura Patch about its own product. For external use only. Follow the product

@@ -30,7 +30,7 @@ Project-specific verification lives in `.cursor/skills/verify-aura-patch/`. The 
 
 See `docs/architecture.md` for prerequisites and coverage gaps. Browser QA uses browser tools, not these Node scripts. Record screenshots under `artifacts/qa/` and evidence in `WEBSITE_SCORE.md`. There is no numerical score until real criteria have been assessed.
 
-Stay inside existing Aura Patch claims (daily ritual, 19 ingredients, peel/apply, up to 12 hours, 30-day pouch). Do not invent disease treatment, clinical results, testimonials, or new ingredient promises.
+Stay inside existing Aura Patch claims (daily ritual, 21 ingredients on the pouch declaration, peel/apply, up to 12 hours, 30-day pouch). Do not invent disease treatment, clinical results, testimonials, or new ingredient promises.
 
 ### Objective
 
