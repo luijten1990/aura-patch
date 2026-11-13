@@ -1,5 +1,9 @@
 # Website quality scorecard
 
+## Ingredient declaration (2026-11-13, Asia/Bangkok)
+
+Aura Patch on `/us` and `/us/why-a-patch` renders the 21-item pouch list (Quercetin, Hawthorn Berry Powder, Lactobacillus Acidophilus). Why-a-patch copy reads “brings 21 listed ingredients”. Organic Ashwagandha remains only on Restore and Energy. Storefront unit tests: 27 passed. `next lint` still fails on pre-existing `@ts-ignore` in `language-select`.
+
 Aura Patch. No numerical score until real criteria have been assessed. Mark items only with evidence (command output, screenshot path, or blocked prerequisite).
 
 ## Why-a-patch advertorial (2026-10-02)

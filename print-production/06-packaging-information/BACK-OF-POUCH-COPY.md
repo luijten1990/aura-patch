@@ -30,7 +30,7 @@ For the best results with our patches, use them every day. Some people might fee
 
 ## Ingredients
 
-Use the declaration in `01-ingredient-list` after the website mismatch is resolved. Do not paste the website marketing list onto the pouch while Proof V9 still shows a different formula.
+Use the declaration in `01-ingredient-list`. The website uses the same list.
 
 ## Patch care
 

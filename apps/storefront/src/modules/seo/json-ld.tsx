@@ -114,7 +114,7 @@ export function OrganizationJsonLd() {
     url: "https://www.getaurapatch.com",
     logo: "https://www.getaurapatch.com/images/aura-patch-logo.webp",
     description:
-      "Aura Patch creates daily wellness transdermal patches — a simpler, pill-free approach to supporting your health with 19 thoughtfully formulated ingredients.",
+      "Aura Patch creates daily wellness transdermal patches — a simpler, pill-free approach to a daily ritual with 21 ingredients on the pouch.",
     contactPoint: {
       "@type": "ContactPoint",
       email: "support@getaurapatch.com",

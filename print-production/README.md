@@ -13,7 +13,7 @@ Those images are flattened references. They are not press files. The Google Driv
 
 | Folder | What belongs here | Status |
 | --- | --- | --- |
-| `01-ingredient-list` | Final ingredient declaration for the pouch | Drafted from Proof V9. Conflicts with the website list. Do not print until reconciled. |
+| `01-ingredient-list` | Final ingredient declaration for the pouch | Signed. The website uses this same list. |
 | `02-pouch-design` | Mockup, print artwork, manufacturer dieline | Dimensions taken from Proof V9. Official dieline is still required. |
 | `03-patch-stickers` | Sticker artwork and cutting spec | Spec drafted from the print guide. Press PDF still required. |
 | `04-pouch-proof` | Manufacturer proof and the approved version | Proof V9 recorded. Not signed off. |
@@ -37,8 +37,7 @@ Name files `aura-<item>-mockup-vN`, `aura-<item>-print-vN`, or `aura-<item>-proo
 
 Resolve these before anyone plates or orders laminate:
 
-1. The website formula in `apps/storefront/src/lib/data/aura-collection.ts` is not the same list as Proof V9. See `01-ingredient-list`.
-2. The proof barcode is marked nominal. Confirm the real GS1 GTIN or leave the barcode off.
-3. There is no manufacturer dieline. Seal, zipper, gusset, and tear notch are unknown.
-4. Gold on the sticker is specified as foil **or** metallic ink. Pick one process.
-5. Copy on the pouch needs a regulatory check for the markets you will ship into. This folder does not replace that review.
+1. The proof barcode is marked nominal. Confirm the real GS1 GTIN or leave the barcode off.
+2. There is no manufacturer dieline. Seal, zipper, gusset, and tear notch are unknown.
+3. Gold on the sticker is specified as foil **or** metallic ink. Pick one process.
+4. Copy on the pouch needs a regulatory check for the markets you will ship into. This folder does not replace that review.

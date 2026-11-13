@@ -12,7 +12,7 @@ One page. Sign only against a named file and, ideally, a physical sample. A scre
 
 - [ ] Spelling matches `06-packaging-information`, including Atlanta ST SE, Marietta, GA 30060, and support@getaurapatch.com
 - [ ] Ingredient declaration matches the signed list in `01-ingredient-list`, including quantities if your market requires them
-- [ ] Website formula and pouch formula are the same list, or the difference is an intentional, documented decision
+- [ ] Website formula and pouch formula match `01-ingredient-list`
 - [ ] “30 PATCHES” is the correct net contents
 - [ ] Directions stay: peel, apply to clean dry skin on upper arm or stomach, wear up to 12 hours, remove gently
 - [ ] No new disease, clinical, or testimonial claims were added in prepress

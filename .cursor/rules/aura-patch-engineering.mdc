@@ -7,7 +7,7 @@ alwaysApply: true
 
 Use **one** engineering agent in this repo. Do not split work into frontend, backend, or ecommerce subagents.
 
-Aura Patch is a DTC wellness patch at getaurapatch.com (Medusa + Next.js). Stay inside existing on-site claims (daily ritual, 19 ingredients, peel/apply, up to 12 hours, 30-day pouch). Do not invent disease treatment, clinical results, or new ingredient promises.
+Aura Patch is a DTC wellness patch at getaurapatch.com (Medusa + Next.js). Stay inside existing on-site claims (daily ritual, 21 ingredients on the pouch declaration, peel/apply, up to 12 hours, 30-day pouch). Do not invent disease treatment, clinical results, or new ingredient promises.
 
 A storefront or subscribe/checkout task is not done until:
 
